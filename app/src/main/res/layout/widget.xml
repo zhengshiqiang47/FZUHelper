@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_below="@id/weekday_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/test_course_rl"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+   <ImageView
+       android:id="@+id/widget_image"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:src="@mipmap/ic_launcher"
+       />
+
+
+</RelativeLayout>

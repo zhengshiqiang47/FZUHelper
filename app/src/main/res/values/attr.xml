@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Theme">
+        <attr name="customImageViewStyle" format="reference"/>
+    </declare-styleable>
+    <declare-styleable name="CustomImageView">
+        <attr name="circle" format="boolean"/>
+        <attr name="radius" format="dimension"/>
+    </declare-styleable>
+</resources>

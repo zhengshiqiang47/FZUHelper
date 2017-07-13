@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2e3145</color>
+    <color name="colorPrimaryDark">#2e3145</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorBackground">#47696c</color>
+    <color name="colorAccent">#464960</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorGray">#c1c0c0</color>
+    <color name="colorRed">#EA0000</color>
+    <color name="course_color0">#A0e0e0e0</color>
+    <color name="course_color1">#A0e53935</color>
+    <color name="course_color2">#A03949ab</color>
+    <color name="course_color3">#A000695c</color>
+    <color name="course_color4">#A0fb8c00</color>
+    <color name="course_color5">#A0d81b60</color>
+    <color name="course_color6">#A01e88e5</color>
+    <color name="course_color7">#A043a047</color>
+    <color name="course_color8">#A0ffb300</color>
+    <color name="course_color9">#A08e24aa</color>
+    <color name="course_color10">#A000acc1</color>
+    <color name="course_color11">#A07cb342</color>
+    <color name="course_color12">#A06d4c41</color>
+    <color name="course_color13">#A05e35b1</color>
+    <color name="course_color14">#A0c0ca33</color>
+    <color name="course_color15">#A06d4c41</color>
+    <color name="course_color16">#A0311b92</color>
+    <color name="weekend_bg">#000</color>
+</resources>
