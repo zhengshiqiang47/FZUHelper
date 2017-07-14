@@ -20,6 +20,8 @@ import butterknife.ButterKnife;
 /**
  * Created by Administrator on 2016/10/20.
  */
+ 
+ //test
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
     private static final String TAG="LoginActivity";
