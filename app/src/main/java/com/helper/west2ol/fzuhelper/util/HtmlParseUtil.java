@@ -167,7 +167,7 @@ public class HtmlParseUtil {
             fdscore.setJidian(jidian);
             tempScores.add(fdscore);
         }
-        Log.i(TAG,"共"+scores.size()+"个成绩");
+        Log.i(TAG,"共"+scores.size()+"个成绩"+tempScores.size());
         FDScoreLB.get(context).setScores(tempScores);
         return tempScores;
     }

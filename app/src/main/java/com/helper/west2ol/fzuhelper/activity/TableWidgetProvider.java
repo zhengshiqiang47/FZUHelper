@@ -99,6 +99,14 @@ public class TableWidgetProvider extends AppWidgetProvider {
             Bitmap bitmap=Bitmap.createBitmap(loadBitmapFromView(course_table_layout));
             if (bitmap==null)Log.i("MAIN","NULL Image");
             views.setImageViewBitmap(R.id.widget_image,bitmap);
+
+            Intent intent = new Intent(context, MainContainerActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+            // Get the layout for the App Widget and attach an on-click listener
+            // to the button
+            views.setOnClickPendingIntent(R.id.widget_image, pendingIntent);
+
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
     }
@@ -358,13 +366,6 @@ public class TableWidgetProvider extends AppWidgetProvider {
     private void refreshDate(){
         CourseBeanLab.get(context).getCourses().clear();
         FDScoreLB.get(context).getScores().clear();
-//        KCLB.get(context).getKcs().clear();
-//        FDScoreLB.get(context).getScores().clear();
-//        String Xuehao = context.getSharedPreferences("userinfo", Context.MODE_PRIVATE).getString("passwd","");
-//        Log.i("KBFragment", "密码" +).getSharedPreferences("userinfo", Context.MODE_PRIVATE).getString("username", "");
-//        String Passwd = getActivity( Passwd);
-//        Log.i("KBFragment", "学号" + UserInformation.get(context).getXuehao());
-//        HtmlAnalyze.getScore(context, Xuehao, Passwd);
         HtmlParseUtil.getCourse(context,true);
     }
 
