@@ -8,8 +8,18 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@mipmap/back_login"
     tools:context="com.helper.west2ol.fzuhelper.activity.LoginActivity_1">
 
+    <TextView
+        android:text="My Account"
+        android:textSize="30dp"
+        android:textColor="@color/colorWhite"
+        android:gravity="bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp" />
+    
+    
     <!-- Login progress -->
     <ProgressBar
         android:id="@+id/login_progress"
@@ -17,12 +27,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
-    <ScrollView
+    <ImageView
+        android:background="@drawable/ic_account1"
+        android:layout_marginTop="12dp"
+        android:layout_width="90dp"
+        android:layout_height="90dp" />
+
+
+    <LinearLayout
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@color/colorWhite"
+        android:padding="20dp">
 
         <LinearLayout
             android:id="@+id/email_login_form"
@@ -30,48 +50,88 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <android.support.design.widget.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-            <AutoCompleteTextView
-                android:id="@+id/email"
-                android:layout_width="match_parent"
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/account" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/account"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/account"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:singleLine="true" />
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+
+
+            <Switch
+                android:id="@+id/rem_passwords"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_email"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:singleLine="true"/>
+                android:layout_gravity="right" />
 
-            </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/prompt_password"
-                android:imeActionId="@+id/login"
-                android:imeActionLabel="@string/action_sign_in_short"
-                android:imeOptions="actionUnspecified"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                android:singleLine="true"/>
 
-            </android.support.design.widget.TextInputLayout>
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/password" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/password"
+                        android:imeActionId="@+id/login"
+                        android:imeActionLabel="@string/action_sign_in_short"
+                        android:imeOptions="actionUnspecified"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:singleLine="true" />
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="忘记密码 ?" />
 
             <Button
-                android:id="@+id/email_sign_in_button"
+                android:id="@+id/sign_in_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:background="#cf4800"
                 android:text="@string/action_sign_in"
-                android:textStyle="bold"/>
+                android:textColor="@color/colorWhite"
+                android:textSize="16dp"
+                android:textStyle="bold" />
 
         </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 </LinearLayout>

@@ -3,7 +3,10 @@ package com.helper.west2ol.fzuhelper.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,20 +25,26 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import com.helper.west2ol.fzuhelper.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
- * A login screen that offers login via email/password.
+ * login activity by linyoung
+ * 测试学号123456  密码123456
  */
 public class LoginActivity_1 extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
@@ -49,7 +58,7 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
      * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
+             "123456:123456"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -57,17 +66,29 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private AutoCompleteTextView mAccountView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private Switch mRem_passwords;
+
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
+
+    private String id_1;
+    private String num;
+    //从Logincheck.asp获取的id和num
+
+    private String id_2;//从LOGIN_CHK_XS获取,后面获取web信息的唯一标识码
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_1);
+        //沉浸状态栏
+        setLayout();
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mAccountView = (AutoCompleteTextView) findViewById(R.id.account);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -82,7 +103,7 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button mEmailSignInButton = (Button) findViewById(R.id.sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -92,6 +113,27 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        mRem_passwords = (Switch) findViewById(R.id.rem_passwords);
+
+        //记住密码功能
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isRemember = pref.getBoolean("remember_password", false);
+        if (isRemember) {
+            String account = pref.getString("account", "");
+            String password = pref.getString("password", "");
+            mAccountView.setText(account);
+            mPasswordView.setText(password);
+            mRem_passwords.setChecked(true);
+        }
+    }
+
+    private void setLayout() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            //透明状态栏
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //透明导航栏
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
     }
 
     private void populateAutoComplete() {
@@ -110,7 +152,7 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
             return true;
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(mAccountView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok, new View.OnClickListener() {
                         @Override
                         @TargetApi(Build.VERSION_CODES.M)
@@ -137,7 +179,6 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -149,11 +190,11 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mAccountView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String account = mAccountView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -166,14 +207,10 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        // Check for a valid account address.
+        if (TextUtils.isEmpty(account)) {
+            mAccountView.setError(getString(R.string.error_field_required));
+            focusView = mAccountView;
             cancel = true;
         }
 
@@ -185,13 +222,9 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(account, password);
             mAuthTask.execute((Void) null);
         }
-    }
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
@@ -245,7 +278,7 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
                 // Select only email addresses.
                 ContactsContract.Contacts.Data.MIMETYPE +
                         " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                                                                     .CONTENT_ITEM_TYPE},
+                .CONTENT_ITEM_TYPE},
 
                 // Show primary email addresses first. Note that there won't be
                 // a primary email address if the user hasn't specified one.
@@ -269,6 +302,16 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
 
     }
 
+    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
+        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(LoginActivity_1.this,
+                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
+
+        mAccountView.setAdapter(adapter);
+    }
+
+
     private interface ProfileQuery {
         String[] PROJECTION = {
                 ContactsContract.CommonDataKinds.Email.ADDRESS,
@@ -279,27 +322,17 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
         int IS_PRIMARY = 1;
     }
 
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity_1.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
-    }
-
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
+        private final String mAccount;
         private final String mPassword;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
+        UserLoginTask(String account, String password) {
+            mAccount = account;
             mPassword = password;
         }
 
@@ -316,7 +349,7 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
 
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
+                if (pieces[0].equals(mAccount)) {
                     // Account exists, return true if the password matches.
                     return pieces[1].equals(mPassword);
                 }
@@ -332,6 +365,19 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
             showProgress(false);
 
             if (success) {
+                editor = pref.edit();
+                if (mRem_passwords.isChecked()) {
+                    editor.putBoolean("remember_password", true);
+                    editor.putString("account", mAccount);
+                    editor.putString("password", mPassword);
+                } else {
+                    editor.clear();
+                }
+                editor.apply();
+
+                Intent intent = new Intent(LoginActivity_1.this , MainContainerActivity.class);
+                startActivity(intent);
+
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
