@@ -9,6 +9,7 @@ import okhttp3.Cookie;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /** Login
@@ -105,13 +106,46 @@ public class HttpUtil {
                 return null;
             }
             String result=new String(response.body().bytes());
-            Log.i(TAG, "result" + result);
+//            Log.i(TAG, "result" + result);
             return result;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return html;
     }
+
+    public static String getHistoryCourseHtml(String targetUrl,String xuenian){
+        String html=null;
+        OkHttpClient okHttpClient=new OkHttpClient.Builder().build();
+        Log.i(TAG, "id:" + FzuCookie.get().getId());
+        RequestBody requestBody=new FormBody.Builder()
+                .add("ctl00$ContentPlaceHolder1$DDL_xnxq",xuenian)
+                .add("ctl00$ContentPlaceHolder1$zylbdpl","本专业")
+                .add("ctl00$ContentPlaceHolder1$BT_submit","确定")
+                .add("__EVENTVALIDATION",FzuCookie.get().EVENTVALIDATION)
+                .add("__VIEWSTATE",FzuCookie.get().VIEWSTATE).build();
+        Request request=new Request.Builder()
+                .url(targetUrl+"?id="+FzuCookie.get().getId())
+                .addHeader("Cookie",FzuCookie.get().getCookie()+"")
+                .addHeader("Accept-Language","zh-CN,zh;q=0.8,en;q=0.6")
+                .addHeader("Connection","keep-alive")
+                .post(requestBody)
+                .build();
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            if(!response.message().equals("OK")){
+                Log.i(TAG,"获取课表失败，message不是Ok");
+                return null;
+            }
+            String result=new String(response.body().bytes());
+//            Log.i(TAG, "result" + result);
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return html;
+    }
+
 
 //    public static String getScoreHtml() {
 //        String html=null;

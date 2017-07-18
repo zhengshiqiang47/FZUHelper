@@ -59,6 +59,7 @@ import static android.R.id.empty;
  */
 
 public class CourseTableFragment extends Fragment{
+
     private static final String TAG = "KBActivity";
     /** 第一个无内容的格子 */
     protected TextView empty;
@@ -91,8 +92,10 @@ public class CourseTableFragment extends Fragment{
     private ImageView accountIcon;
     private DrawerLayout mDrawerLayout;
     Button menu_button_in_course_table;
-    @Bind(R.id.course_table_myscrollview)
-    TwinklingRefreshLayout refreshLayout;
+    @Bind(R.id.more_button_in_course_table)
+    Button moreButton;
+//    @Bind(R.id.course_table_myscrollview)
+//    TwinklingRefreshLayout refreshLayout;
     DrawerLayout drawer;
     @Override
     public void onCreate(Bundle savedIntenceState){
@@ -120,6 +123,12 @@ public class CourseTableFragment extends Fragment{
                 drawer.openDrawer(Gravity.LEFT);
             }
         });
+        moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showKB(1, 2016, 2);
+            }
+        });
         new getCourse().execute();
         initKB(rootView);
         Log.i("CourseTable", "初始化完成");
@@ -137,28 +146,30 @@ public class CourseTableFragment extends Fragment{
         sunColum = (TextView) v.findViewById(R.id.test_sunday_course);
         course_table_layout = (RelativeLayout) v.findViewById(R.id.test_course_rl);
         SinaRefreshView refreshView = new SinaRefreshView(getActivity());
-        refreshLayout.setHeaderView(refreshView);
-        refreshLayout.setOnRefreshListener(new TwinklingRefreshLayout.OnRefreshListener(){
-            @Override
-            public void onRefresh(final TwinklingRefreshLayout refreshLayout) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                refreshLayout.finishRefreshing();
-                            }
-                        });
-                    }
-                }).start();
-            }
-        });
+//        refreshLayout.setHeaderView(refreshView);
+//        refreshLayout.setOnRefreshListener(new TwinklingRefreshLayout.OnRefreshListener(){
+//            @Override
+//            public void onRefresh(final TwinklingRefreshLayout refreshLayout) {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            Thread.sleep(500);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        getActivity().runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                refreshLayout.finishRefreshing();
+//                            }
+//                        });
+//                    }
+//                }).start();
+//            }
+//        });
+//        refreshLayout.setEnableLoadmore(false);
+//        refreshLayout.setEnableOverlayRefreshView(true);
 //        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
 //                R.color.colorRed,
 //                R.color.colorAccent,
@@ -315,7 +326,7 @@ public class CourseTableFragment extends Fragment{
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;
             }
-            TextView courseInfo = new TextView(getActivity());
+            final TextView courseInfo = new TextView(getActivity());
             String name=kc.getKcName();
             String location=kc.getKcLocation();
             if(name.length()>=13){
@@ -374,6 +385,9 @@ public class CourseTableFragment extends Fragment{
                 courseInfo.getBackground().setAlpha(200);
                 courseInfo.setTextColor(Color.GRAY);
             }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                courseInfo.setElevation(12.0f);
+            }
             courseInfo.setTextSize(12);
             courseInfo.setLayoutParams(rlp);
 
@@ -409,22 +423,21 @@ public class CourseTableFragment extends Fragment{
 //        String Passwd = getActivity( Passwd);
 //        Log.i("KBFragment", "学号" + UserInformation.get(getActivity()).getXuehao());
 //        HtmlAnalyze.getScore(getActivity(), Xuehao, Passwd);
-        HtmlParseUtil.getCourse(getActivity().getApplicationContext(),true);
+        HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),true);
     }
 
     private class getCourse extends AsyncTask<Void,Void,Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
-            HtmlParseUtil.getCourse(getActivity(),false);
+            HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),false);
+            HtmlParseUtil.getHistoryCourse(getActivity().getApplicationContext(),"201602");
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-                showKB(2, 2017, 1);
-                Log.i(TAG, "显示课表");
-
+            showKB(2, 2017, 1);
         }
     }
 }
