@@ -366,14 +366,14 @@ public class TableWidgetProvider extends AppWidgetProvider {
     private void refreshDate(){
         CourseBeanLab.get(context).getCourses().clear();
         FDScoreLB.get(context).getScores().clear();
-        HtmlParseUtil.getCourse(context,true);
+        HtmlParseUtil.getCurrentCourse(context,true);
     }
 
     private class getCourse extends AsyncTask<Void,Void,Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
-            HtmlParseUtil.getCourse(context,false);
+            HtmlParseUtil.getCurrentCourse(context,false);
             return null;
         }
 
