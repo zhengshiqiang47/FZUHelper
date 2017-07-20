@@ -58,7 +58,7 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
      * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-             "123456:123456"
+            "123456:123456"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -392,4 +392,3 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
         }
     }
 }
-
