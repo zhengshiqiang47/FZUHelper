@@ -40,7 +40,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         switch (v.getId()){
             case R.id.logout_button:
                 ActivityController.finashAll();
-                Intent intent = new Intent(SettingActivity.this , LoginActivity.class);
+                Intent intent = new Intent(SettingActivity.this , LoginActivity_1.class);
                 startActivity(intent);
                 break;
             case R.id.back_button_in_setting:
