@@ -10,6 +10,7 @@
     tools:context="com.helper.west2ol.fzuhelper.activity.MainContainerActivity"
     tools:showIn="@layout/fragment_grade">
     <LinearLayout
+        android:layout_margin="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
         <TextView
