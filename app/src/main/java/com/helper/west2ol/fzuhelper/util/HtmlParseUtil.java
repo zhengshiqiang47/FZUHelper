@@ -31,6 +31,7 @@ public class HtmlParseUtil {
             return true;
         }
         String result = HttpUtil.getCourseHtml("http://59.77.226.35/student/xkjg/wdxk/xkjg_list.aspx");
+
         Document document = Jsoup.parse(result);
 
         //设置常用参数

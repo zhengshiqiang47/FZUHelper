@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 24
@@ -33,6 +35,14 @@ dependencies {
     compile 'com.squareup.okio:okio:1.7.0'
     compile 'com.lcodecorex:tkrefreshlayout:1.0.3'
     compile 'com.android.support:cardview-v7:24.2.1'
+    compile 'org.greenrobot:greendao-generator:3.2.2'
+    compile 'org.greenrobot:greendao:3.2.2'
     testCompile 'junit:junit:4.12'
     compile files('libs/jsoup-1.9.2.jar')
+}
+
+greendao {
+    schemaVersion 1
+    daoPackage 'com.helper.west2ol.fzuhelper.dao'
+    targetGenDir 'src/main/java'
 }

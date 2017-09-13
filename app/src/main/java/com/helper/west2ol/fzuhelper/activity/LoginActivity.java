@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        final String loginResponse = HttpUtil.Login(muser, passwd);
+                        final String loginResponse = HttpUtil.Login(getApplicationContext());
                         switch (loginResponse){
                             case "网络错误":
                                 break;

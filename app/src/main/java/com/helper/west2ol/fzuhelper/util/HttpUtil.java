@@ -1,6 +1,10 @@
 package com.helper.west2ol.fzuhelper.util;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.helper.west2ol.fzuhelper.bean.User;
+import com.helper.west2ol.fzuhelper.dao.DBManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,9 +53,11 @@ public class HttpUtil {
     public static final String getEmptyClassRoom = "kkgl/kbcx/kbcx_choose.aspx"; //空教室
 
 
-    public static String Login(String muser , String passwwd ){
+    public static String Login(Context context){
         OkHttpClient okHttpClient = new OkHttpClient.Builder().addNetworkInterceptor(new LoginInterceptor()).build();
-        FormBody formBody=new FormBody.Builder().add("muser","031502344").add("passwd","zsqqq1996424").build();
+        DBManager dbManager=new DBManager(context);
+        User user=dbManager.queryUserList().get(0);
+        FormBody formBody=new FormBody.Builder().add("muser",user.getFzuAccount()).add("passwd",user.getFzuPasssword()).build();
         Request request=new Request.Builder()
                 .url("http://59.77.226.32/logincheck.asp")
                 .method("Post",null)

@@ -28,7 +28,7 @@
     <color name="weekend_bg">#000</color>
 
     <color name="score_bg">#ffffff</color>
-    <color name="score_item_bg">#2CB2EF</color>
+    <color name="score_item_bg">#A01e88e5</color>
     <color name="score_60">#ffffff</color>
     <color name="score_70">#745DC5</color>
     <color name="score_80">#BC3B2A</color>

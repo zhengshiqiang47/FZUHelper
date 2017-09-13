@@ -11,11 +11,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.helper.west2ol.fzuhelper.R;
+import com.helper.west2ol.fzuhelper.bean.User;
+import com.helper.west2ol.fzuhelper.dao.DBManager;
+import com.helper.west2ol.fzuhelper.dao.DaoMaster;
 import com.helper.west2ol.fzuhelper.fragment.CourseTableFragment;
 import com.helper.west2ol.fzuhelper.fragment.GradeFragment;
 import com.helper.west2ol.fzuhelper.fragment.MathFragment;
 import com.helper.west2ol.fzuhelper.util.ActivityController;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
+
+import java.util.List;
 
 public class MainContainerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG="MainActivity";
@@ -34,6 +39,7 @@ public class MainContainerActivity extends AppCompatActivity implements Navigati
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_container);
         ActivityController.addActivity(this);
+        initData();
 
         id = getIntent().getStringExtra("id");
         parameterToFragment = new Bundle();
@@ -53,16 +59,25 @@ public class MainContainerActivity extends AppCompatActivity implements Navigati
         course_Item.setChecked(true);
     }
 
+    private void initData(){
+        DBManager dbManager=DBManager.getInstance(getApplicationContext());
+        List<User> resUsers=dbManager.queryUserList();
+        System.out.println("resUserCount:" + resUsers.size());
+        System.out.println(resUsers.get(0).getFzuAccount()+" Pass:"+resUsers.get(0).getFzuPasssword());
+    }
+
 
     @Override
     public void onDestroy(){
         super.onDestroy();
         ActivityController.removeActivity(this);
     }
+
     @Override
     public void onResume(){
         super.onResume();
     }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -139,7 +154,7 @@ public class MainContainerActivity extends AppCompatActivity implements Navigati
 
         @Override
         protected Void doInBackground(Void... params) {
-            HttpUtil.Login("dkfjd","djkf");
+            HttpUtil.Login(getApplicationContext());
             return null;
         }
 
