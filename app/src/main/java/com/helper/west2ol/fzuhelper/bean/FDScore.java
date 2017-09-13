@@ -1,11 +1,14 @@
 package com.helper.west2ol.fzuhelper.bean;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * Created by zsq on 16-8-22.
  */
+@Entity
 public class FDScore {
     private static final String JSON_NAME = "FDScoreName";
     private static final String JSON_JIDIAN = "FDScoreJidian";
@@ -14,6 +17,8 @@ public class FDScore {
     private static final String JSON_YEAR = "FDScoreYear";
     private static final String JSON_XUENIAN = "FDScoreXuenian";
 
+    @Id(autoincrement = true)
+    private Long fdScoreId;
 
     private String name="";
     private String jidian="";
@@ -21,6 +26,14 @@ public class FDScore {
     private String score="";
     private int year;
     private int xuenian;
+
+    public Long getFdScoreId() {
+        return fdScoreId;
+    }
+
+    public void setFdScoreId(Long fdScoreId) {
+        this.fdScoreId = fdScoreId;
+    }
 
     public int getYear() {
         return year;

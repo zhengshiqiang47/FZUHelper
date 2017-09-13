@@ -30,8 +30,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     EditText passwdEd;
 
     private String id_1;
-    private String num;
-    //从Logincheck.asp获取的id和num
+    private String num;//从Logincheck.asp获取的id和num
 
     private String id_2;//从LOGIN_CHK_XS获取,后面获取web信息的唯一标识码
 
