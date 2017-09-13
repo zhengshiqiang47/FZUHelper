@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
-import com.helper.west2ol.fzuhelper.fragment.CourseTableFragment;
 
 import java.util.ArrayList;
 import java.util.List;

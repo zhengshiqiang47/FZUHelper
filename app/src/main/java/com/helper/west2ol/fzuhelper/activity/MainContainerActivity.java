@@ -1,33 +1,20 @@
 package com.helper.west2ol.fzuhelper.activity;
 
-import android.app.Activity;
-import android.content.ClipData;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.os.AsyncTaskCompat;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.helper.west2ol.fzuhelper.R;
-import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
 import com.helper.west2ol.fzuhelper.fragment.CourseTableFragment;
 import com.helper.west2ol.fzuhelper.fragment.GradeFragment;
 import com.helper.west2ol.fzuhelper.fragment.MathFragment;
 import com.helper.west2ol.fzuhelper.util.ActivityController;
-import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
 
 public class MainContainerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {

@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.util.ActivityController;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
-import com.helper.west2ol.fzuhelper.util.HttpUtil;
 
 /**
  * Created by Administrator on 2016/10/20.

@@ -12,8 +12,8 @@ public class CourseBean {
     private int kcStartWeek;
     private int kcEndWeek;
     private boolean kcIsDouble=true;
-    private int kcWeekend;
     private boolean kcIsSingle=true;
+    private int kcWeekend;
     private int kcYear;
     private int kcXuenian;
     private String kcNote;
@@ -119,5 +119,14 @@ public class CourseBean {
 
     public void setKcBackgroundId(int kcBackgroundId) {
         this.kcBackgroundId = kcBackgroundId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        CourseBean courseBean= (CourseBean) obj;
+        if (courseBean.getKcYear()==this.getKcYear()&&courseBean.getKcXuenian()==this.getKcXuenian())
+            return true;
+        else
+            return false;
     }
 }

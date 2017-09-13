@@ -1,7 +1,6 @@
 package com.helper.west2ol.fzuhelper.bean;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.ArrayList;
 

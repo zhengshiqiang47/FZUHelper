@@ -1,64 +1,44 @@
 package com.helper.west2ol.fzuhelper.fragment;
 
 import android.app.Fragment;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.helper.west2ol.fzuhelper.R;
-import com.helper.west2ol.fzuhelper.activity.MainContainerActivity;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
 import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
-import com.helper.west2ol.fzuhelper.util.HttpUtil;
-import com.helper.west2ol.fzuhelper.view.MyScrollView;
-import com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout;
 import com.lcodecore.tkrefreshlayout.header.SinaRefreshView;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static android.R.id.empty;
 
 /**
  * Created by Administrator on 2016/10/20.
  */
 
 public class CourseTableFragment extends Fragment{
+
     private static final String TAG = "KBActivity";
     /** 第一个无内容的格子 */
     protected TextView empty;
@@ -91,8 +71,10 @@ public class CourseTableFragment extends Fragment{
     private ImageView accountIcon;
     private DrawerLayout mDrawerLayout;
     Button menu_button_in_course_table;
-    @Bind(R.id.course_table_myscrollview)
-    TwinklingRefreshLayout refreshLayout;
+    @Bind(R.id.more_button_in_course_table)
+    Button moreButton;
+//    @Bind(R.id.course_table_myscrollview)
+//    TwinklingRefreshLayout refreshLayout;
     DrawerLayout drawer;
     @Override
     public void onCreate(Bundle savedIntenceState){
@@ -120,6 +102,12 @@ public class CourseTableFragment extends Fragment{
                 drawer.openDrawer(Gravity.LEFT);
             }
         });
+        moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showKB(1, 2016, 2);
+            }
+        });
         new getCourse().execute();
         initKB(rootView);
         Log.i("CourseTable", "初始化完成");
@@ -137,28 +125,30 @@ public class CourseTableFragment extends Fragment{
         sunColum = (TextView) v.findViewById(R.id.test_sunday_course);
         course_table_layout = (RelativeLayout) v.findViewById(R.id.test_course_rl);
         SinaRefreshView refreshView = new SinaRefreshView(getActivity());
-        refreshLayout.setHeaderView(refreshView);
-        refreshLayout.setOnRefreshListener(new TwinklingRefreshLayout.OnRefreshListener(){
-            @Override
-            public void onRefresh(final TwinklingRefreshLayout refreshLayout) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                refreshLayout.finishRefreshing();
-                            }
-                        });
-                    }
-                }).start();
-            }
-        });
+//        refreshLayout.setHeaderView(refreshView);
+//        refreshLayout.setOnRefreshListener(new TwinklingRefreshLayout.OnRefreshListener(){
+//            @Override
+//            public void onRefresh(final TwinklingRefreshLayout refreshLayout) {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            Thread.sleep(500);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        getActivity().runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                refreshLayout.finishRefreshing();
+//                            }
+//                        });
+//                    }
+//                }).start();
+//            }
+//        });
+//        refreshLayout.setEnableLoadmore(false);
+//        refreshLayout.setEnableOverlayRefreshView(true);
 //        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
 //                R.color.colorRed,
 //                R.color.colorAccent,
@@ -292,7 +282,7 @@ public class CourseTableFragment extends Fragment{
         }
 
         for (int i=0;i<kcs.size();i++) {
-            CourseBean kc=CourseBeanLab.get(getActivity().getApplicationContext()).getCourses().get(i);
+            CourseBean kc= CourseBeanLab.get(getActivity().getApplicationContext()).getCourses().get(i);
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;
             }
@@ -311,11 +301,11 @@ public class CourseTableFragment extends Fragment{
 
         for (int i=0;i<kcs.size();i++) {
 
-            CourseBean kc=CourseBeanLab.get(getActivity()).getCourses().get(i);
+            CourseBean kc= CourseBeanLab.get(getActivity()).getCourses().get(i);
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;
             }
-            TextView courseInfo = new TextView(getActivity());
+            final TextView courseInfo = new TextView(getActivity());
             String name=kc.getKcName();
             String location=kc.getKcLocation();
             if(name.length()>=13){
@@ -374,6 +364,9 @@ public class CourseTableFragment extends Fragment{
                 courseInfo.getBackground().setAlpha(200);
                 courseInfo.setTextColor(Color.GRAY);
             }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                courseInfo.setElevation(12.0f);
+            }
             courseInfo.setTextSize(12);
             courseInfo.setLayoutParams(rlp);
 
@@ -409,22 +402,21 @@ public class CourseTableFragment extends Fragment{
 //        String Passwd = getActivity( Passwd);
 //        Log.i("KBFragment", "学号" + UserInformation.get(getActivity()).getXuehao());
 //        HtmlAnalyze.getScore(getActivity(), Xuehao, Passwd);
-        HtmlParseUtil.getCourse(getActivity().getApplicationContext(),true);
+        HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),true);
     }
 
     private class getCourse extends AsyncTask<Void,Void,Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
-            HtmlParseUtil.getCourse(getActivity(),false);
+            HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),false);
+            HtmlParseUtil.getHistoryCourse(getActivity().getApplicationContext(),"201602");
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-                showKB(2, 2017, 1);
-                Log.i(TAG, "显示课表");
-
+            showKB(2, 2017, 1);
         }
     }
 }

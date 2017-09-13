@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -18,10 +17,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RemoteViews;
 import android.widget.TextView;
@@ -32,10 +29,6 @@ import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
 import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
-import com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout;
-import com.lcodecore.tkrefreshlayout.header.SinaRefreshView;
-
-import org.xmlpull.v1.XmlPullParser;
 
 import java.util.ArrayList;
 
@@ -99,6 +92,14 @@ public class TableWidgetProvider extends AppWidgetProvider {
             Bitmap bitmap=Bitmap.createBitmap(loadBitmapFromView(course_table_layout));
             if (bitmap==null)Log.i("MAIN","NULL Image");
             views.setImageViewBitmap(R.id.widget_image,bitmap);
+
+            Intent intent = new Intent(context, MainContainerActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+            // Get the layout for the App Widget and attach an on-click listener
+            // to the button
+            views.setOnClickPendingIntent(R.id.widget_image, pendingIntent);
+
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
     }
@@ -248,7 +249,7 @@ public class TableWidgetProvider extends AppWidgetProvider {
         }
 
         for (int i=0;i<kcs.size();i++) {
-            CourseBean kc=CourseBeanLab.get(context).getCourses().get(i);
+            CourseBean kc= CourseBeanLab.get(context).getCourses().get(i);
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;
             }
@@ -267,7 +268,7 @@ public class TableWidgetProvider extends AppWidgetProvider {
 
         for (int i=0;i<kcs.size();i++) {
 
-            CourseBean kc=CourseBeanLab.get(context).getCourses().get(i);
+            CourseBean kc= CourseBeanLab.get(context).getCourses().get(i);
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;
             }
@@ -358,21 +359,14 @@ public class TableWidgetProvider extends AppWidgetProvider {
     private void refreshDate(){
         CourseBeanLab.get(context).getCourses().clear();
         FDScoreLB.get(context).getScores().clear();
-//        KCLB.get(context).getKcs().clear();
-//        FDScoreLB.get(context).getScores().clear();
-//        String Xuehao = context.getSharedPreferences("userinfo", Context.MODE_PRIVATE).getString("passwd","");
-//        Log.i("KBFragment", "密码" +).getSharedPreferences("userinfo", Context.MODE_PRIVATE).getString("username", "");
-//        String Passwd = getActivity( Passwd);
-//        Log.i("KBFragment", "学号" + UserInformation.get(context).getXuehao());
-//        HtmlAnalyze.getScore(context, Xuehao, Passwd);
-        HtmlParseUtil.getCourse(context,true);
+        HtmlParseUtil.getCurrentCourse(context,true);
     }
 
     private class getCourse extends AsyncTask<Void,Void,Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
-            HtmlParseUtil.getCourse(context,false);
+            HtmlParseUtil.getCurrentCourse(context,false);
             return null;
         }
 

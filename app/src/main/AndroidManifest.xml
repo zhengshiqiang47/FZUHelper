@@ -31,7 +31,7 @@
         <activity
             android:name=".activity.SettingActivity"
             android:label="设置"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
 
