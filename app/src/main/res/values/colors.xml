@@ -26,4 +26,12 @@
     <color name="course_color15">#A06d4c41</color>
     <color name="course_color16">#A0311b92</color>
     <color name="weekend_bg">#000</color>
+
+    <color name="score_bg">#ffffff</color>
+    <color name="score_item_bg">#2CB2EF</color>
+    <color name="score_60">#ffffff</color>
+    <color name="score_70">#745DC5</color>
+    <color name="score_80">#BC3B2A</color>
+    <color name="score_90">#16A086</color>
+    <color name="score_100">#34495E</color>
 </resources>
