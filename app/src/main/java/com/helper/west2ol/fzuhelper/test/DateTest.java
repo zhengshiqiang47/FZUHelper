@@ -1,5 +1,8 @@
 package com.helper.west2ol.fzuhelper.test;
 
+import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
+import com.helper.west2ol.fzuhelper.util.HttpUtil;
+
 /**
  * Created by CoderQiang on 2017/8/11.
  */

@@ -22,6 +22,12 @@
         android:textSize="20dp"
         android:textColor="@color/colorWhite"
         android:text="课程表"/>
+    <Spinner
+        android:id="@+id/course_table_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:popupTheme="@color/colorWhite">
+    </Spinner>
     <Button
         android:id="@+id/more_button_in_course_table"
         android:layout_width="50dp"

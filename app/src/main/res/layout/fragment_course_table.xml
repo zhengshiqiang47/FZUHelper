@@ -32,18 +32,17 @@
 
         </android.support.design.widget.AppBarLayout>
         <!--<com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout-->
-            <!--android:id="@+id/course_table_myscrollview"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_width="match_parent">-->
+        <!--android:id="@+id/course_table_myscrollview"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_width="match_parent">-->
         <ScrollView
             android:id="@+id/scroll_body"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none"
-            >
-        <include layout="@layout/content_course_table"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:scrollbars="none">
+            <include layout="@layout/content_course_table"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
         </ScrollView>
         <!--</com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout>-->
     </LinearLayout>

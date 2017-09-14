@@ -40,7 +40,6 @@ public class MainContainerActivity extends AppCompatActivity implements Navigati
         setContentView(R.layout.activity_main_container);
         ActivityController.addActivity(this);
         initData();
-
         id = getIntent().getStringExtra("id");
         parameterToFragment = new Bundle();
         parameterToFragment.putString("id",id);
@@ -49,10 +48,8 @@ public class MainContainerActivity extends AppCompatActivity implements Navigati
         getFragmentManager().beginTransaction()
                 .replace(R.id.main_container , courseTableFragment)
                 .commit();
-
         new Login().execute();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         course_Item = navigationView.getMenu().getItem(0);
@@ -154,7 +151,7 @@ public class MainContainerActivity extends AppCompatActivity implements Navigati
 
         @Override
         protected Void doInBackground(Void... params) {
-            HttpUtil.Login(getApplicationContext());
+
             return null;
         }
 

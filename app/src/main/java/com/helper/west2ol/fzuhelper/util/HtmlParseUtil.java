@@ -14,6 +14,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -23,6 +24,12 @@ import java.util.List;
 public class HtmlParseUtil {
     private static final String TAG = "HtmlParseUtil";
 
+    /**
+     * 获取当前学期课程表
+     * @param context
+     * @param isRefresh
+     * @return
+     */
     public static boolean getCurrentCourse(Context context,boolean isRefresh) {
         ArrayList<CourseBean> tempKcs = new ArrayList<>();
         ArrayList<CourseBean> kcs = CourseBeanLab.get(context).getCourses();
@@ -31,7 +38,7 @@ public class HtmlParseUtil {
             return true;
         }
         String result = HttpUtil.getCourseHtml("http://59.77.226.35/student/xkjg/wdxk/xkjg_list.aspx");
-
+        Log.i(TAG, result);
         Document document = Jsoup.parse(result);
 
         //设置常用参数
@@ -59,9 +66,9 @@ public class HtmlParseUtil {
             int year = Integer.parseInt(yearStr);
             int xuenian = Integer.parseInt(xuenianStr);
             //解析成绩
-            FDScore fdscore = new FDScore();
-            fdscore.setName(title);
-            Element jihuaEle = kb.select("td").get(2);
+//            FDScore fdscore = new FDScore();
+//            fdscore.setName(title);
+//            Element jihuaEle = kb.select("td").get(2);
 
 //            Element scoreEle = kb.select("td").get(4);
 //            String score = scoreEle.text();
@@ -71,11 +78,11 @@ public class HtmlParseUtil {
 //            String jidian = scoreEle.text();
 //            fdscore.setJidian(jidian);
 
-            Element xuefenEle = kb.select("td").get(4);
-            String xuefen = xuefenEle.text();
-            fdscore.setXuefen(xuefen);
-            fdscore.setYear(year);
-            fdscore.setXuenian(xuenian);
+//            Element xuefenEle = kb.select("td").get(4);
+//            String xuefen = xuefenEle.text();
+//            fdscore.setXuefen(xuefen);
+//            fdscore.setYear(year);
+//            fdscore.setXuenian(xuenian);
 
             //解析课程备注:
             Element noteEle=kb.select("td").get(11);
@@ -97,14 +104,12 @@ public class HtmlParseUtil {
                 kc.setKcName(title);
                 try {
                     String[] contents = strings[j].split(" ");
-
                     String[] week = contents[0].split("-");
                     int startWeek = Integer.parseInt(week[0]);
                     int endWeek = Integer.parseInt(week[1]);
                     kc.setKcStartWeek(startWeek);
                     kc.setKcEndWeek(endWeek);
 //                    Log.i(TAG, "startweek" + startWeek + "  endweek" + endWeek);
-
                     int weekend = Integer.parseInt(contents[1].substring(2, 3));
                     kc.setKcWeekend(weekend);
 
@@ -305,12 +310,12 @@ public class HtmlParseUtil {
         return tempScores;
     }
 
-    public static boolean getBeginDate(Context context){
+    public static boolean getBeginDate(){
         String html= HttpUtil.getHtml("http://59.77.226.32/xl.asp");
-        Log.i(TAG,html);
+//        Log.i(TAG,html);
         Document document = Jsoup.parse(html);
         String now=document.select("div[style=padding:5px;border:1px black dotted]").text();
-        Log.i(TAG, "now:" + now);
+//        Log.i(TAG, "now:" + now);
         Elements dayEles=document.select("td:matches(正式上课*)");
         Element dayEle = dayEles.get(1);
         String date=document.select("table[cellspacing]").get(1).text();
@@ -319,8 +324,24 @@ public class HtmlParseUtil {
         date=date.substring(length-5,length);
         int month=Integer.parseInt(date.split("-")[0]);
         int day=Integer.parseInt(date.split("-")[1]);
-        Log.i(TAG, "month:" + month + " day" + day);
+        System.out.println("month:"+month+" day:"+day);
+//        Log.i(TAG, "month:" + month + " day" + day);
         return false;
+    }
+
+    public static void getDate(){
+        String html=HttpUtil.getHtml("http://59.77.226.32/tt.asp");
+        Document document = Jsoup.parse(html);
+        String curWeek=document.select("font[color=#FF0000]").get(0).text();
+        int week = Integer.parseInt(curWeek);
+        String yearStr = document.select("b").get(0).text();
+        String year=yearStr.substring(yearStr.indexOf("学年")-4,yearStr.indexOf("学年"));
+        String xuenian=yearStr.substring(yearStr.indexOf("学期")-2,yearStr.indexOf("学期"));
+        DefaultConfig defaultConfig=DefaultConfig.get();
+        defaultConfig.setNowWeek(week);
+        defaultConfig.setCurXuenian(Integer.parseInt(xuenian));
+        defaultConfig.setCurYear(Integer.parseInt(year));
+        return;
     }
 }
 

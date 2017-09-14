@@ -53,7 +53,7 @@ public class OtherActivity extends AppCompatActivity implements View.OnClickList
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        HtmlParseUtil.getBeginDate(getApplicationContext());
+//                        HtmlParseUtil.getBeginDate(getApplicationContext());
                     }
                 }).start();
                 break;

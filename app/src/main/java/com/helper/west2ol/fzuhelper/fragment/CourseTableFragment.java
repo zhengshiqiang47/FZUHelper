@@ -15,9 +15,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,13 +27,21 @@ import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
 import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
+import com.helper.west2ol.fzuhelper.util.DefaultConfig;
+import com.helper.west2ol.fzuhelper.util.FzuCookie;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
+import com.helper.west2ol.fzuhelper.util.HttpUtil;
 import com.lcodecore.tkrefreshlayout.header.SinaRefreshView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Administrator on 2016/10/20.
@@ -73,6 +83,8 @@ public class CourseTableFragment extends Fragment{
     Button menu_button_in_course_table;
     @Bind(R.id.more_button_in_course_table)
     Button moreButton;
+    @Bind(R.id.course_table_spinner)
+    Spinner spinner;
 //    @Bind(R.id.course_table_myscrollview)
 //    TwinklingRefreshLayout refreshLayout;
     DrawerLayout drawer;
@@ -108,13 +120,56 @@ public class CourseTableFragment extends Fragment{
                 showKB(1, 2016, 2);
             }
         });
-        new getCourse().execute();
+        getCourse();
         initKB(rootView);
         Log.i("CourseTable", "初始化完成");
         return rootView;
     }
 
+    private void getCourse(){
+        Observable.create(new Observable.OnSubscribe<Object>() {
+            @Override
+            public void call(Subscriber<? super Object> subscriber) {
+                if (FzuCookie.get().getCookie()==null){
+                    HttpUtil.Login(getActivity().getApplicationContext());
+                }
+                HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),false);
+                HtmlParseUtil.getDate();
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
+            @Override
+            public void onCompleted() {
+                DefaultConfig defaultConfig=DefaultConfig.get();
+                Log.i(TAG,defaultConfig.getCurYear()+" "+defaultConfig.getCurXuenian()+" "+defaultConfig.getNowWeek());
+                spinner.setSelection(defaultConfig.getNowWeek()-1);
+                showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        });
+    }
+
+    private int leftWidth=0;
+
     private void initKB(View v){
+        List<String> weeks = new ArrayList<>();
+        for (int i=0;i<22;i++) {
+            weeks.add("第 "+(i+1)+" 周");
+        }
+        ArrayAdapter<String> spinnerAdapter=new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, weeks);
+        spinnerAdapter.setDropDownViewResource(R.layout.item_week_spinner);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setSelection(DefaultConfig.get().getNowWeek());
+
         empty = (TextView) v.findViewById(R.id.test_empty);
         monColum = (TextView) v.findViewById(R.id.test_monday_course);
         tueColum = (TextView) v.findViewById(R.id.test_tuesday_course);
@@ -168,7 +223,7 @@ public class CourseTableFragment extends Fragment{
         int gridHeight = height / 12;
         for(int i = 1; i <= 12; i ++) {
             //i为行,j为列
-            for (int j = 2; j <= 8; j++) {
+            for (int j = 1; j <= 8; j++) {
                 TextView tx = new TextView(getActivity().getApplicationContext());
                 tx.setId((i - 1) * 8 + j);
                 //除了最后一列，都使用course_text_view_bg背景（最后一列没有右边框）
@@ -178,7 +233,8 @@ public class CourseTableFragment extends Fragment{
                 tx.setGravity(Gravity.CENTER);
                 if (j == 1) {
                     tx.setText(i+"");
-                    rp.width = aveWidth * 3 / 4;
+                    rp.width = aveWidth * 1 / 4;
+                    leftWidth=rp.width;
                     //设置他们的相对位置
                     if (i == 1)
                         rp.addRule(RelativeLayout.BELOW, empty.getId());
@@ -192,6 +248,12 @@ public class CourseTableFragment extends Fragment{
         }
     }
 
+    /**
+     * 显示课表
+     * @param week 星期
+     * @param year 年份
+     * @param xuenian 学年 1或 2
+     */
     public void showKB(int week, int year, int xuenian){
         course_table_layout.removeAllViews();
         initKB(view);
@@ -200,7 +262,7 @@ public class CourseTableFragment extends Fragment{
         //屏幕宽度
         int width = dm.widthPixels;
         //平均宽度
-        int aveWidth = width / 7;
+        int aveWidth = (width-leftWidth-50) / 7;
         //第一个空白格子设置为25宽
         screenWidth = width;
         aveWidth = aveWidth;
@@ -226,9 +288,17 @@ public class CourseTableFragment extends Fragment{
                 //文字对齐方式
                 tx.setGravity(Gravity.CENTER);
                 //如果是第一列，需要设置课的序号（1 到 12）
+                if (j == 1) {
+                    tx.setText(i+"");
+                    rp.width = aveWidth * 3 / 4;
+                    //设置他们的相对位置
+                    if (i == 1)
+                        rp.addRule(RelativeLayout.BELOW, empty.getId());
+                    else
+                        rp.addRule(RelativeLayout.BELOW, (i - 1) * 8);
+                }
                 rp.addRule(RelativeLayout.RIGHT_OF, (i - 1) * 8  + j - 1);
                 rp.addRule(RelativeLayout.ALIGN_TOP, (i - 1) * 8  + j - 1);
-                tx.setText("");
                 tx.setLayoutParams(rp);
                 course_table_layout.addView(tx);
             }
@@ -319,14 +389,12 @@ public class CourseTableFragment extends Fragment{
             //textview的位置由课程开始节数和上课的时间（day of week）确定
 
             rlp.topMargin = 5 + (kc.getKcStartTime()- 1) * gridHeight+40;
-            rlp.leftMargin = 1;
+            rlp.leftMargin = 2;
             // 偏移由这节课是星期几决定
             rlp.addRule(RelativeLayout.RIGHT_OF, kc.getKcWeekend());
             //字体居中
             courseInfo.setGravity(Gravity.CENTER);
             // 设置一种背景 根据当前周数设定
-
-
 
             if(kc.getKcStartWeek()<=week&&kc.getKcEndWeek()>=week){
                 if(kc.isKcIsSingle()&&week%2==1){
@@ -409,14 +477,13 @@ public class CourseTableFragment extends Fragment{
 
         @Override
         protected Void doInBackground(Void... params) {
-            HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),false);
-            HtmlParseUtil.getHistoryCourse(getActivity().getApplicationContext(),"201602");
+
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            showKB(2, 2017, 1);
+
         }
     }
 }

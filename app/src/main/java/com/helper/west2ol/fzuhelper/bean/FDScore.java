@@ -4,6 +4,7 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * Created by zsq on 16-8-22.
@@ -24,8 +25,10 @@ public class FDScore {
     private String jidian="";
     private String xuefen="";
     private String score="";
+
     private int year;
     private int xuenian;
+
 
     public Long getFdScoreId() {
         return fdScoreId;
@@ -60,6 +63,18 @@ public class FDScore {
         score = json.getString(JSON_SCORE);
         year = json.getInt(JSON_YEAR);
         xuenian = json.getInt(JSON_XUENIAN);
+    }
+
+    @Generated(hash = 1035163516)
+    public FDScore(Long fdScoreId, String name, String jidian, String xuefen,
+            String score, int year, int xuenian) {
+        this.fdScoreId = fdScoreId;
+        this.name = name;
+        this.jidian = jidian;
+        this.xuefen = xuefen;
+        this.score = score;
+        this.year = year;
+        this.xuenian = xuenian;
     }
 
     public String getName() {

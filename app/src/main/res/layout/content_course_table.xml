@@ -1,84 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_marginTop="4dp"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginTop="4dp"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
-        <!-- 最左边空白的格子 -->
-        <TextView android:id="@+id/test_empty"
+    <!-- 最左边空白的格子 -->
+    <TextView android:id="@+id/test_empty"
+
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        style="@style/courseTableText"
+        />
+    <LinearLayout
+        android:id="@+id/weekday_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="16dp">
+        <!-- 星期一的格子 -->
+        <LinearLayout
+            android:layout_toRightOf="@id/test_empty"
+            android:layout_weight="1"
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/courseTableText"
-            android:text="@string/empty"
-            />
+            style="@style/courseTableText">
+            <TextView android:id="@+id/test_monday_course"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/weekend_bg"
+                android:text="@string/mon"
+                />
+            <TextView
+                android:id="@+id/course_table_date_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:text="11/12"/>
+        </LinearLayout>
+
+
         <LinearLayout
-            android:id="@+id/weekday_layout"
-            android:layout_width="match_parent"
+            android:layout_toRightOf="@id/test_monday_course"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <!-- 星期一的格子 -->
-            <LinearLayout
-                android:layout_toRightOf="@id/test_empty"
-                android:layout_weight="1"
-                android:orientation="vertical"
+            style="@style/courseTableText">
+            <!-- 星期二的格子 -->
+            <TextView android:id="@+id/test_tuesday_course"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/courseTableText">
-                <TextView android:id="@+id/test_monday_course"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/weekend_bg"
-                    android:text="@string/mon"
-                    />
-                <TextView
-                    android:id="@+id/course_table_date1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="11sp"
-                    android:text="11/12"/>
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_toRightOf="@id/test_monday_course"
-                android:layout_weight="1"
-                android:orientation="vertical"
+                android:text="@string/tue"
+                android:textColor="@color/weekend_bg"
+                style="@style/courseTableText"
+                />
+            <TextView
+                android:id="@+id/course_table_date_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/courseTableText">
-                <!-- 星期二的格子 -->
-                <TextView android:id="@+id/test_tuesday_course"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/tue"
-                    android:textColor="@color/weekend_bg"
-                    style="@style/courseTableText"
-                    />
-                <TextView
-                    android:id="@+id/course_table_date2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="11sp"
-                    android:text="11/12"/>
-            </LinearLayout>
-            <!-- 星期三的格子 -->
-            <LinearLayout
-                android:layout_toRightOf="@id/test_monday_course"
-                android:layout_weight="1"
-                android:orientation="vertical"
+                android:textSize="11sp"
+                android:text="11/12"/>
+        </LinearLayout>
+        <!-- 星期三的格子 -->
+        <LinearLayout
+            android:layout_toRightOf="@id/test_monday_course"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/courseTableText">
+            <TextView android:id="@+id/test_wednesday_course"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/courseTableText">
-                <TextView android:id="@+id/test_wednesday_course"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/wen"
-                    android:textColor="@color/weekend_bg"
-                    style="@style/courseTableText"
-                    android:layout_toRightOf="@id/test_tuesday_course"
-                    android:layout_weight="1"/>
-            </LinearLayout>
+                android:text="@string/wen"
+                android:textColor="@color/weekend_bg"
+                style="@style/courseTableText"
+                android:layout_toRightOf="@id/test_tuesday_course"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/course_table_date_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:text="11/12"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/courseTableText">
             <!-- 星期四的格子 -->
             <TextView android:id="@+id/test_thursday_course"
                 android:layout_width="wrap_content"
@@ -88,6 +101,20 @@
                 style="@style/courseTableText"
                 android:layout_toRightOf="@id/test_wednesday_course"
                 android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/course_table_date_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:text="11/12"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/courseTableText">
+            <!-- 星期四的格子 -->
             <!-- 星期五的格子 -->
             <TextView android:id="@+id/test_friday_course"
                 android:layout_width="wrap_content"
@@ -97,7 +124,19 @@
                 style="@style/courseTableText"
                 android:layout_toRightOf="@id/test_thursday_course"
                 android:layout_weight="1" />
-
+            <TextView
+                android:id="@+id/course_table_date_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:text="11/12"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/courseTableText">
             <!-- 星期六的格子 -->
             <TextView android:id="@+id/test_saturday_course"
                 android:layout_width="wrap_content"
@@ -107,7 +146,19 @@
                 style="@style/courseTableText"
                 android:layout_toRightOf="@id/test_friday_course"
                 android:layout_weight="1"/>
-
+            <TextView
+                android:id="@+id/course_table_date_6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:text="11/12"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/courseTableText">
             <!-- 星期天的格子 -->
             <TextView android:id="@+id/test_sunday_course"
                 android:layout_width="wrap_content"
@@ -117,18 +168,25 @@
                 android:textColor="@color/weekend_bg"
                 android:layout_toRightOf="@id/test_saturday_course"
                 android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/course_table_date_7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:text="11/12"/>
         </LinearLayout>
+    </LinearLayout>
 
 
-        <!-- 课程表body部分 -->
+    <!-- 课程表body部分 -->
 
-        <!-- 课程信息 -->
-        <RelativeLayout
-            android:layout_below="@id/weekday_layout"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/test_course_rl"
-            >
-        </RelativeLayout>
-
+    <!-- 课程信息 -->
+    <RelativeLayout
+        android:layout_below="@id/weekday_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/test_course_rl"
+        >
     </RelativeLayout>
+
+</RelativeLayout>
