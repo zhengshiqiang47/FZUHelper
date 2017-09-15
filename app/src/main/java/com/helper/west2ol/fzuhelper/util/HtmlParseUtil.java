@@ -15,7 +15,10 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2016/10/22.
@@ -310,9 +313,14 @@ public class HtmlParseUtil {
         return tempScores;
     }
 
-    public static boolean getBeginDate(){
-        String html= HttpUtil.getHtml("http://59.77.226.32/xl.asp");
-//        Log.i(TAG,html);
+    //解析开学时间
+    public static boolean getBeginDate(String xq){
+        Map<String, Object> params = new HashMap<>();
+        if (xq != null) {
+            params.put("xq",DefaultConfig.get().getXqValues().get(xq));
+        }
+        String html= HttpUtil.getHtmlByParam("http://59.77.226.32/xl.asp",params);
+//        System.out.println("html:"+html);
         Document document = Jsoup.parse(html);
         String now=document.select("div[style=padding:5px;border:1px black dotted]").text();
 //        Log.i(TAG, "now:" + now);
@@ -322,13 +330,28 @@ public class HtmlParseUtil {
         date=date.split("为正式上课")[0];
         int length=date.length();
         date=date.substring(length-5,length);
+        //存储所有学期数
+        Map<String,String> xqs=DefaultConfig.get().getXqValues();
+        Elements options=document.select("option");
+        for (Element ele:options) {
+            xqs.put(ele.text(),ele.attr("value"));
+        }
         int month=Integer.parseInt(date.split("-")[0]);
         int day=Integer.parseInt(date.split("-")[1]);
         System.out.println("month:"+month+" day:"+day);
-//        Log.i(TAG, "month:" + month + " day" + day);
-        return false;
+        Calendar calendar=Calendar.getInstance();
+        if (xq == null) {
+            System.out.println("year:"+Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+            calendar.set(Calendar.getInstance().get(Calendar.YEAR),month-1,day);
+        }else {
+            calendar.set(Integer.parseInt(xq.substring(0,4)),month-1,day);
+        }
+        //存储当前设置的学期开学时间
+        DefaultConfig.get().setBeginDate(calendar.getTimeInMillis());
+        return true;
     }
 
+    //解析当前学期
     public static void getDate(){
         String html=HttpUtil.getHtml("http://59.77.226.32/tt.asp");
         Document document = Jsoup.parse(html);
@@ -338,6 +361,7 @@ public class HtmlParseUtil {
         String year=yearStr.substring(yearStr.indexOf("学年")-4,yearStr.indexOf("学年"));
         String xuenian=yearStr.substring(yearStr.indexOf("学期")-2,yearStr.indexOf("学期"));
         DefaultConfig defaultConfig=DefaultConfig.get();
+
         defaultConfig.setNowWeek(week);
         defaultConfig.setCurXuenian(Integer.parseInt(xuenian));
         defaultConfig.setCurYear(Integer.parseInt(year));

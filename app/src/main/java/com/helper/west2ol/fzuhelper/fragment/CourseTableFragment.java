@@ -15,6 +15,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -34,6 +35,7 @@ import com.helper.west2ol.fzuhelper.util.HttpUtil;
 import com.lcodecore.tkrefreshlayout.header.SinaRefreshView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.Bind;
@@ -121,6 +123,7 @@ public class CourseTableFragment extends Fragment{
             }
         });
         getCourse();
+        initData();
         initKB(rootView);
         Log.i("CourseTable", "初始化完成");
         return rootView;
@@ -134,6 +137,7 @@ public class CourseTableFragment extends Fragment{
                     HttpUtil.Login(getActivity().getApplicationContext());
                 }
                 HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),false);
+                HtmlParseUtil.getBeginDate(null);
                 HtmlParseUtil.getDate();
                 subscriber.onCompleted();
             }
@@ -160,15 +164,32 @@ public class CourseTableFragment extends Fragment{
 
     private int leftWidth=0;
 
-    private void initKB(View v){
+    private void initData(){
         List<String> weeks = new ArrayList<>();
         for (int i=0;i<22;i++) {
             weeks.add("第 "+(i+1)+" 周");
         }
         ArrayAdapter<String> spinnerAdapter=new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, weeks);
-        spinnerAdapter.setDropDownViewResource(R.layout.item_week_spinner);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
         spinner.setSelection(DefaultConfig.get().getNowWeek());
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println(position);
+                DefaultConfig.get().setNowWeek(position+1);
+                showKB(position+1,DefaultConfig.get().getCurYear(),DefaultConfig.get().getCurXuenian());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+    }
+    private void initKB(View v){
+
 
         empty = (TextView) v.findViewById(R.id.test_empty);
         monColum = (TextView) v.findViewById(R.id.test_monday_course);
@@ -179,6 +200,41 @@ public class CourseTableFragment extends Fragment{
         satColum  = (TextView) v.findViewById(R.id.test_saturday_course);
         sunColum = (TextView) v.findViewById(R.id.test_sunday_course);
         course_table_layout = (RelativeLayout) v.findViewById(R.id.test_course_rl);
+        int curWeek=DefaultConfig.get().getNowWeek();
+        long beginDate=DefaultConfig.get().getBeginDate();
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTimeInMillis(beginDate);
+        calendar.add(Calendar.WEEK_OF_MONTH,+curWeek-1);
+        System.out.println("");
+//        calendar.add(Calendar.DAY_OF_WEEK,-calendar.get(Calendar.DAY_OF_WEEK)+1);
+        //设置课表对应日期，这样写万不得已，有空重构！！！
+        int month=calendar.get(Calendar.MONTH)+1;
+        int day=calendar.get(Calendar.DAY_OF_MONTH);
+        monColum.setText(month+"-"+day);
+        calendar.add(Calendar.DAY_OF_MONTH,1);
+        month=calendar.get(Calendar.MONTH)+1;
+        day=calendar.get(Calendar.DAY_OF_MONTH);
+        tueColum.setText(month+"-"+day);
+        calendar.add(Calendar.DAY_OF_MONTH,1);
+        month=calendar.get(Calendar.MONTH)+1;
+        day=calendar.get(Calendar.DAY_OF_MONTH);
+        wedColum.setText(month+"-"+day);
+        calendar.add(Calendar.DAY_OF_MONTH,1);
+        month=calendar.get(Calendar.MONTH)+1;
+        day=calendar.get(Calendar.DAY_OF_MONTH);
+        thrusColum.setText(month+"-"+day);
+        calendar.add(Calendar.DAY_OF_MONTH,1);
+        month=calendar.get(Calendar.MONTH)+1;
+        day=calendar.get(Calendar.DAY_OF_MONTH);
+        friColum.setText(month+"-"+day);
+        calendar.add(Calendar.DAY_OF_MONTH,1);
+        month=calendar.get(Calendar.MONTH)+1;
+        day=calendar.get(Calendar.DAY_OF_MONTH);
+        satColum.setText(month+"-"+day);
+        calendar.add(Calendar.DAY_OF_MONTH,1);
+        month=calendar.get(Calendar.MONTH)+1;
+        day=calendar.get(Calendar.DAY_OF_MONTH);
+        sunColum.setText(month+"-"+day);
         SinaRefreshView refreshView = new SinaRefreshView(getActivity());
 //        refreshLayout.setHeaderView(refreshView);
 //        refreshLayout.setOnRefreshListener(new TwinklingRefreshLayout.OnRefreshListener(){
@@ -370,7 +426,6 @@ public class CourseTableFragment extends Fragment{
         }
 
         for (int i=0;i<kcs.size();i++) {
-
             CourseBean kc= CourseBeanLab.get(getActivity()).getCourses().get(i);
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;

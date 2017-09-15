@@ -11,5 +11,7 @@ public class DateTest {
 
     public static final void main(String args[]) throws Exception {
         System.out.println("ok");
+        HtmlParseUtil.getBeginDate(null);
+        HtmlParseUtil.getBeginDate("201502");
     }
 }

@@ -7,7 +7,9 @@ import com.helper.west2ol.fzuhelper.bean.User;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Cookie;
 import okhttp3.FormBody;
@@ -152,6 +154,41 @@ public class HttpUtil {
         return html;
     }
 
+
+    public static String getHtmlByParam(String url,Map<String,Object> params){
+        String html=null;
+        OkHttpClient okHttpClient=new OkHttpClient.Builder().build();
+//        Log.i(TAG, "id:" + FzuCookie.get().getId());
+        FormBody.Builder formBodyBuilder=new FormBody.Builder();
+        Iterator<Map.Entry<String,Object>> iterator=params.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String,Object> entry=iterator.next();
+            System.out.println("isNull:"+(entry==null)+" key:"+entry.getKey()+" value:"+entry.getValue());
+            formBodyBuilder.add(entry.getKey(), (String) entry.getValue());
+        }
+        RequestBody requestBody=formBodyBuilder.build();
+        Request request=new Request.Builder()
+                .url(url)
+                .addHeader("Cookie", FzuCookie.get().getCookie()+"")
+                .addHeader("Accept-Language","zh-CN,zh;q=0.8,en;q=0.6")
+                .addHeader("Connection","keep-alive")
+                .post(requestBody)
+                .build();
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            if(!response.message().equals("OK")){
+                Log.i(TAG,"获取数据，message不是Ok");
+                return null;
+            }
+            String result=new String(response.body().bytes(),"gb2312");
+            System.out.println(result);
+//            Log.i(TAG, "result" + result);
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return html;
+    }
 
 //    public static String getScoreHtml() {
 //        String html=null;
