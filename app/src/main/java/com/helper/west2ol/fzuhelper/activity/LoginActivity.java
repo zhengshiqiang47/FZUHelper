@@ -1,5 +1,6 @@
 package com.helper.west2ol.fzuhelper.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,17 +11,28 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.helper.west2ol.fzuhelper.R;
+import com.helper.west2ol.fzuhelper.bean.User;
+import com.helper.west2ol.fzuhelper.dao.DBManager;
+import com.helper.west2ol.fzuhelper.dao.DaoMaster;
 import com.helper.west2ol.fzuhelper.util.ActivityController;
+import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Administrator on 2016/10/20.
  */
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
+public class LoginActivity extends Activity implements View.OnClickListener{
     private static final String TAG="LoginActivity";
     @Bind(R.id.login_button)
     Button login_button;
@@ -39,11 +51,64 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedIntanceState);
         setContentView(R.layout.activity_login);
         ActivityController.addActivity(this);
-
         ButterKnife.bind(this);
         login_button = (Button)findViewById(R.id.login_button);
         login_button.setOnClickListener(this);
+        flashLogin();
     }
+
+    private void flashLogin() {
+        final DBManager dbManager=new DBManager(this);
+        List<User> users=dbManager.queryUserList();
+        if (users != null) {
+            for (final User user : users) {
+                if (user.isLogin() == true) {
+                    Observable.create(new Observable.OnSubscribe<Object>() {
+                        @Override
+                        public void call(Subscriber<? super Object> subscriber) {
+                            DefaultConfig.get().setUserAccount(user.getFzuAccount());
+                            final String loginResponse = HttpUtil.Login(getApplicationContext(),user);
+                            subscriber.onNext(loginResponse);
+                            switch (loginResponse){
+                                case "网络错误":
+                                    break;
+                                case "密码错误":
+                                    user.setIsLogin(false);
+                                    dbManager.updateUser(user);
+                                    Log.i(TAG, "密码错误");
+                                    break;
+                                case "登录成功":
+                                    subscriber.onCompleted();
+                                    break;
+                            }
+
+                        }
+                    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<Object>() {
+
+                        @Override
+                        public void onCompleted() {
+                            Intent intent = new Intent(LoginActivity.this , MainContainerActivity.class);
+                            intent.putExtra("id" , id_2);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(Object o) {
+                            Toast.makeText(getApplicationContext(), (String)o, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    break;
+                }
+            }
+        }
+    }
+
     @Override
     public void onDestroy(){
         super.onDestroy();
@@ -66,7 +131,30 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        final String loginResponse = HttpUtil.Login(getApplicationContext());
+                        User user=new User();
+                        user.setFzuPasssword(passwd);
+                        user.setFzuAccount(muser);
+                        DBManager dbManager=new DBManager(getApplicationContext());
+                        List<User> users=dbManager.queryUserList();
+                        boolean isExist=false;
+                        for (User resUser : users) {
+                            if (resUser.getFzuAccount().equals(user.getFzuAccount())){
+                                resUser.setFzuPasssword(user.getFzuPasssword());
+                                resUser.setIsLogin(true);
+                                dbManager.updateUser(resUser);
+                                isExist=true;
+                                if (resUser.isLogin()){
+
+                                }
+                                break;
+                            }
+                        }
+                        if (!isExist) {
+                            user.setIsLogin(true);
+                            dbManager.insertUser(user);
+                        }
+                        DefaultConfig.get().setUserAccount(user.getFzuAccount());
+                        final String loginResponse = HttpUtil.Login(getApplicationContext(),user);
                         switch (loginResponse){
                             case "网络错误":
                                 break;

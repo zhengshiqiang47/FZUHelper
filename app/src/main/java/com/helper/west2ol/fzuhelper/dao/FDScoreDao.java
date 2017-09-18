@@ -31,6 +31,7 @@ public class FDScoreDao extends AbstractDao<FDScore, Long> {
         public final static Property Score = new Property(4, String.class, "score", false, "SCORE");
         public final static Property Year = new Property(5, int.class, "year", false, "YEAR");
         public final static Property Xuenian = new Property(6, int.class, "xuenian", false, "XUENIAN");
+        public final static Property Unique = new Property(7, String.class, "unique", false, "UNIQUE");
     }
 
 
@@ -52,7 +53,8 @@ public class FDScoreDao extends AbstractDao<FDScore, Long> {
                 "\"XUEFEN\" TEXT," + // 3: xuefen
                 "\"SCORE\" TEXT," + // 4: score
                 "\"YEAR\" INTEGER NOT NULL ," + // 5: year
-                "\"XUENIAN\" INTEGER NOT NULL );"); // 6: xuenian
+                "\"XUENIAN\" INTEGER NOT NULL ," + // 6: xuenian
+                "\"UNIQUE\" TEXT UNIQUE );"); // 7: unique
     }
 
     /** Drops the underlying database table. */
@@ -91,6 +93,11 @@ public class FDScoreDao extends AbstractDao<FDScore, Long> {
         }
         stmt.bindLong(6, entity.getYear());
         stmt.bindLong(7, entity.getXuenian());
+ 
+        String unique = entity.getUnique();
+        if (unique != null) {
+            stmt.bindString(8, unique);
+        }
     }
 
     @Override
@@ -123,6 +130,11 @@ public class FDScoreDao extends AbstractDao<FDScore, Long> {
         }
         stmt.bindLong(6, entity.getYear());
         stmt.bindLong(7, entity.getXuenian());
+ 
+        String unique = entity.getUnique();
+        if (unique != null) {
+            stmt.bindString(8, unique);
+        }
     }
 
     @Override
@@ -139,7 +151,8 @@ public class FDScoreDao extends AbstractDao<FDScore, Long> {
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // xuefen
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // score
             cursor.getInt(offset + 5), // year
-            cursor.getInt(offset + 6) // xuenian
+            cursor.getInt(offset + 6), // xuenian
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7) // unique
         );
         return entity;
     }
@@ -153,6 +166,7 @@ public class FDScoreDao extends AbstractDao<FDScore, Long> {
         entity.setScore(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setYear(cursor.getInt(offset + 5));
         entity.setXuenian(cursor.getInt(offset + 6));
+        entity.setUnique(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
      }
     
     @Override

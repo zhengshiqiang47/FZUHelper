@@ -1,5 +1,8 @@
 package com.helper.west2ol.fzuhelper.util;
 
+import com.helper.west2ol.fzuhelper.bean.User;
+
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +10,7 @@ import java.util.Map;
  * Created by CoderQiang on 2017/9/14.
  */
 
-public class DefaultConfig {
+public class DefaultConfig implements Serializable {
 
     public static DefaultConfig defaultConfig=null;
 
@@ -18,6 +21,10 @@ public class DefaultConfig {
     private long beginDate=0;
     private Map<String,String> xqValues;
 
+    private String userAccount;
+
+    private boolean isLogin;
+
     private DefaultConfig() {
 
     }
@@ -27,6 +34,14 @@ public class DefaultConfig {
             defaultConfig = new DefaultConfig();
         }
         return defaultConfig;
+    }
+
+    public String getUserAccount() {
+        return userAccount;
+    }
+
+    public void setUserAccount(String userAccount) {
+        this.userAccount = userAccount;
     }
 
     public long getBeginDate() {
@@ -42,6 +57,14 @@ public class DefaultConfig {
             xqValues = new HashMap<>();
         }
         return xqValues;
+    }
+
+    public boolean isLogin() {
+        return isLogin;
+    }
+
+    public void setLogin(boolean login) {
+        isLogin = login;
     }
 
     public void setXqValues(Map<String, String> xqValues) {
@@ -70,5 +93,18 @@ public class DefaultConfig {
 
     public void setCurYear(int curYear) {
         this.curYear = curYear;
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultConfig{" +
+                "nowWeek=" + nowWeek +
+                ", curYear=" + curYear +
+                ", curXuenian=" + curXuenian +
+                ", beginDate=" + beginDate +
+                ", xqValues=" + xqValues +
+                ", user=" + userAccount +
+                ", isLogin=" + isLogin +
+                '}';
     }
 }

@@ -55,10 +55,8 @@ public class HttpUtil {
     public static final String getEmptyClassRoom = "kkgl/kbcx/kbcx_choose.aspx"; //空教室
 
 
-    public static String Login(Context context){
+    public static String Login(Context context,User user){
         OkHttpClient okHttpClient = new OkHttpClient.Builder().addNetworkInterceptor(new LoginInterceptor()).build();
-        DBManager dbManager=new DBManager(context);
-        User user=dbManager.queryUserList().get(0);
         FormBody formBody=new FormBody.Builder().add("muser",user.getFzuAccount()).add("passwd",user.getFzuPasssword()).build();
         Request request=new Request.Builder()
                 .url("http://59.77.226.32/logincheck.asp")
@@ -73,7 +71,6 @@ public class HttpUtil {
                 Log.i(TAG,"网络出错");
                 return "网络出错";
             }
-            List<Cookie> cookies =null;
             String result = new String(response.body().bytes());
             if(result.contains("<body bgcolor=C6DCB4><script language=javascript>alert")){
                 Log.i(TAG,"密码错误");

@@ -27,6 +27,7 @@ public class UserDao extends AbstractDao<User, Long> {
         public final static Property UserId = new Property(0, Long.class, "userId", true, "_id");
         public final static Property FzuAccount = new Property(1, String.class, "FzuAccount", false, "FZU_ACCOUNT");
         public final static Property FzuPasssword = new Property(2, String.class, "FzuPasssword", false, "FZU_PASSSWORD");
+        public final static Property IsLogin = new Property(3, boolean.class, "isLogin", false, "IS_LOGIN");
     }
 
 
@@ -44,7 +45,8 @@ public class UserDao extends AbstractDao<User, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"USER\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: userId
                 "\"FZU_ACCOUNT\" TEXT," + // 1: FzuAccount
-                "\"FZU_PASSSWORD\" TEXT);"); // 2: FzuPasssword
+                "\"FZU_PASSSWORD\" TEXT," + // 2: FzuPasssword
+                "\"IS_LOGIN\" INTEGER NOT NULL );"); // 3: isLogin
     }
 
     /** Drops the underlying database table. */
@@ -71,6 +73,7 @@ public class UserDao extends AbstractDao<User, Long> {
         if (FzuPasssword != null) {
             stmt.bindString(3, FzuPasssword);
         }
+        stmt.bindLong(4, entity.getIsLogin() ? 1L: 0L);
     }
 
     @Override
@@ -91,6 +94,7 @@ public class UserDao extends AbstractDao<User, Long> {
         if (FzuPasssword != null) {
             stmt.bindString(3, FzuPasssword);
         }
+        stmt.bindLong(4, entity.getIsLogin() ? 1L: 0L);
     }
 
     @Override
@@ -103,7 +107,8 @@ public class UserDao extends AbstractDao<User, Long> {
         User entity = new User( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // userId
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // FzuAccount
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // FzuPasssword
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // FzuPasssword
+            cursor.getShort(offset + 3) != 0 // isLogin
         );
         return entity;
     }
@@ -113,6 +118,7 @@ public class UserDao extends AbstractDao<User, Long> {
         entity.setUserId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setFzuAccount(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setFzuPasssword(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setIsLogin(cursor.getShort(offset + 3) != 0);
      }
     
     @Override

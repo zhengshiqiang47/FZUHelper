@@ -7,16 +7,51 @@
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     tools:context="com.helper.west2ol.fzuhelper.activity.MainContainerActivity">
-
-    <android.support.design.widget.AppBarLayout
+    <android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent">
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/menu_button_in_course_table"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/menu_button"
+                />
+            <TextView
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="成绩"
+                android:textSize="18sp"
+                android:textColor="@color/colorWhite"/>
+        </RelativeLayout>
 
-        android:theme="@style/AppTheme.AppBarOverlay">
-        <include layout="@layout/title_bar_grade"
-            android:layout_height="55dp"
-            android:layout_width="match_parent" />
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="fixed"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="#ffffff"
+            app:tabSelectedTextColor="#FFFFFFFF"
+            app:tabTextColor="#F0F0F0F0" />
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_grade" />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    </android.support.design.widget.CoordinatorLayout>
+    <!--<include layout="@layout/content_grade" />-->
 </LinearLayout>

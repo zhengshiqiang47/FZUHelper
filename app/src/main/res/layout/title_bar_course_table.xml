@@ -24,8 +24,12 @@
         android:text="课程表"/>
     <Spinner
         android:id="@+id/course_table_spinner"
+        android:spinnerMode="dropdown"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
+        android:pointerIcon="arrow"
+        android:theme="@android:style/Theme.Material.Light"
+        android:animateLayoutChanges="true"
         android:popupTheme="@color/colorWhite">
     </Spinner>
     <Button

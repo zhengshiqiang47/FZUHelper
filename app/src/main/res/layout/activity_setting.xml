@@ -2,11 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark">
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:textColor="@color/colorPrimary"/>
     <include layout="@layout/title_setting"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="80dp"
         />
     <ScrollView
         android:layout_width="match_parent"
@@ -30,7 +33,7 @@
                     android:layout_height="25dp"
                     android:layout_marginLeft="20dp"
                     android:text="风格"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="15dp"/>
                 <TextView
                     android:layout_alignParentBottom="true"
@@ -61,7 +64,7 @@
                     android:layout_height="50dp"
                     android:layout_marginLeft="20dp"
                     android:text="账号绑定"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorPrimaryDark"
                     android:textSize="15dp"/>
                 <TextView
                     android:layout_alignParentBottom="true"
@@ -93,7 +96,7 @@
                     android:layout_height="50dp"
                     android:layout_marginLeft="20dp"
                     android:text="意见反馈"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="15dp"/>
                 <TextView
                     android:layout_alignParentBottom="true"
@@ -125,7 +128,7 @@
                     android:layout_height="50dp"
                     android:layout_marginLeft="20dp"
                     android:text="检测更新"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="15dp"/>
                 <TextView
                     android:layout_alignParentBottom="true"
@@ -157,7 +160,7 @@
                     android:layout_height="50dp"
                     android:layout_marginLeft="20dp"
                     android:text="分享"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="15dp"/>
                 <TextView
                     android:layout_alignParentBottom="true"
@@ -189,7 +192,7 @@
                     android:layout_height="50dp"
                     android:layout_marginLeft="20dp"
                     android:text="关于"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="15dp"/>
                 <TextView
                     android:layout_alignParentBottom="true"
@@ -221,7 +224,7 @@
                     android:layout_height="50dp"
                     android:layout_marginLeft="20dp"
                     android:text="注销"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="15dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"

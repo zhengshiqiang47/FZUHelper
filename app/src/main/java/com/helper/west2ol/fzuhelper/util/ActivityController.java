@@ -1,5 +1,6 @@
 package com.helper.west2ol.fzuhelper.util;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -10,15 +11,15 @@ import java.util.List;
  */
 
 public class ActivityController {
-    public static List<AppCompatActivity> activities = new ArrayList<AppCompatActivity>();
-    public static void addActivity(AppCompatActivity activity){
+    public static List<Activity> activities = new ArrayList<Activity>();
+    public static void addActivity(Activity activity){
         activities.add(activity);
     }
-    public static void removeActivity(AppCompatActivity activity){
+    public static void removeActivity(Activity activity){
         activities.remove(activity);
     }
     public static void finashAll(){
-        for(AppCompatActivity activity : activities){
+        for(Activity activity : activities){
             if(!activity.isFinishing()){
                 activity.finish();
             }

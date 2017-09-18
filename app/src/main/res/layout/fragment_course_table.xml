@@ -27,8 +27,7 @@
 
             <include layout="@layout/title_bar_course_table"
                 android:layout_height="55dp"
-                android:layout_width="match_parent"
-                />
+                android:layout_width="match_parent" />
 
         </android.support.design.widget.AppBarLayout>
         <!--<com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout-->

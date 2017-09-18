@@ -2,6 +2,7 @@ package com.helper.west2ol.fzuhelper.bean;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Unique;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.greenrobot.greendao.annotation.Generated;
@@ -21,6 +22,7 @@ public class FDScore {
     @Id(autoincrement = true)
     private Long fdScoreId;
 
+
     private String name="";
     private String jidian="";
     private String xuefen="";
@@ -28,7 +30,16 @@ public class FDScore {
 
     private int year;
     private int xuenian;
+    @Unique()
+    private String unique;
 
+    public String getUnique() {
+        return unique;
+    }
+
+    public void setUnique(String unique) {
+        this.unique = unique;
+    }
 
     public Long getFdScoreId() {
         return fdScoreId;
@@ -65,9 +76,9 @@ public class FDScore {
         xuenian = json.getInt(JSON_XUENIAN);
     }
 
-    @Generated(hash = 1035163516)
+    @Generated(hash = 2126133735)
     public FDScore(Long fdScoreId, String name, String jidian, String xuefen,
-            String score, int year, int xuenian) {
+            String score, int year, int xuenian, String unique) {
         this.fdScoreId = fdScoreId;
         this.name = name;
         this.jidian = jidian;
@@ -75,6 +86,7 @@ public class FDScore {
         this.score = score;
         this.year = year;
         this.xuenian = xuenian;
+        this.unique = unique;
     }
 
     public String getName() {

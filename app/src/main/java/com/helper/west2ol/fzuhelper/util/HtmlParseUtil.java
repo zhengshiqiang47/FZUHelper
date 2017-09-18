@@ -7,6 +7,7 @@ import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
 import com.helper.west2ol.fzuhelper.bean.FDScore;
 import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
+import com.helper.west2ol.fzuhelper.dao.DBManager;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,6 +35,7 @@ public class HtmlParseUtil {
      * @return
      */
     public static boolean getCurrentCourse(Context context,boolean isRefresh) {
+        DBManager dbManager=new DBManager(context);
         ArrayList<CourseBean> tempKcs = new ArrayList<>();
         ArrayList<CourseBean> kcs = CourseBeanLab.get(context).getCourses();
         if(kcs.size()>=2&&!isRefresh){
@@ -41,8 +43,9 @@ public class HtmlParseUtil {
             return true;
         }
         String result = HttpUtil.getCourseHtml("http://59.77.226.35/student/xkjg/wdxk/xkjg_list.aspx");
-        Log.i(TAG, result);
+//        Log.i(TAG, result);
         Document document = Jsoup.parse(result);
+        Log.i(TAG,"解析课表");
 
         //设置常用参数
         Element VIEWSTATE=document.select("input[id=__VIEWSTATE]").get(0);
@@ -157,6 +160,8 @@ public class HtmlParseUtil {
         }
         CourseBeanLab.get(context).getCourses().addAll(tempKcs);
         Log.i(TAG,"共"+courseEles.size()+"个"+" 解析后:"+tempKcs.size()+"个");
+        dbManager.dropCourseBeans();
+        dbManager.insertCourseBeans(tempKcs);
         return true;
     }
 

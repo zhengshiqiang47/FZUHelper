@@ -28,15 +28,19 @@ import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
 import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
+import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.FzuCookie;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
+import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
 import com.lcodecore.tkrefreshlayout.header.SinaRefreshView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -90,6 +94,14 @@ public class CourseTableFragment extends Fragment{
 //    @Bind(R.id.course_table_myscrollview)
 //    TwinklingRefreshLayout refreshLayout;
     DrawerLayout drawer;
+    private boolean isRefresh=false;
+
+    private int leftWidth=0;//第一列所占宽度
+
+    Map<Integer,CourseBean> courseBeanMap;
+
+    SaveObjectUtils saveObjectUtils;
+
     @Override
     public void onCreate(Bundle savedIntenceState){
         super.onCreate(savedIntenceState);
@@ -100,6 +112,7 @@ public class CourseTableFragment extends Fragment{
         View rootView = inflater.inflate(R.layout.fragment_course_table , container , false);
         view=rootView;
         ButterKnife.bind(this, rootView);
+        saveObjectUtils=new SaveObjectUtils(getActivity(),"config");
         FloatingActionButton add = (FloatingActionButton) rootView.findViewById(R.id.more_button_in_coursetable);
         add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,9 +135,11 @@ public class CourseTableFragment extends Fragment{
                 showKB(1, 2016, 2);
             }
         });
-        getCourse();
+        Log.i(TAG,"Config:"+saveObjectUtils.getObject("config",DefaultConfig.class));
+        if (CourseBeanLab.get(this.getActivity()).getCourses() == null||CourseBeanLab.get(this.getActivity()).getCourses().size()<=1) {
+            getCourse();
+        }
         initData();
-        initKB(rootView);
         Log.i("CourseTable", "初始化完成");
         return rootView;
     }
@@ -134,7 +149,7 @@ public class CourseTableFragment extends Fragment{
             @Override
             public void call(Subscriber<? super Object> subscriber) {
                 if (FzuCookie.get().getCookie()==null){
-                    HttpUtil.Login(getActivity().getApplicationContext());
+                    HttpUtil.Login(getActivity().getApplicationContext(),DBManager.getInstance(getActivity()).queryUser(DefaultConfig.get().getUserAccount()));
                 }
                 HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),false);
                 HtmlParseUtil.getBeginDate(null);
@@ -145,6 +160,8 @@ public class CourseTableFragment extends Fragment{
             @Override
             public void onCompleted() {
                 DefaultConfig defaultConfig=DefaultConfig.get();
+
+                saveObjectUtils.setObject("config", defaultConfig);
                 Log.i(TAG,defaultConfig.getCurYear()+" "+defaultConfig.getCurXuenian()+" "+defaultConfig.getNowWeek());
                 spinner.setSelection(defaultConfig.getNowWeek()-1);
                 showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
@@ -162,22 +179,34 @@ public class CourseTableFragment extends Fragment{
         });
     }
 
-    private int leftWidth=0;
+
+
 
     private void initData(){
+        DefaultConfig defaultConfig=saveObjectUtils.getObject("config",DefaultConfig.class);
+        DefaultConfig config=DefaultConfig.get();
+        config.setBeginDate(defaultConfig.getBeginDate());
+        config.setUserAccount(defaultConfig.getUserAccount());
+        config.setNowWeek(defaultConfig.getNowWeek());
+        config.setCurXuenian(defaultConfig.getCurXuenian());
+        config.setCurYear(defaultConfig.getCurYear());
+        config.setXqValues(defaultConfig.getXqValues());
+        config.setLogin(defaultConfig.isLogin());
+
         List<String> weeks = new ArrayList<>();
         for (int i=0;i<22;i++) {
             weeks.add("第 "+(i+1)+" 周");
         }
-        ArrayAdapter<String> spinnerAdapter=new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, weeks);
+        courseBeanMap = new HashMap<>();
+        ArrayAdapter<String> spinnerAdapter=new ArrayAdapter<String>(getActivity(), R.layout.item_week_spinner_show, weeks);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
         spinner.setSelection(DefaultConfig.get().getNowWeek());
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println(position);
-                DefaultConfig.get().setNowWeek(position+1);
+                System.out.println("position:"+position);
+                DefaultConfig.get().setNowWeek(position);
                 showKB(position+1,DefaultConfig.get().getCurYear(),DefaultConfig.get().getCurXuenian());
             }
 
@@ -289,15 +318,19 @@ public class CourseTableFragment extends Fragment{
                 tx.setGravity(Gravity.CENTER);
                 if (j == 1) {
                     tx.setText(i+"");
-                    rp.width = aveWidth * 1 / 4;
+                    rp.width = aveWidth * 2 / 5;
+
                     leftWidth=rp.width;
                     //设置他们的相对位置
                     if (i == 1)
                         rp.addRule(RelativeLayout.BELOW, empty.getId());
                     else
                         rp.addRule(RelativeLayout.BELOW, (i - 1) * 8);
+                    if((i-1)%4==0&&i>=2){
+                        rp.topMargin=gridHeight/4;
+                    }
                 }
-                tx.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                tx.setTextColor(getResources().getColor(R.color.colorBlack));
                 tx.setLayoutParams(rp);
                 course_table_layout.addView(tx);
             }
@@ -311,7 +344,9 @@ public class CourseTableFragment extends Fragment{
      * @param xuenian 学年 1或 2
      */
     public void showKB(int week, int year, int xuenian){
-        course_table_layout.removeAllViews();
+        if (course_table_layout != null) {
+            course_table_layout.removeAllViews();
+        }
         initKB(view);
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -354,7 +389,7 @@ public class CourseTableFragment extends Fragment{
                         rp.addRule(RelativeLayout.BELOW, (i - 1) * 8);
                 }
                 rp.addRule(RelativeLayout.RIGHT_OF, (i - 1) * 8  + j - 1);
-                rp.addRule(RelativeLayout.ALIGN_TOP, (i - 1) * 8  + j - 1);
+                rp.addRule(RelativeLayout.ALIGN_TOP, (i - 1) * 8  + j - +1);
                 tx.setLayoutParams(rp);
                 course_table_layout.addView(tx);
             }
@@ -407,8 +442,9 @@ public class CourseTableFragment extends Fragment{
             }
         }
 
+        List<CourseBean> courseBeen=CourseBeanLab.get(getActivity().getApplicationContext()).getCourses();
         for (int i=0;i<kcs.size();i++) {
-            CourseBean kc= CourseBeanLab.get(getActivity().getApplicationContext()).getCourses().get(i);
+            CourseBean kc= courseBeen.get(i);
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;
             }
@@ -426,7 +462,7 @@ public class CourseTableFragment extends Fragment{
         }
 
         for (int i=0;i<kcs.size();i++) {
-            CourseBean kc= CourseBeanLab.get(getActivity()).getCourses().get(i);
+            CourseBean kc= courseBeen.get(i);
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;
             }
@@ -440,10 +476,9 @@ public class CourseTableFragment extends Fragment{
             courseInfo.setText(name+"\n\n"+kc.getKcLocation());
             //该textview的高度根据其节数的跨度来设置
             int timecount = Math.abs(kc.getKcEndTime()-kc.getKcStartTime()+1) ;
-            RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(aveWidth * 31 / 32, (gridHeight - 5) * timecount );
+            RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(aveWidth * 31 / 32, (gridHeight - 5) * timecount +timecount/4*5);
             //textview的位置由课程开始节数和上课的时间（day of week）确定
-
-            rlp.topMargin = 5 + (kc.getKcStartTime()- 1) * gridHeight+40;
+            rlp.topMargin = 5 + (kc.getKcStartTime()- 1) * gridHeight+(kc.getKcStartTime()/4*(gridHeight/4));
             rlp.leftMargin = 2;
             // 偏移由这节课是星期几决定
             rlp.addRule(RelativeLayout.RIGHT_OF, kc.getKcWeekend());
@@ -492,7 +527,7 @@ public class CourseTableFragment extends Fragment{
             }
             courseInfo.setTextSize(12);
             courseInfo.setLayoutParams(rlp);
-
+            courseBeanMap.put(courseInfo.getId(),kc);
             //设置不透明度
             course_table_layout.addView(courseInfo);
         }
@@ -526,19 +561,5 @@ public class CourseTableFragment extends Fragment{
 //        Log.i("KBFragment", "学号" + UserInformation.get(getActivity()).getXuehao());
 //        HtmlAnalyze.getScore(getActivity(), Xuehao, Passwd);
         HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),true);
-    }
-
-    private class getCourse extends AsyncTask<Void,Void,Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-
-        }
     }
 }

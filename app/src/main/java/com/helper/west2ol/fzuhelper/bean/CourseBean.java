@@ -1,10 +1,22 @@
 package com.helper.west2ol.fzuhelper.bean;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Unique;
+import org.greenrobot.greendao.annotation.Generated;
+
 /**
  * Created by Administrator on 2016/10/30.
  */
 
+@Entity
 public class CourseBean {
+
+    private static final String JSON_XUENIAN = "FDScoreXuenian";
+
+    @Id(autoincrement = true)
+    private Long courseId;
+
     private String kcName;
     private String kcLocation;
     private int kcStartTime;
@@ -18,6 +30,51 @@ public class CourseBean {
     private int kcXuenian;
     private String kcNote;
     private int kcBackgroundId;
+
+
+    @Unique()
+    private String unique;
+
+    @Generated(hash = 497578870)
+    public CourseBean(Long courseId, String kcName, String kcLocation, int kcStartTime, int kcEndTime,
+            int kcStartWeek, int kcEndWeek, boolean kcIsDouble, boolean kcIsSingle, int kcWeekend,
+            int kcYear, int kcXuenian, String kcNote, int kcBackgroundId, String unique) {
+        this.courseId = courseId;
+        this.kcName = kcName;
+        this.kcLocation = kcLocation;
+        this.kcStartTime = kcStartTime;
+        this.kcEndTime = kcEndTime;
+        this.kcStartWeek = kcStartWeek;
+        this.kcEndWeek = kcEndWeek;
+        this.kcIsDouble = kcIsDouble;
+        this.kcIsSingle = kcIsSingle;
+        this.kcWeekend = kcWeekend;
+        this.kcYear = kcYear;
+        this.kcXuenian = kcXuenian;
+        this.kcNote = kcNote;
+        this.kcBackgroundId = kcBackgroundId;
+        this.unique = unique;
+    }
+
+    @Generated(hash = 858107730)
+    public CourseBean() {
+    }
+
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public String getUnique() {
+        return unique;
+    }
+
+    public void setUnique(String unique) {
+        this.unique = unique;
+    }
 
     public String getKcNote() {
         return kcNote;
@@ -128,5 +185,13 @@ public class CourseBean {
             return true;
         else
             return false;
+    }
+
+    public boolean getKcIsDouble() {
+        return this.kcIsDouble;
+    }
+
+    public boolean getKcIsSingle() {
+        return this.kcIsSingle;
     }
 }
