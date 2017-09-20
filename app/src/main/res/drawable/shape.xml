@@ -1,7 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<shape
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <solid android:color="#FFFFFF" />
-    <corners android:radius="10dip" />
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--显示下面的阴影-->
+    <item
+        android:top="8dp"
+        >
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#8f99d6ff"
+                android:endColor="#003498DB"
+                />
+
+            <corners
+                android:bottomLeftRadius="12dip"
+                android:bottomRightRadius="12dip"
+                android:topLeftRadius="6dip"
+                android:topRightRadius="6dip"/>
+        </shape>
+    </item>
+    <!--显示上面的-->
+    <item
+        android:bottom="8dp"
+        >
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="90"
+                android:startColor="#5f99d6ff"
+                android:endColor="#003498DB"
+                />
+
+            <corners
+                android:radius="16dp"
+                android:bottomLeftRadius="6dip"
+                android:bottomRightRadius="6dip"
+                android:topLeftRadius="12dip"
+                android:topRightRadius="12dip"/>
+        </shape>
+    </item>
+    <!--&lt;!&ndash;显示右面的&ndash;&gt;-->
+    <!--&lt;!&ndash;显示左面的&ndash;&gt;-->
+    <!--<item-->
+        <!--android:top="8dp"-->
+        <!--android:bottom="8dp"-->
+        <!--android:left="8dp"-->
+        <!--&gt;-->
+        <!--<shape android:shape="rectangle">-->
+            <!--<gradient-->
+                <!--android:angle="0"-->
+                <!--android:startColor="#5f99d6ff"-->
+                <!--android:endColor="#003498DB"-->
+                <!--/>-->
+
+            <!--<corners-->
+                <!--android:bottomLeftRadius="6dip"-->
+                <!--android:bottomRightRadius="6dip"-->
+                <!--android:topLeftRadius="6dip"-->
+                <!--android:topRightRadius="6dip"/>-->
+        <!--</shape>-->
+    <!--</item>-->
+    <!--<item-->
+        <!--android:left="8dp"-->
+        <!--&gt;-->
+        <!--<shape android:shape="rectangle">-->
+            <!--<gradient-->
+                <!--android:angle="0"-->
+                <!--android:startColor="#4f99d6ff"-->
+                <!--android:endColor="#003498DB"-->
+                <!--/>-->
+
+            <!--<corners-->
+                <!--android:bottomLeftRadius="6dip"-->
+                <!--android:bottomRightRadius="6dip"-->
+                <!--android:topLeftRadius="6dip"-->
+                <!--android:topRightRadius="6dip"/>-->
+        <!--</shape>-->
+    <!--</item>-->
+    <!--<item-->
+        <!--android:right="8dp"-->
+        <!--&gt;-->
+        <!--<shape android:shape="rectangle">-->
+            <!--<gradient-->
+                <!--android:angle="180"-->
+                <!--android:startColor="#4f99d6ff"-->
+                <!--android:endColor="#003498DB"-->
+                <!--/>-->
+
+            <!--<corners-->
+                <!--android:bottomLeftRadius="6dip"-->
+                <!--android:bottomRightRadius="6dip"-->
+                <!--android:topLeftRadius="6dip"-->
+                <!--android:topRightRadius="6dip"/>-->
+        <!--</shape>-->
+    <!--</item>-->
+
+    <item
+        android:top="8dp"
+        android:bottom="8dp">
+
+        <shape android:shape="rectangle">
+            <gradient
+                android:endColor="#FFFFFF"
+                android:startColor="#FFFFFF"/>
+
+            <!--<corners-->
+                <!--android:bottomLeftRadius="6dip"-->
+                <!--android:bottomRightRadius="6dip"-->
+                <!--android:topLeftRadius="6dip"-->
+                <!--android:topRightRadius="6dip"/>-->
+        </shape>
+    </item>
+
+</layer-list>

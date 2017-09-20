@@ -27,6 +27,7 @@
                 android:background="@drawable/menu_button"
                 />
             <TextView
+                android:id="@+id/grade_title"
                 android:gravity="center"
                 android:layout_marginTop="8dp"
                 android:layout_width="match_parent"

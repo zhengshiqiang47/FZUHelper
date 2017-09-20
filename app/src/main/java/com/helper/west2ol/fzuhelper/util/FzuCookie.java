@@ -1,5 +1,6 @@
 package com.helper.west2ol.fzuhelper.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -8,7 +9,7 @@ import java.util.ArrayList;
  * 在没有存入文件之前，用这个类的单例保存cookie
  */
 
-public class FzuCookie {
+public class FzuCookie implements Serializable{
     private static FzuCookie fzuCookie;
     String cookie;
     String id;

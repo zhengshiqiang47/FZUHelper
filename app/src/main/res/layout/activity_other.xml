@@ -76,7 +76,6 @@
                 android:layout_height="70dp"
                 android:backgroundTint="@color/colorAccent"
                 android:background="@drawable/shape"
-                android:src="@drawable/button_image_3"
                 android:elevation="10dp"
                 />
             <TextView

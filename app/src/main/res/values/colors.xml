@@ -4,6 +4,8 @@
     <!--<color name="colorPrimaryDark">#2980B9</color>-->
     <color name="colorPrimaryDark">#3498DB</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorBlackLight">#434343</color>
+    <color name="colorBlackLight_2">#838383</color>
     <color name="colorBackground">#47696c</color>
     <color name="colorAccent">#9B59B6</color>
     <color name="colorWhite">#ffffff</color>

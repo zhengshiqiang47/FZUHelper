@@ -28,6 +28,7 @@ import com.helper.west2ol.fzuhelper.dao.DaoMaster;
 import com.helper.west2ol.fzuhelper.fragment.CourseTableFragment;
 import com.helper.west2ol.fzuhelper.fragment.GradeFragment;
 import com.helper.west2ol.fzuhelper.fragment.MathFragment;
+import com.helper.west2ol.fzuhelper.fragment.YibanFragment;
 import com.helper.west2ol.fzuhelper.util.ActivityController;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
@@ -45,6 +46,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
     public CourseTableFragment courseTableFragment;
     GradeFragment gradeFragment;
     MathFragment mathFragment;
+    YibanFragment yibanFragment;
 
     private Fragment current;
     NavigationView navigationView;
@@ -65,6 +67,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                     | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -191,8 +194,14 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                 break;
             case R.id.item4:
                 Intent intent4 = new Intent(MainContainerActivity.this , OtherActivity.class);
-                intent4.putExtra("id" , id);
-                startActivity(intent4);
+//                intent4.putExtra("id" , id);
+//                startActivity(intent4);
+                break;
+            case R.id.item5:
+                if (yibanFragment == null) {
+                    yibanFragment = new YibanFragment();
+                }
+                switchFragment(current,yibanFragment);
                 break;
             case R.id.item8:
                 parameterToFragment.putString("id",id);

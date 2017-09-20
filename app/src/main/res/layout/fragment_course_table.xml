@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorWhite"
     android:fitsSystemWindows="true"
     tools:context="com.helper.west2ol.fzuhelper.activity.MainContainerActivity">
 
@@ -28,7 +29,6 @@
             <include layout="@layout/title_bar_course_table"
                 android:layout_height="55dp"
                 android:layout_width="match_parent" />
-
         </android.support.design.widget.AppBarLayout>
         <!--<com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout-->
         <!--android:id="@+id/course_table_myscrollview"-->

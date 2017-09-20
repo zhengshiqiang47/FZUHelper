@@ -195,5 +195,13 @@ public class DBManager {
         return list;
     }
 
+    public void dropFDScores(){
+        DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
+        DaoSession daoSession = daoMaster.newSession();
+        FDScoreDao FDScoreDao = daoSession.getFDScoreDao();
+        FDScoreDao.deleteAll();
+    }
+
+
 
 }

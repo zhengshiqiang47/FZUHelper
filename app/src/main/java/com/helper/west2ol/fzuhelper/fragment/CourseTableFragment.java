@@ -132,10 +132,31 @@ public class CourseTableFragment extends Fragment{
         moreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showKB(1, 2016, 2);
+                Observable.create(new Observable.OnSubscribe<Object>() {
+                    @Override
+                    public void call(Subscriber<? super Object> subscriber) {
+                        HtmlParseUtil.getHistoryCourse(getActivity(),"201602");
+                        subscriber.onCompleted();
+                    }
+                }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
+                    @Override
+                    public void onCompleted() {
+                        showKB(1, 2016, 2);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+
+                    }
+                });
+
             }
         });
-        Log.i(TAG,"Config:"+saveObjectUtils.getObject("config",DefaultConfig.class));
         if (CourseBeanLab.get(this.getActivity()).getCourses() == null||CourseBeanLab.get(this.getActivity()).getCourses().size()<=1) {
             getCourse();
         }
@@ -160,8 +181,9 @@ public class CourseTableFragment extends Fragment{
             @Override
             public void onCompleted() {
                 DefaultConfig defaultConfig=DefaultConfig.get();
-
+                FzuCookie fzuCookie=FzuCookie.get();
                 saveObjectUtils.setObject("config", defaultConfig);
+                saveObjectUtils.setObject("cookie",fzuCookie);
                 Log.i(TAG,defaultConfig.getCurYear()+" "+defaultConfig.getCurXuenian()+" "+defaultConfig.getNowWeek());
                 spinner.setSelection(defaultConfig.getNowWeek()-1);
                 showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
@@ -185,14 +207,24 @@ public class CourseTableFragment extends Fragment{
     private void initData(){
         DefaultConfig defaultConfig=saveObjectUtils.getObject("config",DefaultConfig.class);
         DefaultConfig config=DefaultConfig.get();
-        config.setBeginDate(defaultConfig.getBeginDate());
-        config.setUserAccount(defaultConfig.getUserAccount());
-        config.setNowWeek(defaultConfig.getNowWeek());
-        config.setCurXuenian(defaultConfig.getCurXuenian());
-        config.setCurYear(defaultConfig.getCurYear());
-        config.setXqValues(defaultConfig.getXqValues());
-        config.setLogin(defaultConfig.isLogin());
-
+        if (defaultConfig != null) {
+            config.setBeginDate(defaultConfig.getBeginDate());
+            config.setUserAccount(defaultConfig.getUserAccount());
+            config.setNowWeek(defaultConfig.getNowWeek());
+            config.setCurXuenian(defaultConfig.getCurXuenian());
+            config.setCurYear(defaultConfig.getCurYear());
+            config.setXqValues(defaultConfig.getXqValues());
+            config.setLogin(defaultConfig.isLogin());
+        }
+        FzuCookie fzuCookie=saveObjectUtils.getObject("cookie",FzuCookie.class);
+        FzuCookie cookie=FzuCookie.get();
+        if (fzuCookie != null) {
+            cookie.setCookie(fzuCookie.getCookie());
+            cookie.setEVENTVALIDATION(fzuCookie.getEVENTVALIDATION());
+            cookie.setId(fzuCookie.getId());
+            cookie.setOptions(fzuCookie.getOptions());
+            cookie.setVIEWSTATE(fzuCookie.getVIEWSTATE());
+        }
         List<String> weeks = new ArrayList<>();
         for (int i=0;i<22;i++) {
             weeks.add("第 "+(i+1)+" 周");

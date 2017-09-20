@@ -6,9 +6,8 @@
     android:layout_height="wrap_content">
     <LinearLayout
         android:background="@drawable/score_item_bg"
-        android:layout_margin="4dp"
+        android:layout_margin="1dp"
         android:layout_width="match_parent"
-        android:elevation="3dp"
         android:layout_height="wrap_content" >
         <LinearLayout
             android:layout_width="0dp"
@@ -19,7 +18,7 @@
                 android:id="@+id/item_grade_title"
                 android:text="大学物理三"
                 android:textSize="18sp"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/colorBlackLight"
                 android:layout_width="match_parent"
                 android:layout_weight="5"
                 android:layout_height="wrap_content"
@@ -34,7 +33,7 @@
                     android:id="@+id/item_grade_xuefen"
                     android:layout_width="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorBlackLight_2"
                     android:text="2.5"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -46,7 +45,7 @@
                     android:text="1.2"
                     android:layout_width="0dp"
                     android:layout_weight="10"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorBlackLight_2"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"/>
@@ -70,8 +69,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="89"
-                android:textSize="20sp"
-                android:textColor="@color/colorWhite"
+                android:textSize="18sp"
+                android:textColor="@color/colorBlackLight"
                 android:gravity="center_vertical|right"
                 android:layout_marginRight="16dp"/>
         </LinearLayout>

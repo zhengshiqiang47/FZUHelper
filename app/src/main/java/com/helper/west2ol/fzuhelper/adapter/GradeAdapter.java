@@ -39,22 +39,14 @@ public class GradeAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         GradeHolder gradeHolder = (GradeHolder) holder;
-        if (position == 0) {
-            gradeHolder.gradeTitleText.setText("课程");
-            gradeHolder.scoreText.setText("成绩");
-            gradeHolder.jidianText.setText("绩点");
-            gradeHolder.xuefenText.setText("学分");
-            gradeHolder.imageView.setImageResource(R.drawable.item_score_icon);
-            return;
-        }
-        FDScore fdScore = fdScores.get(position-1);
+        FDScore fdScore = fdScores.get(position);
         gradeHolder.gradeTitleText.setText(fdScore.getName());
         gradeHolder.scoreText.setText(fdScore.getScore());
         if (fdScore.getScore().contains("尚未录入")){
             gradeHolder.scoreText.setText("暂无");
         }
-        gradeHolder.jidianText.setText(fdScore.getJidian());
-        gradeHolder.xuefenText.setText(fdScore.getXuefen());
+        gradeHolder.jidianText.setText("绩点: "+fdScore.getJidian());
+        gradeHolder.xuefenText.setText("学分: "+fdScore.getXuefen());
         gradeHolder.imageView.setImageResource(R.drawable.item_score_icon);
         GradientDrawable drawable= (GradientDrawable) gradeHolder.imageView.getDrawable();
         int colorId = 0;
@@ -80,7 +72,7 @@ public class GradeAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return fdScores.size()+1;
+        return fdScores.size();
     }
 
     private class GradeHolder extends RecyclerView.ViewHolder{

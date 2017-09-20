@@ -3,10 +3,13 @@ package com.helper.west2ol.fzuhelper.util;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
 import com.helper.west2ol.fzuhelper.bean.FDScore;
 import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
+import com.helper.west2ol.fzuhelper.bean.Yiban;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 
 import org.jsoup.Jsoup;
@@ -16,7 +19,6 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -167,7 +169,6 @@ public class HtmlParseUtil {
 
     public static ArrayList<CourseBean> getHistoryCourse(Context context, String xueNian){//学年格式 201702
         ArrayList<CourseBean> tempCourses = new ArrayList<>();
-
         String VIEWSTATE= FzuCookie.get().getVIEWSTATE();
         String EVENTVALIDATION= FzuCookie.get().getEVENTVALIDATION();
         Log.i(TAG,"VIEWSTATE:"+VIEWSTATE);
@@ -188,6 +189,7 @@ public class HtmlParseUtil {
         }
 
         String result = HttpUtil.getHistoryCourseHtml("http://59.77.226.35/student/xkjg/wdxk/xkjg_list.aspx",xueNian);
+        Log.i(TAG, "Result:"+result);
         Document document = Jsoup.parse(result);
 
         //开始解析课表
@@ -315,6 +317,9 @@ public class HtmlParseUtil {
         }
         Log.i(TAG,"共"+scores.size()+"个成绩"+tempScores.size());
         FDScoreLB.get(context).setScores(tempScores);
+        DBManager dbManager = new DBManager(context);
+        dbManager.dropFDScores();
+        dbManager.insertFDScores(tempScores);
         return tempScores;
     }
 
@@ -371,6 +376,74 @@ public class HtmlParseUtil {
         defaultConfig.setCurXuenian(Integer.parseInt(xuenian));
         defaultConfig.setCurYear(Integer.parseInt(year));
         return;
+    }
+
+    //获取易班动态列表
+    public static List<YibanResult.DataBean> getYibanList(){
+        String result=HttpUtil.getHtml("https://fzuhelper.learning2learn.cn/fzuhelper/yibanlist");
+        Log.i(TAG,result);
+        YibanResult yibanResult=new Gson().fromJson(result,YibanResult.class);
+        System.out.println("size:"+yibanResult.getData().size());
+        return yibanResult.getData();
+    }
+
+    public   static class YibanResult{
+
+        private List<DataBean> data;
+
+        public List<DataBean> getData() {
+            return data;
+        }
+
+        public void setData(List<DataBean> data) {
+            this.data = data;
+        }
+
+        public static class DataBean {
+            /**
+             * image : ssfw@3x
+             * title : 宿舍报修
+             * url : http://yiban.fzu.edu.cn/campuslife/xysh_ssfw.aspx
+             * passby : true
+             */
+
+            private String image;
+            private String title;
+            private String url;
+            private boolean passby;
+
+            public String getImage() {
+                return image;
+            }
+
+            public void setImage(String image) {
+                this.image = image;
+            }
+
+            public String getTitle() {
+                return title;
+            }
+
+            public void setTitle(String title) {
+                this.title = title;
+            }
+
+            public String getUrl() {
+                return url;
+            }
+
+            public void setUrl(String url) {
+                this.url = url;
+            }
+
+            public boolean isPassby() {
+                return passby;
+            }
+
+            public void setPassby(boolean passby) {
+                this.passby = passby;
+            }
+        }
     }
 }
 

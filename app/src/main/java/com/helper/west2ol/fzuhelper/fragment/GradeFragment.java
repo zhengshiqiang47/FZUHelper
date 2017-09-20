@@ -22,11 +22,17 @@ import android.widget.TextView;
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.activity.MainContainerActivity;
 import com.helper.west2ol.fzuhelper.adapter.GradeAdapter;
+import com.helper.west2ol.fzuhelper.bean.FDScore;
 import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
+import com.helper.west2ol.fzuhelper.dao.DBManager;
+import com.helper.west2ol.fzuhelper.util.CalculateUtil;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -47,15 +53,22 @@ public class GradeFragment extends Fragment {
 
     Context context;
     PagerAdapter mAdapter;
+    int color;
+    boolean isHidden=false;
 
+    @Bind(R.id.menu_button_in_course_table)
+    Button menu_button_in_course_table;
     @Bind(R.id.viewpager)
     ViewPager viewPager;
     @Bind(R.id.tab_layout)
     TabLayout mTabLayout;
     @Bind(R.id.app_bar)
     AppBarLayout appBarLayout;
+    @Bind(R.id.grade_title)
+    TextView title;
     List<android.support.v4.app.Fragment> fragments;
-//    LinearLayout tabLayout;
+    Map<String,List<FDScore>> scoreMap;
+    Map<Integer,String> tabTitle;
 
     @Override
     public void onCreate(Bundle savedIntenceState){
@@ -67,34 +80,30 @@ public class GradeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater , ViewGroup container , Bundle savedIntanceState){
         View rootView = inflater.inflate(R.layout.fragment_grade , container , false);
         ButterKnife.bind(this, rootView);
-        drawer = (DrawerLayout)getActivity().findViewById(R.id.drawer_layout);
-//        menu_button_in_grade = (Button)rootView.findViewById(R.id.menu_button_in_grade);
-//        menu_button_in_grade.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                drawer.openDrawer(Gravity.LEFT);
-//            }
-//        });
-        initViewPager();
-        InitTabLayout();
+        initView();
         initData();
-        initView(rootView);
         return rootView;
     }
 
     private void initData(){
-        Observable.create(new Observable.OnSubscribe<Object>() {
+        List<FDScore> fdScores= DBManager.getInstance(getActivity()).queryFDScoreList();
+        if (fdScores != null && fdScores.size() >= 1) {
+            scoreMap= CalculateUtil.getTermScores(fdScores);
+            initViewPager();
+            return;
+        }
+        Observable.create(new Observable.OnSubscribe<List<FDScore>>() {
             @Override
-            public void call(Subscriber<? super Object> subscriber) {
-                subscriber.onNext(null);
-                HtmlParseUtil.getScore(context,false);
+            public void call(Subscriber<? super List<FDScore>> subscriber) {
+                List<FDScore> scores=HtmlParseUtil.getScore(context,false);
+                subscriber.onNext(scores);
                 subscriber.onCompleted();
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Object>() {
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<List<FDScore>>() {
 
             @Override
             public void onCompleted() {
-//                gradeRecycler.setAdapter(new GradeAdapter(context, FDScoreLB.get(context).getScores()));
+                initViewPager();
             }
 
             @Override
@@ -103,13 +112,77 @@ public class GradeFragment extends Fragment {
             }
 
             @Override
-            public void onNext(Object o) {
-
+            public void onNext(List<FDScore> scores) {
+                scoreMap= CalculateUtil.getTermScores(scores);
             }
         });
     }
 
+    private void initView(){
+        color=getResources().getColor(R.color.colorPrimary);
+        drawer = (DrawerLayout)getActivity().findViewById(R.id.drawer_layout);
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                if (!isHidden){
+                    ArgbEvaluator evaluator = new ArgbEvaluator();
+                    int evaluate = (Integer) evaluator.evaluate(1-slideOffset, getResources().getColor(R.color.colorPrimary), color);
+                    setBg(evaluate);
+                    title.setTranslationX(400*slideOffset);
+                }
+            }
 
+            @Override
+            public void onDrawerOpened(View drawerView) {
+//                getActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+//                getActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+        menu_button_in_course_table.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.openDrawer(Gravity.LEFT);
+            }
+        });
+    }
+
+    private void refreshData(){
+        Observable.create(new Observable.OnSubscribe<List<FDScore>>() {
+            @Override
+            public void call(Subscriber<? super List<FDScore>> subscriber) {
+                List<FDScore> scores=HtmlParseUtil.getScore(context,false);
+                subscriber.onNext(scores);
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<List<FDScore>>() {
+
+            @Override
+            public void onCompleted() {
+                initViewPager();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(List<FDScore> scores) {
+                scoreMap= CalculateUtil.getTermScores(scores);
+            }
+        });
+    }
+
+    //设置过渡颜色
     private void initViewPager() {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -119,6 +192,7 @@ public class GradeFragment extends Fragment {
                     mTabLayout.setBackgroundColor(getResources().getColor(R.color.journey_green));
                     int evaluate = (Integer) evaluator.evaluate(positionOffset, getResources().getColor(R.color.tab_2_blue), getResources().getColor(R.color.tab_1_green));
                     setBg(evaluate);
+                    color=evaluate;
                 }
                 if (0 < position && position < 1) {
                     mTabLayout.setBackgroundColor(getResources().getColor(R.color.tab_1_green));
@@ -130,19 +204,33 @@ public class GradeFragment extends Fragment {
                     mTabLayout.setBackgroundColor(getResources().getColor(R.color.tab_3_purple));
                     int evaluate = (Integer) evaluator.evaluate(positionOffset, getResources().getColor(R.color.tab_1_green), getResources().getColor(R.color.tab_3_purple));
                     setBg(evaluate);
+                    color=evaluate;
                 }
 
                 if (1 < position && position < 2) {
                     mTabLayout.setBackgroundColor(getResources().getColor(R.color.tab_3_purple));
                     int evaluate = (Integer) evaluator.evaluate(positionOffset, getResources().getColor(R.color.tab_3_purple), getResources().getColor(R.color.tab_1_green));
-                    mTabLayout.setBackgroundColor(evaluate);
+                    setBg(evaluate);
                 }
 
 
                 if (position == 2) {
-                    mTabLayout.setBackgroundColor(getResources().getColor(R.color.tab_pink));
-                    int evaluate = (Integer) evaluator.evaluate(positionOffset, getResources().getColor(R.color.tab_3_purple), getResources().getColor(R.color.tab_pink));
+                    mTabLayout.setBackgroundColor(getResources().getColor(R.color.score_70));
+                    int evaluate = (Integer) evaluator.evaluate(positionOffset, getResources().getColor(R.color.tab_3_purple), getResources().getColor(R.color.score_70));
                     setBg(evaluate);
+                    color=evaluate;
+                }
+
+                if (2 < position && position < 3) {
+                    mTabLayout.setBackgroundColor(getResources().getColor(R.color.score_70));
+                    int evaluate = (Integer) evaluator.evaluate(positionOffset, getResources().getColor(R.color.score_70), getResources().getColor(R.color.course_color1));
+                    setBg(evaluate);
+                }
+                if (position == 3) {
+                    mTabLayout.setBackgroundColor(getResources().getColor(R.color.tab_3_purple));
+                    int evaluate = (Integer) evaluator.evaluate(positionOffset, getResources().getColor(R.color.score_70), getResources().getColor(R.color.tab_3_purple));
+                    setBg(evaluate);
+                    color=evaluate;
                 }
             }
 
@@ -156,19 +244,26 @@ public class GradeFragment extends Fragment {
 
             }
         });
+
         fragments = new ArrayList<android.support.v4.app.Fragment>();
-        fragments.add(new GradeDetailFragment());
-        fragments.add(new GradeDetailFragment());
-        fragments.add(new GradeDetailFragment());
+        tabTitle=new HashMap<>();
+        Iterator<Map.Entry<String,List<FDScore>>> iterator=scoreMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String,List<FDScore>> entry=iterator.next();
+            fragments.add(GradeDetailFragment.getInstance(entry.getValue(),getActivity()));
+            tabTitle.put(tabTitle.size(),entry.getKey());
+        }
         mAdapter = new FragAdapter(((MainContainerActivity)getActivity()).getSupportFragmentManager(), fragments);
         viewPager.setAdapter(mAdapter);
         viewPager.setCurrentItem(0);
+        InitTabLayout();
     }
 
     private void setBg(int evaluate){
         mTabLayout.setBackgroundColor(evaluate);
         getActivity().getWindow().setStatusBarColor(evaluate);
         appBarLayout.setBackgroundColor(evaluate);
+
 //        textView.setBackgroundColor(evaluate);
     }
 
@@ -177,11 +272,6 @@ public class GradeFragment extends Fragment {
         mTabLayout.setupWithViewPager(viewPager);
     }
 
-    int x=0,y=0;
-
-    private void initView(View rootView){
-
-    }
 
     class FragAdapter extends FragmentPagerAdapter {
         private List<android.support.v4.app.Fragment> fragments;
@@ -200,10 +290,7 @@ public class GradeFragment extends Fragment {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            if (position == 0) return "201601";
-            else if (position == 1) return "201602";
-            else if (position == 2) return "201701";
-            else return "其它";
+            return tabTitle.get(position);
         }
 
         @Override
@@ -212,4 +299,9 @@ public class GradeFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        isHidden=hidden;
+        super.onHiddenChanged(hidden);
+    }
 }

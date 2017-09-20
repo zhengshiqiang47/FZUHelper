@@ -9,9 +9,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.helper.west2ol.fzuhelper.R;
+import com.helper.west2ol.fzuhelper.adapter.GradeAdapter;
+import com.helper.west2ol.fzuhelper.bean.FDScore;
 
+import java.util.List;
+
+import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
@@ -20,16 +26,31 @@ import butterknife.ButterKnife;
 
 public class GradeDetailFragment extends Fragment {
 
+    @Bind(R.id.grade_detail_recycler)
     RecyclerView gradeRecycler;
+
     Context context;
+    List<FDScore> fdScores;
+
+    public static GradeDetailFragment getInstance(List<FDScore> fdScores,Context context){
+        GradeDetailFragment fragment = new GradeDetailFragment();
+        fragment.fdScores=fdScores;
+        fragment.context=context;
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater , ViewGroup container , Bundle savedIntanceState){
         View rootView = inflater.inflate(R.layout.fragment_grade_detail , container , false);
         ButterKnife.bind(this, rootView);
-        gradeRecycler=(RecyclerView)rootView.findViewById(R.id.grade_recycler);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        gradeRecycler.setLayoutManager(layoutManager);
+        initView();
         return rootView;
     }
+
+    private void initView(){
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        gradeRecycler.setAdapter(new GradeAdapter(context,fdScores));
+        gradeRecycler.setLayoutManager(layoutManager);
+    }
+
 }
