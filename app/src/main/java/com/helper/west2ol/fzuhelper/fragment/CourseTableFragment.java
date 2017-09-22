@@ -169,9 +169,7 @@ public class CourseTableFragment extends Fragment{
         Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> subscriber) {
-                if (FzuCookie.get().getCookie()==null){
-                    HttpUtil.Login(getActivity().getApplicationContext(),DBManager.getInstance(getActivity()).queryUser(DefaultConfig.get().getUserAccount()));
-                }
+                HttpUtil.Login(getActivity().getApplicationContext(),DBManager.getInstance(getActivity()).queryUser(DefaultConfig.get().getUserAccount()));
                 HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),false);
                 HtmlParseUtil.getBeginDate(null);
                 HtmlParseUtil.getDate();
@@ -205,26 +203,7 @@ public class CourseTableFragment extends Fragment{
 
 
     private void initData(){
-        DefaultConfig defaultConfig=saveObjectUtils.getObject("config",DefaultConfig.class);
-        DefaultConfig config=DefaultConfig.get();
-        if (defaultConfig != null) {
-            config.setBeginDate(defaultConfig.getBeginDate());
-            config.setUserAccount(defaultConfig.getUserAccount());
-            config.setNowWeek(defaultConfig.getNowWeek());
-            config.setCurXuenian(defaultConfig.getCurXuenian());
-            config.setCurYear(defaultConfig.getCurYear());
-            config.setXqValues(defaultConfig.getXqValues());
-            config.setLogin(defaultConfig.isLogin());
-        }
-        FzuCookie fzuCookie=saveObjectUtils.getObject("cookie",FzuCookie.class);
-        FzuCookie cookie=FzuCookie.get();
-        if (fzuCookie != null) {
-            cookie.setCookie(fzuCookie.getCookie());
-            cookie.setEVENTVALIDATION(fzuCookie.getEVENTVALIDATION());
-            cookie.setId(fzuCookie.getId());
-            cookie.setOptions(fzuCookie.getOptions());
-            cookie.setVIEWSTATE(fzuCookie.getVIEWSTATE());
-        }
+
         List<String> weeks = new ArrayList<>();
         for (int i=0;i<22;i++) {
             weeks.add("第 "+(i+1)+" 周");

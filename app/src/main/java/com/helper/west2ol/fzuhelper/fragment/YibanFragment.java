@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.adapter.YibanAdapter;
+import com.helper.west2ol.fzuhelper.bean.Yiban;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.FzuCookie;
@@ -41,21 +42,19 @@ public class YibanFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView=inflater.inflate(R.layout.fragment_yiban,container,false);
-        ButterKnife.bind(rootView);
+        ButterKnife.bind(this, rootView);
         initView();
         return rootView;
     }
 
     private void initView(){
-        Observable.create(new Observable.OnSubscribe<List<HtmlParseUtil.YibanResult.DataBean>>() {
+        Observable.create(new Observable.OnSubscribe<List<Yiban>>() {
             @Override
-            public void call(Subscriber<? super List<HtmlParseUtil.YibanResult.DataBean>> subscriber) {
-//                HtmlParseUtil.
-//                subscriber.onCompleted();
-                List<HtmlParseUtil.YibanResult.DataBean> dataBeens=HtmlParseUtil.getYibanList();
+            public void call(Subscriber<? super List<Yiban>> subscriber) {
+                List<Yiban> dataBeens=HtmlParseUtil.getYibanList();
                 subscriber.onNext(dataBeens);
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<List<Yiban>>() {
             @Override
             public void onCompleted() {
 
@@ -67,10 +66,9 @@ public class YibanFragment extends Fragment {
             }
 
             @Override
-            public void onNext(Object o) {
-                List<HtmlParseUtil.YibanResult.DataBean> dataBeen= (List<HtmlParseUtil.YibanResult.DataBean>) o;
+            public void onNext(List<Yiban> yiben) {
+                recyclerView.setAdapter(new YibanAdapter(getActivity(),yiben));
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                recyclerView.setAdapter(new YibanAdapter(getActivity(),dataBeen));
             }
         });
     }

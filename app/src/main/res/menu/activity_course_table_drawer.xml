@@ -11,15 +11,15 @@
             android:id="@+id/item2"
             android:icon="@drawable/ic_grade"
             android:title="查成绩"></item>
-        <item
-            android:id="@+id/item3"
-            android:icon="@drawable/ic_math"
-            android:title="知数">
-        </item>
-        <item
-            android:id="@+id/item4"
-            android:icon="@drawable/ic_others"
-            android:title="工具箱"></item>
+        <!--<item-->
+            <!--android:id="@+id/item3"-->
+            <!--android:icon="@drawable/ic_math"-->
+            <!--android:title="知数">-->
+        <!--</item>-->
+        <!--<item-->
+            <!--android:id="@+id/item4"-->
+            <!--android:icon="@drawable/ic_others"-->
+            <!--android:title="工具箱"></item>-->
         <item
             android:id="@+id/item5"
             android:icon="@drawable/ic_others"
@@ -29,10 +29,10 @@
         android:checkableBehavior="single">
         <item android:title="生活服务">
             <menu>
-                <item
-                    android:id="@+id/item6"
-                    android:icon="@drawable/ic_wheretogo"
-                    android:title="校园导航"></item>
+                <!--<item-->
+                    <!--android:id="@+id/item6"-->
+                    <!--android:icon="@drawable/ic_wheretogo"-->
+                    <!--android:title="校园导航"></item>-->
                 <!--<item-->
                     <!--android:id="@+id/item6"-->
                     <!--android:icon="@drawable/ic_xiaobai"-->

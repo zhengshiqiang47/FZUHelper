@@ -52,11 +52,14 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
     NavigationView navigationView;
     MenuItem course_Item;
     private String id;
+    SaveObjectUtils saveObjectUtils;
 
     Bundle parameterToFragment;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("onCreate");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_container);
@@ -73,6 +76,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         }
+        saveObjectUtils=new SaveObjectUtils(this,"config");
         initData();
         id = getIntent().getStringExtra("id");
         parameterToFragment = new Bundle();
@@ -98,27 +102,53 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
             System.out.println(resUsers.get(0).getFzuAccount()+" Pass:"+resUsers.get(0).getFzuPasssword());
         }
         List<CourseBean> courseBeens=dbManager.queryCourseBeanList();
-        if (courseBeens != null) {
+        if (courseBeens != null&&CourseBeanLab.get(this.getApplicationContext()).getCourses().size()<=1) {
             Log.i(TAG, "couses:" + courseBeens.size());
-            ArrayList<CourseBean> courseBeen=CourseBeanLab.get(this).getCourses();
+            ArrayList<CourseBean> courseBeen=CourseBeanLab.get(this.getApplicationContext()).getCourses();
             for (CourseBean bean : courseBeens) {
                 courseBeen.add(bean);
             }
         }
+        DefaultConfig defaultConfig=saveObjectUtils.getObject("config",DefaultConfig.class);
+        DefaultConfig config=DefaultConfig.get();
+        if (defaultConfig != null) {
+            config.setBeginDate(defaultConfig.getBeginDate());
+            config.setUserAccount(defaultConfig.getUserAccount());
+            config.setNowWeek(defaultConfig.getNowWeek());
+            config.setCurXuenian(defaultConfig.getCurXuenian());
+            config.setCurYear(defaultConfig.getCurYear());
+            config.setXqValues(defaultConfig.getXqValues());
+            config.setLogin(defaultConfig.isLogin());
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        System.out.println("onStop");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        System.out.println("onStart");
     }
 
     @Override
     public void onDestroy(){
-        super.onDestroy();
+        System.out.println("onDestroy");
         DefaultConfig defaultConfig = DefaultConfig.get();
         SaveObjectUtils saveObjectUtils = new SaveObjectUtils(this,"config");
         saveObjectUtils.setObject("config", defaultConfig);
-        ActivityController.removeActivity(this);
+        super.onDestroy();
+//        CourseBeanLab.get(this).getCourses().clear();
+//        ActivityController.removeActivity(this);
     }
 
     @Override
     public void onResume(){
         super.onResume();
+        System.out.println("onResume");
     }
 
     @Override
@@ -163,7 +193,9 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                     courseTableFragment = new CourseTableFragment();
                 }
                 switchFragment(current,courseTableFragment);
-                getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+                }
 //                courseTableFragment.setArguments(parameterToFragment);
 //                getFragmentManager().beginTransaction()
 //                        .replace(R.id.main_container , courseTableFragment)
@@ -183,20 +215,20 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
 //                        .commit();
 //                current = gradeFragment;
                 break;
-            case R.id.item3:
-                if (mathFragment == null) {
-                    mathFragment = new MathFragment();
-                }
-                switchFragment(current,mathFragment);
-//                getFragmentManager().beginTransaction()
-//                        .replace(R.id.main_container , mathFragment)
-//                        .commit();
-                break;
-            case R.id.item4:
-                Intent intent4 = new Intent(MainContainerActivity.this , OtherActivity.class);
-//                intent4.putExtra("id" , id);
-//                startActivity(intent4);
-                break;
+//            case R.id.item3:
+//                if (mathFragment == null) {
+//                    mathFragment = new MathFragment();
+//                }
+//                switchFragment(current,mathFragment);
+////                getFragmentManager().beginTransaction()
+////                        .replace(R.id.main_container , mathFragment)
+////                        .commit();
+//                break;
+//            case R.id.item4:
+//                Intent intent4 = new Intent(MainContainerActivity.this , OtherActivity.class);
+////                intent4.putExtra("id" , id);
+////                startActivity(intent4);
+//                break;
             case R.id.item5:
                 if (yibanFragment == null) {
                     yibanFragment = new YibanFragment();

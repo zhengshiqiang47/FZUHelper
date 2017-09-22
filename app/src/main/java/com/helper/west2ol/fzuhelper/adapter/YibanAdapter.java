@@ -1,7 +1,9 @@
 package com.helper.west2ol.fzuhelper.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.helper.west2ol.fzuhelper.R;
+import com.helper.west2ol.fzuhelper.activity.WebViewActivity;
 import com.helper.west2ol.fzuhelper.bean.Yiban;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
 
@@ -23,11 +27,11 @@ import java.util.List;
 
 public class YibanAdapter extends RecyclerView.Adapter {
 
-    private List<HtmlParseUtil.YibanResult.DataBean> yiben;
+    private List<Yiban> yiben;
     private Context context;
 
-
-    public YibanAdapter(Context context,List<HtmlParseUtil.YibanResult.DataBean> yiben) {
+    public YibanAdapter(Context context,List<Yiban> yiben) {
+        super();
         this.yiben = yiben;
         this.context=context;
     }
@@ -39,13 +43,14 @@ public class YibanAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Log.i("test","title"+yiben.get(position).getTitle());
         YibanHolder yibanHolder=(YibanHolder)holder;
-        HtmlParseUtil.YibanResult.DataBean yiban = yiben.get(position);
+        Yiban yiban = yiben.get(position);
         yibanHolder.title.setText(yiban.getTitle());
         ImageView imageView=yibanHolder.imageView;
         String image=yiban.getImage();
         if (image.contains("http")){
-
+            Glide.with(context).load(yiban.getImage()).into(imageView);
         } else if (image.contains("jcgl")){
             imageView.setImageResource(R.drawable.jcgl3x);
         }else if (image.contains("jzd")){
@@ -61,14 +66,16 @@ public class YibanAdapter extends RecyclerView.Adapter {
         yibanHolder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent=new Intent(context, WebViewActivity.class);
+                intent.putExtra("url",url);
+                context.startActivity(intent);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return yiben.size();
+        return 10;
     }
 
     private class YibanHolder extends RecyclerView.ViewHolder{

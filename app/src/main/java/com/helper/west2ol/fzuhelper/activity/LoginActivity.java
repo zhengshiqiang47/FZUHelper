@@ -54,60 +54,9 @@ public class LoginActivity extends Activity implements View.OnClickListener{
         ButterKnife.bind(this);
         login_button = (Button)findViewById(R.id.login_button);
         login_button.setOnClickListener(this);
-        flashLogin();
     }
 
-    private void flashLogin() {
-        final DBManager dbManager=new DBManager(this);
-        List<User> users=dbManager.queryUserList();
-        if (users != null) {
-            for (final User user : users) {
-                if (user.isLogin() == true) {
-                    Observable.create(new Observable.OnSubscribe<Object>() {
-                        @Override
-                        public void call(Subscriber<? super Object> subscriber) {
-                            DefaultConfig.get().setUserAccount(user.getFzuAccount());
-                            final String loginResponse = HttpUtil.Login(getApplicationContext(),user);
-                            subscriber.onNext(loginResponse);
-                            switch (loginResponse){
-                                case "网络错误":
-                                    break;
-                                case "密码错误":
-                                    user.setIsLogin(false);
-                                    dbManager.updateUser(user);
-                                    Log.i(TAG, "密码错误");
-                                    break;
-                                case "登录成功":
-                                    subscriber.onCompleted();
-                                    break;
-                            }
 
-                        }
-                    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<Object>() {
-
-                        @Override
-                        public void onCompleted() {
-                            Intent intent = new Intent(LoginActivity.this , MainContainerActivity.class);
-                            intent.putExtra("id" , id_2);
-                            startActivity(intent);
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-
-                        }
-
-                        @Override
-                        public void onNext(Object o) {
-                            Toast.makeText(getApplicationContext(), (String)o, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                    break;
-                }
-            }
-        }
-    }
 
     @Override
     public void onDestroy(){
@@ -175,8 +124,6 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                         });
                     }
                 }).start();
-
-
         }
     }
 }

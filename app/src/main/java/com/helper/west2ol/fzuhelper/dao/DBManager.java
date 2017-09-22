@@ -85,7 +85,7 @@ public class DBManager {
         DaoMaster daoMaster = new DaoMaster(getReadableDatabase());
         DaoSession daoSession = daoMaster.newSession();
         UserDao userDao = daoSession.getUserDao();
-        List<User> users=userDao.queryRaw("userAccount=?",userAccount);
+        List<User> users=userDao.queryBuilder().where(UserDao.Properties.FzuAccount.eq(userAccount)).list();
         System.out.println("Usersize:"+users.size());
         if (users != null && users.size() >= 1) {
             return users.get(0);

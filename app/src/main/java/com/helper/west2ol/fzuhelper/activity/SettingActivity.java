@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import com.helper.west2ol.fzuhelper.R;
+import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
 import com.helper.west2ol.fzuhelper.bean.User;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.util.ActivityController;
@@ -66,7 +67,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                     }
                 }
                 dbManager.dropCourseBeans();
-                Log.i("SettingActivity","课程总数:"+dbManager.queryCourseBeanList().size());
+                CourseBeanLab.get(this).getCourses().clear();
                 ActivityController.finashAll();
                 Intent intent = new Intent(SettingActivity.this , LoginActivity.class);
                 startActivity(intent);
