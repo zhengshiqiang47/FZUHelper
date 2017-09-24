@@ -55,7 +55,7 @@ import rx.schedulers.Schedulers;
  * Created by Administrator on 2016/10/20.
  */
 
-public class CourseTableFragment extends Fragment{
+public class CourseTableFragment extends Fragment implements View.OnClickListener{
 
     private static final String TAG = "KBActivity";
     /** 第一个无内容的格子 */
@@ -494,12 +494,14 @@ public class CourseTableFragment extends Fragment{
                 continue;
             }
             final TextView courseInfo = new TextView(getActivity());
+            courseInfo.setId(courseBeanMap.size()+100);
             String name=kc.getKcName();
             String location=kc.getKcLocation();
             if(name.length()>=13){
                 name = name.substring(0, 11);
                 name += "...";
             }
+            courseInfo.setOnClickListener(this);
             courseInfo.setText(name+"\n\n"+kc.getKcLocation());
             //该textview的高度根据其节数的跨度来设置
             int timecount = Math.abs(kc.getKcEndTime()-kc.getKcStartTime()+1) ;
@@ -554,6 +556,7 @@ public class CourseTableFragment extends Fragment{
             }
             courseInfo.setTextSize(12);
             courseInfo.setLayoutParams(rlp);
+            Log.i(TAG,courseInfo.getId()+" "+kc.getKcName());
             courseBeanMap.put(courseInfo.getId(),kc);
             //设置不透明度
             course_table_layout.addView(courseInfo);
@@ -588,5 +591,14 @@ public class CourseTableFragment extends Fragment{
 //        Log.i("KBFragment", "学号" + UserInformation.get(getActivity()).getXuehao());
 //        HtmlAnalyze.getScore(getActivity(), Xuehao, Passwd);
         HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),true);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId()<100||view.getId()>200){
+            return;
+        }
+        CourseBean courseBean=courseBeanMap.get(view.getId());
+        Log.i(TAG, "name：" + courseBean.getKcName());
     }
 }

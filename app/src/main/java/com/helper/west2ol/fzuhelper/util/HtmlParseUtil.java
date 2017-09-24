@@ -97,6 +97,11 @@ public class HtmlParseUtil {
             String note=noteEle.text();
 
             //解析上课时间
+            String jiaoxueDagang=kb.select("td").get(2).select("a").get(0).attr("href").replace("javascript:pop1('","http://59.77.226.35").replace("');","").split("&")[0];
+            String shoukeJihua=kb.select("td").get(2).select("a").get(1).attr("href").replace("javascript:pop1('","http://59.77.226.35").replace("');","").split("&")[0];
+            String teacher=kb.select("td").get(7).text();
+
+            Log.i(TAG, "大纲:" + jiaoxueDagang + " " + shoukeJihua + " " + teacher);
             Element timeEle = kb.select("td").get(8);
 
             String timeCou = timeEle.text();
@@ -106,6 +111,10 @@ public class HtmlParseUtil {
                 if (note.length()>=1){
                     kc.setKcNote(note);
                 }
+
+                kc.setTeacher(teacher);
+                kc.setJiaoxueDagang(jiaoxueDagang);
+                kc.setShoukeJihua(shoukeJihua);
                 kc.setKcBackgroundId(i);
                 kc.setKcYear(year);
                 kc.setKcXuenian(xuenian);

@@ -38,7 +38,10 @@ public class CourseBeanDao extends AbstractDao<CourseBean, Long> {
         public final static Property KcXuenian = new Property(11, int.class, "kcXuenian", false, "KC_XUENIAN");
         public final static Property KcNote = new Property(12, String.class, "kcNote", false, "KC_NOTE");
         public final static Property KcBackgroundId = new Property(13, int.class, "kcBackgroundId", false, "KC_BACKGROUND_ID");
-        public final static Property Unique = new Property(14, String.class, "unique", false, "UNIQUE");
+        public final static Property ShoukeJihua = new Property(14, String.class, "shoukeJihua", false, "SHOUKE_JIHUA");
+        public final static Property JiaoxueDagang = new Property(15, String.class, "jiaoxueDagang", false, "JIAOXUE_DAGANG");
+        public final static Property Teacher = new Property(16, String.class, "teacher", false, "TEACHER");
+        public final static Property Unique = new Property(17, String.class, "unique", false, "UNIQUE");
     }
 
 
@@ -68,7 +71,10 @@ public class CourseBeanDao extends AbstractDao<CourseBean, Long> {
                 "\"KC_XUENIAN\" INTEGER NOT NULL ," + // 11: kcXuenian
                 "\"KC_NOTE\" TEXT," + // 12: kcNote
                 "\"KC_BACKGROUND_ID\" INTEGER NOT NULL ," + // 13: kcBackgroundId
-                "\"UNIQUE\" TEXT UNIQUE );"); // 14: unique
+                "\"SHOUKE_JIHUA\" TEXT," + // 14: shoukeJihua
+                "\"JIAOXUE_DAGANG\" TEXT," + // 15: jiaoxueDagang
+                "\"TEACHER\" TEXT," + // 16: teacher
+                "\"UNIQUE\" TEXT UNIQUE );"); // 17: unique
     }
 
     /** Drops the underlying database table. */
@@ -111,9 +117,24 @@ public class CourseBeanDao extends AbstractDao<CourseBean, Long> {
         }
         stmt.bindLong(14, entity.getKcBackgroundId());
  
+        String shoukeJihua = entity.getShoukeJihua();
+        if (shoukeJihua != null) {
+            stmt.bindString(15, shoukeJihua);
+        }
+ 
+        String jiaoxueDagang = entity.getJiaoxueDagang();
+        if (jiaoxueDagang != null) {
+            stmt.bindString(16, jiaoxueDagang);
+        }
+ 
+        String teacher = entity.getTeacher();
+        if (teacher != null) {
+            stmt.bindString(17, teacher);
+        }
+ 
         String unique = entity.getUnique();
         if (unique != null) {
-            stmt.bindString(15, unique);
+            stmt.bindString(18, unique);
         }
     }
 
@@ -151,9 +172,24 @@ public class CourseBeanDao extends AbstractDao<CourseBean, Long> {
         }
         stmt.bindLong(14, entity.getKcBackgroundId());
  
+        String shoukeJihua = entity.getShoukeJihua();
+        if (shoukeJihua != null) {
+            stmt.bindString(15, shoukeJihua);
+        }
+ 
+        String jiaoxueDagang = entity.getJiaoxueDagang();
+        if (jiaoxueDagang != null) {
+            stmt.bindString(16, jiaoxueDagang);
+        }
+ 
+        String teacher = entity.getTeacher();
+        if (teacher != null) {
+            stmt.bindString(17, teacher);
+        }
+ 
         String unique = entity.getUnique();
         if (unique != null) {
-            stmt.bindString(15, unique);
+            stmt.bindString(18, unique);
         }
     }
 
@@ -179,7 +215,10 @@ public class CourseBeanDao extends AbstractDao<CourseBean, Long> {
             cursor.getInt(offset + 11), // kcXuenian
             cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // kcNote
             cursor.getInt(offset + 13), // kcBackgroundId
-            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14) // unique
+            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14), // shoukeJihua
+            cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15), // jiaoxueDagang
+            cursor.isNull(offset + 16) ? null : cursor.getString(offset + 16), // teacher
+            cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17) // unique
         );
         return entity;
     }
@@ -200,7 +239,10 @@ public class CourseBeanDao extends AbstractDao<CourseBean, Long> {
         entity.setKcXuenian(cursor.getInt(offset + 11));
         entity.setKcNote(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
         entity.setKcBackgroundId(cursor.getInt(offset + 13));
-        entity.setUnique(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
+        entity.setShoukeJihua(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
+        entity.setJiaoxueDagang(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
+        entity.setTeacher(cursor.isNull(offset + 16) ? null : cursor.getString(offset + 16));
+        entity.setUnique(cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17));
      }
     
     @Override
