@@ -26,4 +26,18 @@ public class DateUtil {
         System.out.println("星期:"+w2+" 日期:"+new SimpleDateFormat("M/dd").format(gc.getTime()));
         return new ArrayList<String>();
     }
+
+    public static int getWeeks(long startTime, long endTime) {
+        if (endTime < startTime) {
+            return -1;
+        }
+        long value=endTime-startTime;
+        long res=0;
+        if (value%(7*24*60*60*1000l)==0){
+            res=(endTime-startTime)/(7*24*60*60*1000l);
+        }else {
+            res=(endTime-startTime)/(7*24*60*60*1000l)+1;
+        }
+        return Integer.parseInt(res+"");
+    }
 }

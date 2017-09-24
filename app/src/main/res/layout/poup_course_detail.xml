@@ -4,7 +4,27 @@
     android:background="@drawable/shape"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <LinearLayout
+        android:layout_marginTop="8dp"
+        android:id="@+id/course_detail_title_layout"
+        android:orientation="vertical"
+        android:elevation="4dp"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="80dp">
+        <TextView
+            android:id="@+id/course_detail_title"
+            android:textColor="@color/colorWhite"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="19sp"
+            android:text="编译方法"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="12dp"
         android:orientation="horizontal"
         android:padding="16dp"
         android:layout_width="match_parent"
@@ -16,7 +36,7 @@
             android:layout_height="wrap_content"
             android:text="教师:"/>
         <TextView
-            android:id="@+id/course_detail_jiaoshi"
+            android:id="@+id/course_detail_teacher"
             android:textSize="17sp"
             android:layout_marginLeft="16dp"
             android:layout_width="wrap_content"
@@ -34,8 +54,9 @@
             android:layout_marginLeft="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="教师:"/>
+            android:text="教室:"/>
         <TextView
+            android:id="@+id/course_detail_room"
             android:textSize="17sp"
             android:layout_marginLeft="16dp"
             android:layout_width="wrap_content"
@@ -52,8 +73,29 @@
             android:layout_marginLeft="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="教师:"/>
+            android:text="节数:"/>
+
         <TextView
+            android:id="@+id/course_detail_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:text="谢火生"
+            android:textSize="17sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:textSize="17sp"
+            android:layout_marginLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="周数:"/>
+        <TextView
+            android:id="@+id/course_detail_week"
             android:textSize="17sp"
             android:layout_marginLeft="16dp"
             android:layout_width="wrap_content"
@@ -70,8 +112,9 @@
             android:layout_marginLeft="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="教师:"/>
+            android:text="备注:"/>
         <TextView
+            android:id="@+id/course_detail_note"
             android:textSize="17sp"
             android:layout_marginLeft="16dp"
             android:layout_width="wrap_content"

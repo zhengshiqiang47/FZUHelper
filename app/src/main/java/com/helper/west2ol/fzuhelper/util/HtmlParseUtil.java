@@ -60,6 +60,7 @@ public class HtmlParseUtil {
         FzuCookie.get().setOptions(optionStr);
         FzuCookie.get().setVIEWSTATE(VIEWSTATE.attr("value"));
         FzuCookie.get().setEVENTVALIDATION(EVENTVALIDATION.attr("value"));
+        FzuCookie.get().setExpTime(System.currentTimeMillis()+10*60*1000l);
 
         //开始解析课表
         Elements courseEles = document.select("tr[onmouseover=c=this.style.backgroundColor;this.style.backgroundColor='#CCFFaa']");
@@ -96,7 +97,7 @@ public class HtmlParseUtil {
             Element noteEle=kb.select("td").get(11);
             String note=noteEle.text();
 
-            //解析上课时间
+            //解析课程信息
             String jiaoxueDagang=kb.select("td").get(2).select("a").get(0).attr("href").replace("javascript:pop1('","http://59.77.226.35").replace("');","").split("&")[0];
             String shoukeJihua=kb.select("td").get(2).select("a").get(1).attr("href").replace("javascript:pop1('","http://59.77.226.35").replace("');","").split("&")[0];
             String teacher=kb.select("td").get(7).text();
@@ -178,6 +179,11 @@ public class HtmlParseUtil {
 
     public static ArrayList<CourseBean> getHistoryCourse(Context context, String xueNian){//学年格式 201702
         ArrayList<CourseBean> tempCourses = new ArrayList<>();
+        if (FzuCookie.get().getEVENTVALIDATION()==null||FzuCookie.get().getExpTime()<=System.currentTimeMillis()){
+            HttpUtil.Login(context,DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
+            getCurrentCourse(context,true);
+        }
+
         String VIEWSTATE= FzuCookie.get().getVIEWSTATE();
         String EVENTVALIDATION= FzuCookie.get().getEVENTVALIDATION();
         Log.i(TAG,"VIEWSTATE:"+VIEWSTATE);
@@ -210,8 +216,9 @@ public class HtmlParseUtil {
             String title = titleEle.text();
 
 
-            //课程计划
-            Element jihuaEle = kb.select("td").get(2);
+            String jiaoxueDagang=kb.select("td").get(2).select("a").get(0).attr("href").replace("javascript:pop1('","http://59.77.226.35").replace("');","").split("&")[0];
+            String shoukeJihua=kb.select("td").get(2).select("a").get(1).attr("href").replace("javascript:pop1('","http://59.77.226.35").replace("');","").split("&")[0];
+            String teacher=kb.select("td").get(7).text();
 
             //解析课程备注:
             Element noteEle=kb.select("td").get(11);
@@ -227,6 +234,10 @@ public class HtmlParseUtil {
                 if (note.length()>=1){
                     kc.setKcNote(note);
                 }
+
+                kc.setTeacher(teacher);
+                kc.setJiaoxueDagang(jiaoxueDagang);
+                kc.setShoukeJihua(shoukeJihua);
                 kc.setKcBackgroundId(i);
                 kc.setKcYear(year);
                 kc.setKcXuenian(xuenian);
@@ -284,6 +295,9 @@ public class HtmlParseUtil {
             courseBeans.remove(tempCourses.get(0));
         }
         CourseBeanLab.get(context).getCourses().addAll(tempCourses);
+        DBManager dbManager=new DBManager(context);
+        dbManager.dropCourseBeans();
+        dbManager.insertCourseBeans(tempCourses);
         Log.i(TAG,"history共"+courseEles.size()+"个"+" 解析后:"+tempCourses.size()+"个"+" 总共:"+ CourseBeanLab.get(context).getCourses().size());
         return tempCourses;
     }
@@ -361,13 +375,18 @@ public class HtmlParseUtil {
         Calendar calendar=Calendar.getInstance();
         if (xq == null) {
             System.out.println("year:"+Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
-            calendar.set(Calendar.getInstance().get(Calendar.YEAR),month-1,day);
+            calendar.set(Calendar.getInstance().get(Calendar.YEAR),month-1,day,0,0);
         }else {
             calendar.set(Integer.parseInt(xq.substring(0,4)),month-1,day);
         }
         //存储当前设置的学期开学时间
-
         DefaultConfig.get().setBeginDate(calendar.getTimeInMillis());
+
+        //根据开学时间和当前时间计算出当前周数
+        long startMillis=calendar.getTimeInMillis();
+        long nowMillis=System.currentTimeMillis();
+        int week=DateUtil.getWeeks(startMillis,nowMillis);
+        DefaultConfig.get().setNowWeek(week);
         return true;
     }
 
@@ -382,7 +401,7 @@ public class HtmlParseUtil {
         String xuenian=yearStr.substring(yearStr.indexOf("学期")-2,yearStr.indexOf("学期"));
         DefaultConfig defaultConfig=DefaultConfig.get();
 
-        defaultConfig.setNowWeek(week);
+//        defaultConfig.setNowWeek(week);
         defaultConfig.setCurXuenian(Integer.parseInt(xuenian));
         defaultConfig.setCurYear(Integer.parseInt(year));
         return;

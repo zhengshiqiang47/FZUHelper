@@ -16,10 +16,15 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -81,6 +86,42 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
     /** 课程格子平均宽度 **/
     protected int aveWidth;
 
+    int[] background = {
+            R.drawable.course_bg1,
+            R.drawable.course_bg2,
+            R.drawable.course_bg3,
+            R.drawable.course_bg4,
+            R.drawable.course_bg5,
+            R.drawable.course_bg6,
+            R.drawable.course_bg7,
+            R.drawable.course_bg8,
+            R.drawable.course_bg9,
+            R.drawable.course_bg10,
+            R.drawable.course_bg11,
+            R.drawable.course_bg12,
+            R.drawable.course_bg13,
+            R.drawable.course_bg14,
+            R.drawable.course_bg15,
+            R.drawable.course_bg16,
+            R.drawable.course_bg1,
+            R.drawable.course_bg2,
+            R.drawable.course_bg3,
+            R.drawable.course_bg4,
+            R.drawable.course_bg5,
+            R.drawable.course_bg6,
+            R.drawable.course_bg7,
+            R.drawable.course_bg8,
+            R.drawable.course_bg9,
+            R.drawable.course_bg10,
+            R.drawable.course_bg11,
+            R.drawable.course_bg12,
+            R.drawable.course_bg13,
+            R.drawable.course_bg14,
+            R.drawable.course_bg15,
+            R.drawable.course_bg16,
+    };
+
+
     private int yearpre=2016;
     private int weekpre=1;
     private int xuenianpre=1;
@@ -136,7 +177,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         moreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
+
 //                Observable.create(new Observable.OnSubscribe<Object>() {
 //                    @Override
 //                    public void call(Subscriber<? super Object> subscriber) {
@@ -179,6 +220,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         popupWindow.setOutsideTouchable(false);
         popupWindow.setFocusable(true);
         popupWindow.setAnimationStyle(R.style.PoupAnimation);
+
     }
 
     private void getCourse(){
@@ -422,40 +464,6 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             }
         }
         //课表颜色背景
-        int[] background = {
-                R.drawable.course_bg1,
-                R.drawable.course_bg2,
-                R.drawable.course_bg3,
-                R.drawable.course_bg4,
-                R.drawable.course_bg5,
-                R.drawable.course_bg6,
-                R.drawable.course_bg7,
-                R.drawable.course_bg8,
-                R.drawable.course_bg9,
-                R.drawable.course_bg10,
-                R.drawable.course_bg11,
-                R.drawable.course_bg12,
-                R.drawable.course_bg13,
-                R.drawable.course_bg14,
-                R.drawable.course_bg15,
-                R.drawable.course_bg16,
-                R.drawable.course_bg1,
-                R.drawable.course_bg2,
-                R.drawable.course_bg3,
-                R.drawable.course_bg4,
-                R.drawable.course_bg5,
-                R.drawable.course_bg6,
-                R.drawable.course_bg7,
-                R.drawable.course_bg8,
-                R.drawable.course_bg9,
-                R.drawable.course_bg10,
-                R.drawable.course_bg11,
-                R.drawable.course_bg12,
-                R.drawable.course_bg13,
-                R.drawable.course_bg14,
-                R.drawable.course_bg15,
-                R.drawable.course_bg16,
-        };
 
         // 添加课程信息
         ArrayList<CourseBean> kcs = CourseBeanLab.get(getActivity().getApplicationContext()).getCourses();
@@ -600,5 +608,41 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         }
         CourseBean courseBean=courseBeanMap.get(view.getId());
         Log.i(TAG, "name：" + courseBean.getKcName());
+        WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
+        lp.alpha =0.5f; //0.0-1.0
+        getActivity().getWindow().setAttributes(lp);
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
+                lp.alpha =1.0f; //0.0-1.0
+                getActivity().getWindow().setAttributes(lp);
+            }
+        });
+        popupWindow.showAtLocation(getView(), Gravity.BOTTOM, 0, 0);
+        View contentView=popupWindow.getContentView();
+        TranslateAnimation translateAnimation=new TranslateAnimation(0.5f,1f,1.5f,1f);
+        translateAnimation.setDuration(800l);
+        translateAnimation.setInterpolator(new DecelerateInterpolator());
+        LinearLayout titleLayout = (LinearLayout) contentView.findViewById(R.id.course_detail_title_layout);
+        TextView titleText = (TextView) contentView.findViewById(R.id.course_detail_title);
+        TextView teachText= (TextView) contentView.findViewById(R.id.course_detail_teacher);
+        TextView roomText = (TextView) contentView.findViewById(R.id.course_detail_room);
+        TextView jieshuText = (TextView) contentView.findViewById(R.id.course_detail_time);
+        TextView weekText = (TextView) contentView.findViewById(R.id.course_detail_week);
+        TextView noteText= (TextView) contentView.findViewById(R.id.course_detail_note);
+        titleText.setText(courseBean.getKcName());
+        teachText.startAnimation(translateAnimation);
+        teachText.setText(courseBean.getTeacher());
+        roomText.setText(courseBean.getKcLocation());
+        teachText.startAnimation(translateAnimation);
+        jieshuText.setText(courseBean.getKcStartTime()+" - "+courseBean.getKcEndTime());
+        weekText.setText(courseBean.getKcStartWeek()+" - "+courseBean.getKcEndWeek());
+        noteText.setText(courseBean.getKcNote());
+
+        titleLayout.setBackgroundResource(background[courseBean.getKcBackgroundId()]);
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.2f,1.0f,1.2f,1.0f,1f,0.5f);
+        scaleAnimation.setDuration(1000l);
+        titleLayout.startAnimation(scaleAnimation);
     }
 }

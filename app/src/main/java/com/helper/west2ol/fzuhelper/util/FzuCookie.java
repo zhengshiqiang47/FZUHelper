@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 public class FzuCookie implements Serializable{
     private static FzuCookie fzuCookie;
+
+    long expTime;
     String cookie;
     String id;
     String VIEWSTATE;
@@ -28,6 +30,14 @@ public class FzuCookie implements Serializable{
             fzuCookie=new FzuCookie();
         }
         return fzuCookie;
+    }
+
+    public long getExpTime() {
+        return expTime;
+    }
+
+    public void setExpTime(long expTime) {
+        this.expTime = expTime;
     }
 
     public void setCookie(String cookieStr) {
