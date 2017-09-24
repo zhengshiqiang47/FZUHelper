@@ -16,6 +16,7 @@ import com.helper.west2ol.fzuhelper.bean.User;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.util.ActivityController;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
+import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
 
 import java.util.List;
 
@@ -67,6 +68,9 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                     }
                 }
                 dbManager.dropCourseBeans();
+                dbManager.dropFDScores();
+                SaveObjectUtils saveObjectUtils=new SaveObjectUtils(getApplicationContext(),"config");
+                saveObjectUtils.setObject("config",null);
                 CourseBeanLab.get(this).getCourses().clear();
                 ActivityController.finashAll();
                 Intent intent = new Intent(SettingActivity.this , LoginActivity.class);
@@ -76,4 +80,5 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                 this.finish();
         }
     }
+    //011917
 }

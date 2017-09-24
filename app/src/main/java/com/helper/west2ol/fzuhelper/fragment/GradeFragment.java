@@ -227,8 +227,8 @@ public class GradeFragment extends Fragment {
                     setBg(evaluate);
                 }
                 if (position == 3) {
-                    mTabLayout.setBackgroundColor(getResources().getColor(R.color.tab_3_purple));
-                    int evaluate = (Integer) evaluator.evaluate(positionOffset, getResources().getColor(R.color.score_70), getResources().getColor(R.color.tab_3_purple));
+                    mTabLayout.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    int evaluate = (Integer) evaluator.evaluate(positionOffset, getResources().getColor(R.color.score_70), getResources().getColor(R.color.colorPrimary));
                     setBg(evaluate);
                     color=evaluate;
                 }

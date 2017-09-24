@@ -25,25 +25,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay">
-
             <include layout="@layout/title_bar_course_table"
                 android:layout_height="55dp"
                 android:layout_width="match_parent" />
         </android.support.design.widget.AppBarLayout>
         <!--<com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout-->
-        <!--android:id="@+id/course_table_myscrollview"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_width="match_parent">-->
-        <ScrollView
-            android:id="@+id/scroll_body"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="none">
-            <include layout="@layout/content_course_table"
+            <!--android:id="@+id/course_table_myscrollview"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_width="match_parent">-->
+            <ScrollView
+                android:id="@+id/scroll_body"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-        </ScrollView>
+                android:layout_height="match_parent"
+                android:scrollbars="none">
+                <include layout="@layout/content_course_table"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </ScrollView>
         <!--</com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout>-->
     </LinearLayout>
+
+
 
 </android.support.design.widget.CoordinatorLayout>

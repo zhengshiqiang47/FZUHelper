@@ -6,12 +6,27 @@
         android:background="@color/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="54dp">
+        <Button
+            android:id="@+id/back_button_in_webview"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/back_button"
+            />
         <TextView
             android:gravity="center"
             android:textColor="@color/colorWhite"
+            android:text="易班工具"
+            android:textSize="16sp"
             android:id="@+id/webview_title"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent" />
+        <Button
+            android:id="@+id/more_button_in_webview"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/menu_2_button"
+            />
     </LinearLayout>
     <WebView
         android:id="@+id/yiban_webview"

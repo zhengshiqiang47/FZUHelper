@@ -87,7 +87,6 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                 .replace(R.id.main_container , courseTableFragment)
                 .commit();
         current = courseTableFragment;
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         course_Item = navigationView.getMenu().getItem(0);
@@ -108,17 +107,6 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
             for (CourseBean bean : courseBeens) {
                 courseBeen.add(bean);
             }
-        }
-        DefaultConfig defaultConfig=saveObjectUtils.getObject("config",DefaultConfig.class);
-        DefaultConfig config=DefaultConfig.get();
-        if (defaultConfig != null) {
-            config.setBeginDate(defaultConfig.getBeginDate());
-            config.setUserAccount(defaultConfig.getUserAccount());
-            config.setNowWeek(defaultConfig.getNowWeek());
-            config.setCurXuenian(defaultConfig.getCurXuenian());
-            config.setCurYear(defaultConfig.getCurYear());
-            config.setXqValues(defaultConfig.getXqValues());
-            config.setLogin(defaultConfig.isLogin());
         }
     }
 
