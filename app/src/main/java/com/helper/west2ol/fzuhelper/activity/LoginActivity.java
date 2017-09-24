@@ -24,6 +24,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -78,9 +79,10 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                     passwdEd.setText("请输入密码");
                     return;
                 }
-                new Thread(new Runnable() {
+                Observable.create(new Observable.OnSubscribe<String>() {
+
                     @Override
-                    public void run() {
+                    public void call(Subscriber<? super String> subscriber) {
                         User user=new User();
                         user.setFzuPasssword(passwd);
                         user.setFzuAccount(muser);
@@ -102,7 +104,22 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                             dbManager.insertUser(user);
                         }
                         DefaultConfig.get().setUserAccount(user.getFzuAccount());
-                        final String loginResponse = HttpUtil.Login(getApplicationContext(),user);
+                        String loginResponse = HttpUtil.Login(getApplicationContext(),user);
+                        subscriber.onNext(loginResponse);
+                    }
+                }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(String loginResponse) {
                         switch (loginResponse){
                             case "网络错误":
                                 break;
@@ -114,15 +131,12 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                                 intent.putExtra("id" , id_2);
                                 startActivity(intent);
                                 break;
+                            default:
+                                Log.i(TAG,"未知错误");
                         }
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getApplicationContext(), loginResponse, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        Toast.makeText(getApplicationContext(), loginResponse, Toast.LENGTH_SHORT).show();
                     }
-                }).start();
+                });
         }
     }
 }

@@ -228,12 +228,12 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         ArrayAdapter<String> spinnerAdapter=new ArrayAdapter<String>(getActivity(), R.layout.item_week_spinner_show, weeks);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
-        spinner.setSelection(DefaultConfig.get().getNowWeek());
+        spinner.setSelection(DefaultConfig.get().getNowWeek()-1);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 System.out.println("position:"+position);
-                DefaultConfig.get().setNowWeek(position);
+                DefaultConfig.get().setNowWeek(position+1);
                 showKB(position+1,DefaultConfig.get().getCurYear(),DefaultConfig.get().getCurXuenian());
             }
 
@@ -244,9 +244,9 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         });
 
     }
+
+
     private void initKB(View v){
-
-
         empty = (TextView) v.findViewById(R.id.test_empty);
         monColum = (TextView) v.findViewById(R.id.test_monday_course);
         tueColum = (TextView) v.findViewById(R.id.test_tuesday_course);

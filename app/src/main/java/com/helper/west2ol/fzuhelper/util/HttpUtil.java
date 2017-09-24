@@ -81,8 +81,11 @@ public class HttpUtil {
                 Log.i(TAG,"密码错误");
                 return "密码错误";
             }
-            Log.i(TAG, "登录成功");
-            return "登录成功";
+            if (result.contains("left.aspx")){
+                Log.i(TAG, "登录成功");
+                return "登录成功";
+            }
+            return "登录失败，请检查用户名和密码是否正确!";
         } catch (IOException e) {
             Log.i(TAG,"网络出错");
             e.printStackTrace();
@@ -192,30 +195,6 @@ public class HttpUtil {
         return html;
     }
 
-//    public static String getScoreHtml() {
-//        String html=null;
-//        OkHttpClient okHttpClient=new OkHttpClient.Builder().build();
-//        Log.i(TAG, "id:" + FzuCookie.get().getId());
-//        Request request=new Request.Builder()
-//                .url("http://59.77.226.35/student/xyzk/cjyl/score_sheet.aspx?"+"id="+FzuCookie.get().getId())
-//                .addHeader("Cookie",FzuCookie.get().getCookie()+"")
-//                .addHeader("Accept-Language","zh-CN,zh;q=0.8,en;q=0.6")
-//                .addHeader("Connection","keep-alive")
-//                .build();
-//        try {
-//            Response response = okHttpClient.newCall(request).execute();
-//            if(!response.message().equals("OK")){
-//                Log.i(TAG,"获取成绩失败，message不是Ok");
-//                return null;
-//            }
-//            String result=new String(response.body().bytes());
-//            Log.i(TAG, "result" + result);
-//            return result;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return html;
-//    }
 
     public static String getHtml(String url) {
         OkHttpClient client = new OkHttpClient();

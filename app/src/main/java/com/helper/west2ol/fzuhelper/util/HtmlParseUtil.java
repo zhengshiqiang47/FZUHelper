@@ -366,6 +366,7 @@ public class HtmlParseUtil {
             calendar.set(Integer.parseInt(xq.substring(0,4)),month-1,day);
         }
         //存储当前设置的学期开学时间
+
         DefaultConfig.get().setBeginDate(calendar.getTimeInMillis());
         return true;
     }

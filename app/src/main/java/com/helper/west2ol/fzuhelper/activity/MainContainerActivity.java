@@ -228,10 +228,36 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                 Intent intent_9 = new Intent(MainContainerActivity.this,SettingActivity.class);
                 startActivity(intent_9);
                 break;
+            case R.id.item9:
+                logout();
+                break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void logout(){
+        DBManager dbManager=new DBManager(this);
+        List<User> users=dbManager.queryUserList();
+        for (User user:users){
+            if (user.getFzuAccount().equals(DefaultConfig.get().getUserAccount())) {
+                user.setIsLogin(false);
+                dbManager.updateUser(user);
+                break;
+            }
+        }
+        dbManager.dropCourseBeans();
+        dbManager.dropFDScores();
+        SaveObjectUtils saveObjectUtils=new SaveObjectUtils(getApplicationContext(),"config");
+        DefaultConfig config=saveObjectUtils.getObject("config", DefaultConfig.class);
+        config.setUserAccount("");
+        saveObjectUtils.setObject("config", config);
+        CourseBeanLab.get(this).getCourses().clear();
+        ActivityController.finashAll();
+        Intent intent = new Intent(MainContainerActivity.this , LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void switchFragment(Fragment from, Fragment to){
