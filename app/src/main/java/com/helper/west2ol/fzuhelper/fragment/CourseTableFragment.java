@@ -621,7 +621,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         });
         popupWindow.showAtLocation(getView(), Gravity.BOTTOM, 0, 0);
         View contentView=popupWindow.getContentView();
-        TranslateAnimation translateAnimation=new TranslateAnimation(0.5f,1f,1.5f,1f);
+        TranslateAnimation translateAnimation=new TranslateAnimation(1.0f,1.0f,3.0f,1.0f);
         translateAnimation.setDuration(800l);
         translateAnimation.setInterpolator(new DecelerateInterpolator());
         LinearLayout titleLayout = (LinearLayout) contentView.findViewById(R.id.course_detail_title_layout);
@@ -641,7 +641,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         noteText.setText(courseBean.getKcNote());
 
         titleLayout.setBackgroundResource(background[courseBean.getKcBackgroundId()]);
-        ScaleAnimation scaleAnimation = new ScaleAnimation(1.2f,1.0f,1.2f,1.0f,1f,0.5f);
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f,1.0f,2.0f,1.0f,0.5f,0.5f);
         scaleAnimation.setDuration(1000l);
         titleLayout.startAnimation(scaleAnimation);
     }
