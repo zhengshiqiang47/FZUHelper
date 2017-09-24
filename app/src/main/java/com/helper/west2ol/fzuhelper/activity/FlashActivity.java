@@ -14,6 +14,7 @@ import com.helper.west2ol.fzuhelper.bean.User;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
+import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
 
 import java.util.List;
 
@@ -42,6 +43,18 @@ public class FlashActivity extends Activity {
 
 
     private void flashLogin() {
+        SaveObjectUtils saveObjectUtils=new SaveObjectUtils(this,"config");
+        DefaultConfig defaultConfig=saveObjectUtils.getObject("config",DefaultConfig.class);
+        DefaultConfig config=DefaultConfig.get();
+        if (defaultConfig != null) {
+            config.setBeginDate(defaultConfig.getBeginDate());
+            config.setUserAccount(defaultConfig.getUserAccount());
+            config.setNowWeek(defaultConfig.getNowWeek());
+            config.setCurXuenian(defaultConfig.getCurXuenian());
+            config.setCurYear(defaultConfig.getCurYear());
+            config.setXqValues(defaultConfig.getXqValues());
+            config.setLogin(defaultConfig.isLogin());
+        }
         final DBManager dbManager=new DBManager(this);
         final List<User> users=dbManager.queryUserList();
         if (users != null) {

@@ -30,15 +30,19 @@ public class CourseBean {
     private int kcXuenian;
     private String kcNote;
     private int kcBackgroundId;
+    private String shoukeJihua;
+    private String jiaoxueDagang;
+    private String teacher;
 
 
     @Unique()
     private String unique;
 
-    @Generated(hash = 497578870)
+    @Generated(hash = 288810990)
     public CourseBean(Long courseId, String kcName, String kcLocation, int kcStartTime, int kcEndTime,
             int kcStartWeek, int kcEndWeek, boolean kcIsDouble, boolean kcIsSingle, int kcWeekend,
-            int kcYear, int kcXuenian, String kcNote, int kcBackgroundId, String unique) {
+            int kcYear, int kcXuenian, String kcNote, int kcBackgroundId, String shoukeJihua,
+            String jiaoxueDagang, String teacher, String unique) {
         this.courseId = courseId;
         this.kcName = kcName;
         this.kcLocation = kcLocation;
@@ -53,11 +57,39 @@ public class CourseBean {
         this.kcXuenian = kcXuenian;
         this.kcNote = kcNote;
         this.kcBackgroundId = kcBackgroundId;
+        this.shoukeJihua = shoukeJihua;
+        this.jiaoxueDagang = jiaoxueDagang;
+        this.teacher = teacher;
         this.unique = unique;
     }
 
     @Generated(hash = 858107730)
     public CourseBean() {
+
+    }
+
+    public String getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(String teacher) {
+        this.teacher = teacher;
+    }
+
+    public String getShoukeJihua() {
+        return shoukeJihua;
+    }
+
+    public void setShoukeJihua(String shoukeJihua) {
+        this.shoukeJihua = shoukeJihua;
+    }
+
+    public String getJiaoxueDagang() {
+        return jiaoxueDagang;
+    }
+
+    public void setJiaoxueDagang(String jiaoxueDagang) {
+        this.jiaoxueDagang = jiaoxueDagang;
     }
 
     public Long getCourseId() {

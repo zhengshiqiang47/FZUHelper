@@ -17,6 +17,7 @@ import com.helper.west2ol.fzuhelper.dao.DaoMaster;
 import com.helper.west2ol.fzuhelper.util.ActivityController;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
+import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
 
 import java.util.List;
 
@@ -87,14 +88,12 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                         List<User> users=dbManager.queryUserList();
                         boolean isExist=false;
                         for (User resUser : users) {
+                            Log.i(TAG,"user "+resUser.getFzuAccount());
                             if (resUser.getFzuAccount().equals(user.getFzuAccount())){
                                 resUser.setFzuPasssword(user.getFzuPasssword());
                                 resUser.setIsLogin(true);
                                 dbManager.updateUser(resUser);
                                 isExist=true;
-                                if (resUser.isLogin()){
-
-                                }
                                 break;
                             }
                         }

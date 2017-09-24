@@ -59,8 +59,14 @@ public class YibanAdapter extends RecyclerView.Adapter {
             imageView.setImageResource(R.drawable.ssfw);
         }else if (image.contains("zhcp")){
             imageView.setImageResource(R.drawable.zhcp);
-        }else if (image.contains("appIcon")){
-            imageView.setImageResource(R.drawable.logo);
+        }else if (yiban.getTitle().toString().contains("CET")){
+            imageView.setImageResource(R.drawable.cet_42);
+            imageView.setScaleX(0.7f);
+            imageView.setScaleY(0.7f);
+        }else if (yiban.getTitle().toString().contains("单期绩点")){
+            imageView.setImageResource(R.drawable.score);
+            imageView.setScaleX(0.7f);
+            imageView.setScaleY(0.7f);
         }
         final String url=yiban.getUrl();
         yibanHolder.layout.setOnClickListener(new View.OnClickListener() {

@@ -3,12 +3,15 @@ package com.helper.west2ol.fzuhelper.fragment;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.adapter.YibanAdapter;
@@ -37,6 +40,10 @@ public class YibanFragment extends Fragment {
 
     @Bind(R.id.yiban_recycler)
     RecyclerView recyclerView;
+    @Bind(R.id.menu_button_in_yiban)
+    Button menuButton;
+
+    DrawerLayout drawerLayout;
 
     @Nullable
     @Override
@@ -48,11 +55,19 @@ public class YibanFragment extends Fragment {
     }
 
     private void initView(){
+        drawerLayout= (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(Gravity.LEFT);
+            }
+        });
         Observable.create(new Observable.OnSubscribe<List<Yiban>>() {
             @Override
             public void call(Subscriber<? super List<Yiban>> subscriber) {
                 List<Yiban> dataBeens=HtmlParseUtil.getYibanList();
                 subscriber.onNext(dataBeens);
+                subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<List<Yiban>>() {
             @Override

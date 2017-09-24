@@ -102,6 +102,13 @@ public class DBManager {
         return list;
     }
 
+    public void dropUsers(){
+        DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
+        DaoSession daoSession = daoMaster.newSession();
+        UserDao UserDao =daoSession.getUserDao();
+        UserDao.deleteAll();
+    }
+
 
     //课表
 

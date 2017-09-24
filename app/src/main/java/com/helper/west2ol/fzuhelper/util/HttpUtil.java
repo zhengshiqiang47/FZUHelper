@@ -56,6 +56,7 @@ public class HttpUtil {
 
 
     public static String Login(Context context,User user){
+        Log.i(TAG, "user:" + user.getFzuAccount()+" pass:"+user.getFzuPasssword());
         OkHttpClient okHttpClient = new OkHttpClient.Builder().addNetworkInterceptor(new LoginInterceptor()).build();
         FormBody formBody=new FormBody.Builder().add("muser",user.getFzuAccount()).add("passwd",user.getFzuPasssword()).build();
         Request request=new Request.Builder()
@@ -72,7 +73,11 @@ public class HttpUtil {
                 return "网络出错";
             }
             String result = new String(response.body().bytes());
-            if(result.contains("<body bgcolor=C6DCB4><script language=javascript>alert")){
+            if (result.contains("charset=gb2312")){
+                result=new String(result.getBytes(),"gb2312");
+            }
+            Log.i(TAG, result);
+            if(result.contains("密码错误，请重新登录，或与学院教学办联系！")||result.contains("用户名错误，请确认是否输入错误，用户名前请不要加字母！！")){
                 Log.i(TAG,"密码错误");
                 return "密码错误";
             }
@@ -178,8 +183,8 @@ public class HttpUtil {
                 return null;
             }
             String result=new String(response.body().bytes(),"gb2312");
-            System.out.println(result);
-//            Log.i(TAG, "result" + result);
+
+            Log.i(TAG, "getParams");
             return result;
         } catch (IOException e) {
             e.printStackTrace();
