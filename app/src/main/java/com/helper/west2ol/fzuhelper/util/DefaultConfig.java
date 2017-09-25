@@ -3,6 +3,7 @@ package com.helper.west2ol.fzuhelper.util;
 import com.helper.west2ol.fzuhelper.bean.User;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ public class DefaultConfig implements Serializable {
 
     private long beginDate=0;
     private Map<String,String> xqValues;
+    private ArrayList<String> options;
 
     private String userAccount;
 
@@ -57,6 +59,14 @@ public class DefaultConfig implements Serializable {
             xqValues = new HashMap<>();
         }
         return xqValues;
+    }
+
+    public ArrayList<String> getOptions() {
+        return options;
+    }
+
+    public void setOptions(ArrayList<String> options) {
+        this.options = options;
     }
 
     public boolean isLogin() {

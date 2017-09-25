@@ -31,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bigkoo.pickerview.OptionsPickerView;
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
@@ -46,6 +47,7 @@ import com.lcodecore.tkrefreshlayout.header.SinaRefreshView;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -120,11 +122,6 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             R.drawable.course_bg15,
             R.drawable.course_bg16,
     };
-
-
-    private int yearpre=2016;
-    private int weekpre=1;
-    private int xuenianpre=1;
     private View view;
     private ImageView menuIcon;
     private ImageView accountIcon;
@@ -134,17 +131,14 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
     Button moreButton;
     @Bind(R.id.course_table_spinner)
     Spinner spinner;
-//    @Bind(R.id.course_table_myscrollview)
-//    TwinklingRefreshLayout refreshLayout;
 
     PopupWindow popupWindow;
     DrawerLayout drawer;
+
     private boolean isRefresh=false;
-
+    ArrayList<String> options = new ArrayList<>();
     private int leftWidth=0;//第一列所占宽度
-
     Map<Integer,CourseBean> courseBeanMap;
-
     SaveObjectUtils saveObjectUtils;
 
     @Override
@@ -153,7 +147,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 
     }
     @Override
-    public View onCreateView(LayoutInflater inflater , ViewGroup container , Bundle savedIntanceState){
+    public View onCreateView(final LayoutInflater inflater , ViewGroup container , Bundle savedIntanceState){
         View rootView = inflater.inflate(R.layout.fragment_course_table , container , false);
         view=rootView;
         ButterKnife.bind(this, rootView);
@@ -174,34 +168,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
                 drawer.openDrawer(Gravity.LEFT);
             }
         });
-        moreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-//                Observable.create(new Observable.OnSubscribe<Object>() {
-//                    @Override
-//                    public void call(Subscriber<? super Object> subscriber) {
-//                        HtmlParseUtil.getHistoryCourse(getActivity(),"201602");
-//                        subscriber.onCompleted();
-//                    }
-//                }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
-//                    @Override
-//                    public void onCompleted() {
-//                        showKB(1, 2016, 2);
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onNext(Object o) {
-//
-//                    }
-//                });
-            }
-        });
+        moreButton.setOnClickListener(this);
         if (CourseBeanLab.get(this.getActivity()).getCourses() == null||CourseBeanLab.get(this.getActivity()).getCourses().size()<=1) {
             getCourse();
         }
@@ -220,6 +187,35 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         popupWindow.setOutsideTouchable(false);
         popupWindow.setFocusable(true);
         popupWindow.setAnimationStyle(R.style.PoupAnimation);
+        //        refreshLayout.setHeaderView(refreshView);
+//        refreshLayout.setOnRefreshListener(new TwinklingRefreshLayout.OnRefreshListener(){
+//            @Override
+//            public void onRefresh(final TwinklingRefreshLayout refreshLayout) {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            Thread.sleep(500);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        getActivity().runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                refreshLayout.finishRefreshing();
+//                            }
+//                        });
+//                    }
+//                }).start();
+//            }
+//        });
+//        refreshLayout.setEnableLoadmore(false);
+//        refreshLayout.setEnableOverlayRefreshView(true);
+//        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+//                R.color.colorRed,
+//                R.color.colorAccent,
+//                R.color.colorBackground);
+//        swipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
 
     }
 
@@ -260,8 +256,9 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 
 
 
-    private void initData(){
 
+    private void initData(){
+        options=DefaultConfig.get().getOptions();
         List<String> weeks = new ArrayList<>();
         for (int i=0;i<22;i++) {
             weeks.add("第 "+(i+1)+" 周");
@@ -334,35 +331,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         day=calendar.get(Calendar.DAY_OF_MONTH);
         sunColum.setText(month+"-"+day);
         SinaRefreshView refreshView = new SinaRefreshView(getActivity());
-//        refreshLayout.setHeaderView(refreshView);
-//        refreshLayout.setOnRefreshListener(new TwinklingRefreshLayout.OnRefreshListener(){
-//            @Override
-//            public void onRefresh(final TwinklingRefreshLayout refreshLayout) {
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        try {
-//                            Thread.sleep(500);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                        getActivity().runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                refreshLayout.finishRefreshing();
-//                            }
-//                        });
-//                    }
-//                }).start();
-//            }
-//        });
-//        refreshLayout.setEnableLoadmore(false);
-//        refreshLayout.setEnableOverlayRefreshView(true);
-//        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
-//                R.color.colorRed,
-//                R.color.colorAccent,
-//                R.color.colorBackground);
-//        swipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
+
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         //屏幕宽度
@@ -416,6 +385,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         if (course_table_layout != null) {
             course_table_layout.removeAllViews();
         }
+        courseBeanMap.clear();
         initKB(view);
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -571,42 +541,30 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    private Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    showKB(weekpre,yearpre,xuenianpre);
-//                    swipeRefreshLayout.setRefreshing(false);
-                    Toast.makeText(getActivity(), "刷新成功", Toast.LENGTH_SHORT).show();
-                    //swipeRefreshLayout.setEnabled(false);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
-    private void refreshDate(){
-        CourseBeanLab.get(getActivity()).getCourses().clear();
-        FDScoreLB.get(getActivity()).getScores().clear();
-//        KCLB.get(getActivity()).getKcs().clear();
-//        FDScoreLB.get(getActivity()).getScores().clear();
-//        String Xuehao = getActivity().getSharedPreferences("userinfo", Context.MODE_PRIVATE).getString("passwd","");
-//        Log.i("KBFragment", "密码" +).getSharedPreferences("userinfo", Context.MODE_PRIVATE).getString("username", "");
-//        String Passwd = getActivity( Passwd);
-//        Log.i("KBFragment", "学号" + UserInformation.get(getActivity()).getXuehao());
-//        HtmlAnalyze.getScore(getActivity(), Xuehao, Passwd);
-        HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),true);
-    }
-
     @Override
     public void onClick(View view) {
         if (view.getId()<100||view.getId()>200){
+            switch (view.getId()) {
+                case R.id.more_button_in_course_table:
+                    OptionsPickerView pickerView=new OptionsPickerView.Builder(getActivity(), new OptionsPickerView.OnOptionsSelectListener() {
+                        @Override
+                        public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                            Log.i(TAG, options.get(options1));
+                            getHistoryCourse(options.get(options1));
+                        }
+                    }).build();
+                    Log.i(TAG, "size:" + options.size());
+                    pickerView.setPicker(options);
+                    pickerView.show(true);
+                    break;
+            }
             return;
         }
-        CourseBean courseBean=courseBeanMap.get(view.getId());
+        popupWindow(view.getId());
+    }
+
+    private void popupWindow(int viewId){
+        CourseBean courseBean=courseBeanMap.get(viewId);
         Log.i(TAG, "name：" + courseBean.getKcName());
         WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
         lp.alpha =0.5f; //0.0-1.0
@@ -644,5 +602,42 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f,1.0f,2.0f,1.0f,0.5f,0.5f);
         scaleAnimation.setDuration(1000l);
         titleLayout.startAnimation(scaleAnimation);
+    }
+
+    private void getHistoryCourse(final String xueNian){
+        Log.i(TAG,"getHistoryCourse");
+        Observable.create(new Observable.OnSubscribe<Object>() {
+            @Override
+            public void call(Subscriber<? super Object> subscriber) {
+                HtmlParseUtil.getHistoryCourse(getActivity().getApplicationContext(),xueNian);
+                HtmlParseUtil.getBeginDate(xueNian);
+
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
+            @Override
+            public void onCompleted() {
+                DefaultConfig defaultConfig=DefaultConfig.get();
+                defaultConfig.setCurYear(Integer.parseInt(xueNian.substring(0,4)));
+                defaultConfig.setCurXuenian(Integer.parseInt(xueNian.substring(4,6)));
+                defaultConfig.setNowWeek(1);
+                FzuCookie fzuCookie=FzuCookie.get();
+                saveObjectUtils.setObject("config", defaultConfig);
+                saveObjectUtils.setObject("cookie",fzuCookie);
+                Log.i(TAG,defaultConfig.getCurYear()+" "+defaultConfig.getCurXuenian()+" "+defaultConfig.getNowWeek()+" "+defaultConfig.getUserAccount());
+                spinner.setSelection(defaultConfig.getNowWeek()-1);
+                showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        });
     }
 }

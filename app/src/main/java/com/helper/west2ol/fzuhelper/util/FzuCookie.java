@@ -19,7 +19,6 @@ public class FzuCookie implements Serializable{
     String EVENTVALIDATION;
     long lastUpdateTime;
 
-    ArrayList<String> options = new ArrayList<>();
 
     private FzuCookie() {
 
@@ -80,11 +79,4 @@ public class FzuCookie implements Serializable{
         this.lastUpdateTime = lastUpdateTime;
     }
 
-    public ArrayList<String> getOptions() {
-        return options;
-    }
-
-    public void setOptions(ArrayList<String> options) {
-        this.options = options;
-    }
 }

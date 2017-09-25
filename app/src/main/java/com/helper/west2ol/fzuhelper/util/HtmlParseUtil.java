@@ -57,7 +57,7 @@ public class HtmlParseUtil {
         for (Element element:options){
             optionStr.add(element.attr("value"));
         }
-        FzuCookie.get().setOptions(optionStr);
+        DefaultConfig.get().setOptions(optionStr);
         FzuCookie.get().setVIEWSTATE(VIEWSTATE.attr("value"));
         FzuCookie.get().setEVENTVALIDATION(EVENTVALIDATION.attr("value"));
         FzuCookie.get().setExpTime(System.currentTimeMillis()+10*60*1000l);

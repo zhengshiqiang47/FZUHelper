@@ -53,6 +53,7 @@ public class FlashActivity extends Activity {
             config.setCurXuenian(defaultConfig.getCurXuenian());
             config.setCurYear(defaultConfig.getCurYear());
             config.setXqValues(defaultConfig.getXqValues());
+            config.setOptions(defaultConfig.getOptions());
             config.setLogin(defaultConfig.isLogin());
         }
         final DBManager dbManager=new DBManager(this);
