@@ -32,6 +32,7 @@ public class YibanAdapter extends RecyclerView.Adapter {
 
     public YibanAdapter(Context context,List<Yiban> yiben) {
         super();
+        yiben.add(new Yiban("","一键XX","https://onekey.learning2learn.cn",true));
         this.yiben = yiben;
         this.context=context;
     }
@@ -67,6 +68,10 @@ public class YibanAdapter extends RecyclerView.Adapter {
             imageView.setImageResource(R.drawable.score);
             imageView.setScaleX(0.7f);
             imageView.setScaleY(0.7f);
+        }else if (yiban.getTitle().toString().contains("一键XX")){
+            imageView.setImageResource(R.drawable.score);
+            imageView.setScaleX(0.7f);
+            imageView.setScaleY(0.7f);
         }
         final String url=yiban.getUrl();
         yibanHolder.layout.setOnClickListener(new View.OnClickListener() {
@@ -81,7 +86,7 @@ public class YibanAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return 10;
+        return yiben.size();
     }
 
     private class YibanHolder extends RecyclerView.ViewHolder{

@@ -10,6 +10,15 @@ public class Yiban {
     private String url;
     private boolean passby=false;
 
+    public Yiban(){}
+
+    public Yiban(String image, String title, String url, boolean passby) {
+        this.image = image;
+        this.title = title;
+        this.url = url;
+        this.passby = passby;
+    }
+
     public boolean isPassby() {
         return passby;
     }

@@ -74,24 +74,6 @@ public class HtmlParseUtil {
             String xuenianStr = "01";
             int year = Integer.parseInt(yearStr);
             int xuenian = Integer.parseInt(xuenianStr);
-            //解析成绩
-//            FDScore fdscore = new FDScore();
-//            fdscore.setName(title);
-//            Element jihuaEle = kb.select("td").get(2);
-
-//            Element scoreEle = kb.select("td").get(4);
-//            String score = scoreEle.text();
-//            fdscore.setScore(score);
-
-//            Element jidianEle = kb.select("td").get(5);
-//            String jidian = scoreEle.text();
-//            fdscore.setJidian(jidian);
-
-//            Element xuefenEle = kb.select("td").get(4);
-//            String xuefen = xuefenEle.text();
-//            fdscore.setXuefen(xuefen);
-//            fdscore.setYear(year);
-//            fdscore.setXuenian(xuenian);
 
             //解析课程备注:
             Element noteEle=kb.select("td").get(11);
