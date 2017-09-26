@@ -9,6 +9,7 @@ import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
 import com.helper.west2ol.fzuhelper.bean.FDScore;
 import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
+import com.helper.west2ol.fzuhelper.bean.User;
 import com.helper.west2ol.fzuhelper.bean.Yiban;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 
@@ -44,7 +45,7 @@ public class HtmlParseUtil {
             Log.i(TAG, "已经解析过");
             return true;
         }
-        String result = HttpUtil.getCourseHtml("http://59.77.226.35/student/xkjg/wdxk/xkjg_list.aspx");
+        String result = HttpUtil.getCookieHtml("http://59.77.226.35/student/xkjg/wdxk/xkjg_list.aspx");
 //        Log.i(TAG, result);
         Document document = Jsoup.parse(result);
         Log.i(TAG,"解析课表");
@@ -293,7 +294,7 @@ public class HtmlParseUtil {
             Log.i(TAG,"已解析过且不刷新");
             return scores;
         }
-        String scoreHtml= HttpUtil.getCourseHtml("http://59.77.226.35/student/xyzk/cjyl/score_sheet.aspx");
+        String scoreHtml= HttpUtil.getCookieHtml("http://59.77.226.35/student/xyzk/cjyl/score_sheet.aspx");
         Document document = Jsoup.parse(scoreHtml);
         Elements courseEles = document.select("tr[onmouseover=c=this.style.backgroundColor;this.style.backgroundColor='#CCFFaa']");
         for (int i = 0; i < courseEles.size(); i++) {
@@ -328,6 +329,33 @@ public class HtmlParseUtil {
         return tempScores;
     }
 
+    //解析个人信息
+    public static boolean getStudentInfo(Context context){
+        String result=HttpUtil.getCookieHtml("http://59.77.226.35/jcxx/xsxx/StudentInformation.aspx");
+        if (result == null) {
+            return false;
+        }
+        Document document = Jsoup.parse(result);
+        Elements tableEles=document.select("table[style=border-collapse: collapse; table-layout:fixed;]");
+        String xuehao=tableEles.select("span[id=ContentPlaceHolder1_LB_xh]").text();
+        String name=tableEles.select("tr").get(0).select("span[id=ContentPlaceHolder1_LB_xm]").text();
+        String sex=tableEles.select("span[id=ContentPlaceHolder1_LB_xb]").text();
+        String xymc=tableEles.select("span[id=ContentPlaceHolder1_LB_xymc]").text();
+        String zymc=tableEles.select("span[id=ContentPlaceHolder1_LB_zymc]").text();
+        String nianji=tableEles.select("span[id=ContentPlaceHolder1_LB_nj").text();
+        String banji=tableEles.select("span[id=ContentPlaceHolder1_LB_bh]").text();
+        DBManager dbManager = new DBManager(context);
+        User user=dbManager.queryUser(xuehao);
+        user.setName(name);
+        user.setSex(sex);
+        user.setXymc(xymc);
+        user.setZymc(zymc);
+        user.setNianji(nianji);
+        user.setBanji(banji);
+        DefaultConfig.get().setUserName(name);
+        dbManager.updateUser(user);
+        return true;
+    }
     //解析开学时间
     public static boolean getBeginDate(String xq){
         Map<String, Object> params = new HashMap<>();

@@ -64,7 +64,7 @@ import rx.schedulers.Schedulers;
 
 public class CourseTableFragment extends Fragment implements View.OnClickListener{
 
-    private static final String TAG = "KBActivity";
+    private static final String TAG = "CourseTableFragment";
     /** 第一个无内容的格子 */
     protected TextView empty;
     /** 星期一的格子 */
@@ -122,6 +122,11 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             R.drawable.course_bg15,
             R.drawable.course_bg16,
     };
+
+
+    private int yearpre=2016;
+    private int weekpre=1;
+    private int xuenianpre=1;
     private View view;
     private ImageView menuIcon;
     private ImageView accountIcon;
@@ -179,6 +184,14 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
     }
 
     private void initView(){
+        if (DefaultConfig.get().getUserName()!=null&&!DefaultConfig.get().getUserName().isEmpty()) {
+            TextView headerNameText = (TextView) drawer.findViewById(R.id.nav_header_name);
+            TextView headerWeekText= (TextView) drawer.findViewById(R.id.nav_header_week);
+            TextView headerXnText= (TextView) drawer.findViewById(R.id.nav_header_xuenian);
+            headerNameText.setText(DefaultConfig.get().getUserName());
+            headerWeekText.setText("第 "+DefaultConfig.get().getNowWeek()+" 周");
+            headerXnText.setText(DefaultConfig.get().getCurYear()+"年"+DefaultConfig.get().getCurXuenian()+"学期");
+        }
         popupWindow= new PopupWindow(getActivity());
         popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -225,6 +238,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             @Override
             public void call(Subscriber<? super Object> subscriber) {
                 HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),false);
+                HtmlParseUtil.getStudentInfo(getActivity());
                 HtmlParseUtil.getBeginDate(null);
                 HtmlParseUtil.getDate();
                 subscriber.onCompleted();
@@ -239,6 +253,12 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
                 Log.i(TAG,defaultConfig.getCurYear()+" "+defaultConfig.getCurXuenian()+" "+defaultConfig.getNowWeek()+" "+defaultConfig.getUserAccount());
                 spinner.setSelection(defaultConfig.getNowWeek()-1);
                 showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
+                TextView headerNameText = (TextView) drawer.findViewById(R.id.nav_header_name);
+                TextView headerWeekText= (TextView) drawer.findViewById(R.id.nav_header_week);
+                TextView headerXnText= (TextView) drawer.findViewById(R.id.nav_header_xuenian);
+                headerNameText.setText(DefaultConfig.get().getUserName());
+                headerWeekText.setText("第 "+DefaultConfig.get().getNowWeek()+" 周");
+                headerXnText.setText(DefaultConfig.get().getCurYear()+"年"+DefaultConfig.get().getCurXuenian()+"学期");
             }
 
             @Override
@@ -252,7 +272,6 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             }
         });
     }
-
 
 
 
@@ -343,8 +362,8 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         this.aveWidth = aveWidth;
 
         int height = dm.heightPixels;
-        int gridHeight = height / 12;
-        for(int i = 1; i <= 12; i ++) {
+        int gridHeight = height / 11;
+        for(int i = 1; i <= 11; i ++) {
             //i为行,j为列
             for (int j = 1; j <= 8; j++) {
                 TextView tx = new TextView(getActivity().getApplicationContext());
@@ -406,13 +425,6 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             for(int j = 2; j <= 8; j ++){
                 TextView tx = new TextView(getActivity().getApplicationContext());
                 tx.setId((i - 1) * 8  + j);
-                //除了最后一列，都使用course_text_view_bg背景（最后一列没有右边框）
-//                if(j < 8)
-//                    tx.setBackgroundDrawable(this.
-//                            getResources().getDrawable(R.drawable.course_text_view_bg));
-//                else
-//                    tx.setBackgroundDrawable(this.
-//                            getResources().getDrawable(R.drawable.course_table_last_colum));
                 //相对布局参数
                 RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(aveWidth * 33 / 32 + 1, gridHeight);
                 //文字对齐方式
@@ -541,6 +553,19 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         }
     }
 
+    private void refreshDate(){
+        CourseBeanLab.get(getActivity()).getCourses().clear();
+        FDScoreLB.get(getActivity()).getScores().clear();
+//        KCLB.get(getActivity()).getKcs().clear();
+//        FDScoreLB.get(getActivity()).getScores().clear();
+//        String Xuehao = getActivity().getSharedPreferences("userinfo", Context.MODE_PRIVATE).getString("passwd","");
+//        Log.i("KBFragment", "密码" +).getSharedPreferences("userinfo", Context.MODE_PRIVATE).getString("username", "");
+//        String Passwd = getActivity( Passwd);
+//        Log.i("KBFragment", "学号" + UserInformation.get(getActivity()).getXuehao());
+//        HtmlAnalyze.getScore(getActivity(), Xuehao, Passwd);
+        HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),true);
+    }
+
     @Override
     public void onClick(View view) {
         if (view.getId()<100||view.getId()>200){
@@ -580,7 +605,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         popupWindow.showAtLocation(getView(), Gravity.BOTTOM, 0, 0);
         View contentView=popupWindow.getContentView();
         TranslateAnimation translateAnimation=new TranslateAnimation(1.0f,1.0f,3.0f,1.0f);
-        translateAnimation.setDuration(800l);
+        translateAnimation.setDuration(400l);
         translateAnimation.setInterpolator(new DecelerateInterpolator());
         LinearLayout titleLayout = (LinearLayout) contentView.findViewById(R.id.course_detail_title_layout);
         TextView titleText = (TextView) contentView.findViewById(R.id.course_detail_title);
@@ -599,8 +624,8 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         noteText.setText(courseBean.getKcNote());
 
         titleLayout.setBackgroundResource(background[courseBean.getKcBackgroundId()]);
-        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f,1.0f,2.0f,1.0f,0.5f,0.5f);
-        scaleAnimation.setDuration(1000l);
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f,1.0f,1.5f,1.0f,0.5f,0.5f);
+        scaleAnimation.setDuration(700l);
         titleLayout.startAnimation(scaleAnimation);
     }
 

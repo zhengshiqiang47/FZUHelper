@@ -24,6 +24,7 @@ public class DefaultConfig implements Serializable {
     private ArrayList<String> options;
 
     private String userAccount;
+    private String userName;
 
     private boolean isLogin;
 
@@ -36,6 +37,14 @@ public class DefaultConfig implements Serializable {
             defaultConfig = new DefaultConfig();
         }
         return defaultConfig;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getUserAccount() {

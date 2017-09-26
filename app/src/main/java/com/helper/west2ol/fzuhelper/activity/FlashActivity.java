@@ -49,6 +49,7 @@ public class FlashActivity extends Activity {
         if (defaultConfig != null) {
             config.setBeginDate(defaultConfig.getBeginDate());
             config.setUserAccount(defaultConfig.getUserAccount());
+            config.setUserName(defaultConfig.getUserName());
             config.setNowWeek(defaultConfig.getNowWeek());
             config.setCurXuenian(defaultConfig.getCurXuenian());
             config.setCurYear(defaultConfig.getCurYear());

@@ -70,7 +70,6 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                     | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -81,16 +80,14 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
         id = getIntent().getStringExtra("id");
         parameterToFragment = new Bundle();
         parameterToFragment.putString("id",id);
-        courseTableFragment = new CourseTableFragment();
-        courseTableFragment.setArguments(parameterToFragment);
-        getFragmentManager().beginTransaction()
-                .replace(R.id.main_container , courseTableFragment)
-                .commit();
-        current = courseTableFragment;
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         course_Item = navigationView.getMenu().getItem(0);
         course_Item.setChecked(true);
+        courseTableFragment = new CourseTableFragment();
+        courseTableFragment.setArguments(parameterToFragment);
+        current = courseTableFragment;
+
     }
 
     private void initData(){
@@ -108,6 +105,20 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                 courseBeen.add(bean);
             }
         }
+    }
+
+    private boolean isFirst=true;
+    //界面渲染完成回调
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        if (isFirst&&hasFocus) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.main_container , courseTableFragment)
+                    .commit();
+            isFirst=false;
+        }
+        super.onWindowFocusChanged(hasFocus);
+
     }
 
     @Override

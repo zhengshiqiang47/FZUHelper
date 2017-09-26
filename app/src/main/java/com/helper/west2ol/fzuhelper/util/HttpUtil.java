@@ -102,7 +102,7 @@ public class HttpUtil {
      * @param targetUrl
      * @return
      */
-    public static String getCourseHtml(String targetUrl){
+    public static String getCookieHtml(String targetUrl){
         String html=null;
         OkHttpClient okHttpClient=new OkHttpClient.Builder().build();
         Log.i(TAG, "id:" + FzuCookie.get().getId());

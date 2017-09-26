@@ -28,6 +28,13 @@ public class UserDao extends AbstractDao<User, Long> {
         public final static Property FzuAccount = new Property(1, String.class, "FzuAccount", false, "FZU_ACCOUNT");
         public final static Property FzuPasssword = new Property(2, String.class, "FzuPasssword", false, "FZU_PASSSWORD");
         public final static Property IsLogin = new Property(3, boolean.class, "isLogin", false, "IS_LOGIN");
+        public final static Property Name = new Property(4, String.class, "name", false, "NAME");
+        public final static Property Xymc = new Property(5, String.class, "xymc", false, "XYMC");
+        public final static Property Zymc = new Property(6, String.class, "zymc", false, "ZYMC");
+        public final static Property Sex = new Property(7, String.class, "sex", false, "SEX");
+        public final static Property Nianji = new Property(8, String.class, "nianji", false, "NIANJI");
+        public final static Property Banji = new Property(9, String.class, "banji", false, "BANJI");
+        public final static Property Phone = new Property(10, String.class, "phone", false, "PHONE");
     }
 
 
@@ -46,7 +53,14 @@ public class UserDao extends AbstractDao<User, Long> {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: userId
                 "\"FZU_ACCOUNT\" TEXT," + // 1: FzuAccount
                 "\"FZU_PASSSWORD\" TEXT," + // 2: FzuPasssword
-                "\"IS_LOGIN\" INTEGER NOT NULL );"); // 3: isLogin
+                "\"IS_LOGIN\" INTEGER NOT NULL ," + // 3: isLogin
+                "\"NAME\" TEXT," + // 4: name
+                "\"XYMC\" TEXT," + // 5: xymc
+                "\"ZYMC\" TEXT," + // 6: zymc
+                "\"SEX\" TEXT," + // 7: sex
+                "\"NIANJI\" TEXT," + // 8: nianji
+                "\"BANJI\" TEXT," + // 9: banji
+                "\"PHONE\" TEXT);"); // 10: phone
     }
 
     /** Drops the underlying database table. */
@@ -74,6 +88,41 @@ public class UserDao extends AbstractDao<User, Long> {
             stmt.bindString(3, FzuPasssword);
         }
         stmt.bindLong(4, entity.getIsLogin() ? 1L: 0L);
+ 
+        String name = entity.getName();
+        if (name != null) {
+            stmt.bindString(5, name);
+        }
+ 
+        String xymc = entity.getXymc();
+        if (xymc != null) {
+            stmt.bindString(6, xymc);
+        }
+ 
+        String zymc = entity.getZymc();
+        if (zymc != null) {
+            stmt.bindString(7, zymc);
+        }
+ 
+        String sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindString(8, sex);
+        }
+ 
+        String nianji = entity.getNianji();
+        if (nianji != null) {
+            stmt.bindString(9, nianji);
+        }
+ 
+        String banji = entity.getBanji();
+        if (banji != null) {
+            stmt.bindString(10, banji);
+        }
+ 
+        String phone = entity.getPhone();
+        if (phone != null) {
+            stmt.bindString(11, phone);
+        }
     }
 
     @Override
@@ -95,6 +144,41 @@ public class UserDao extends AbstractDao<User, Long> {
             stmt.bindString(3, FzuPasssword);
         }
         stmt.bindLong(4, entity.getIsLogin() ? 1L: 0L);
+ 
+        String name = entity.getName();
+        if (name != null) {
+            stmt.bindString(5, name);
+        }
+ 
+        String xymc = entity.getXymc();
+        if (xymc != null) {
+            stmt.bindString(6, xymc);
+        }
+ 
+        String zymc = entity.getZymc();
+        if (zymc != null) {
+            stmt.bindString(7, zymc);
+        }
+ 
+        String sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindString(8, sex);
+        }
+ 
+        String nianji = entity.getNianji();
+        if (nianji != null) {
+            stmt.bindString(9, nianji);
+        }
+ 
+        String banji = entity.getBanji();
+        if (banji != null) {
+            stmt.bindString(10, banji);
+        }
+ 
+        String phone = entity.getPhone();
+        if (phone != null) {
+            stmt.bindString(11, phone);
+        }
     }
 
     @Override
@@ -108,7 +192,14 @@ public class UserDao extends AbstractDao<User, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // userId
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // FzuAccount
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // FzuPasssword
-            cursor.getShort(offset + 3) != 0 // isLogin
+            cursor.getShort(offset + 3) != 0, // isLogin
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // name
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // xymc
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // zymc
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // sex
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // nianji
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // banji
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10) // phone
         );
         return entity;
     }
@@ -119,6 +210,13 @@ public class UserDao extends AbstractDao<User, Long> {
         entity.setFzuAccount(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setFzuPasssword(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setIsLogin(cursor.getShort(offset + 3) != 0);
+        entity.setName(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setXymc(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setZymc(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setSex(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setNianji(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setBanji(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setPhone(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
      }
     
     @Override
