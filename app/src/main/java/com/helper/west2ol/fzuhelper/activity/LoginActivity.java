@@ -130,6 +130,7 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                                 Intent intent = new Intent(LoginActivity.this , MainContainerActivity.class);
                                 intent.putExtra("id" , id_2);
                                 startActivity(intent);
+                                finish();
                                 break;
                             default:
                                 Log.i(TAG,"未知错误");

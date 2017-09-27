@@ -135,7 +135,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
 
     @Override
     public void onDestroy(){
-        System.out.println("onDestroy");
+        Log.i(TAG,"onDestroy");
         DefaultConfig defaultConfig = DefaultConfig.get();
         SaveObjectUtils saveObjectUtils = new SaveObjectUtils(this,"config");
         saveObjectUtils.setObject("config", defaultConfig);

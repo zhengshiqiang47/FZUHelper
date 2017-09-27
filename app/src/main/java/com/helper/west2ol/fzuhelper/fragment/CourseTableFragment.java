@@ -1,6 +1,7 @@
 package com.helper.west2ol.fzuhelper.fragment;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -44,10 +45,13 @@ import com.helper.west2ol.fzuhelper.util.HttpUtil;
 import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
 import com.lcodecore.tkrefreshlayout.header.SinaRefreshView;
 
+import org.angmarch.views.NiceSpinner;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -134,8 +138,10 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
     Button menu_button_in_course_table;
     @Bind(R.id.more_button_in_course_table)
     Button moreButton;
-    @Bind(R.id.course_table_spinner)
-    Spinner spinner;
+//    @Bind(R.id.course_table_spinner)
+//    Spinner spinner;
+    @Bind(R.id.course_table_nice_spinner)
+    NiceSpinner niceSpinner;
 
     PopupWindow popupWindow;
     DrawerLayout drawer;
@@ -145,11 +151,12 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
     private int leftWidth=0;//第一列所占宽度
     Map<Integer,CourseBean> courseBeanMap;
     SaveObjectUtils saveObjectUtils;
+    private CourseTableFragment fragment;
 
     @Override
     public void onCreate(Bundle savedIntenceState){
         super.onCreate(savedIntenceState);
-
+        fragment=this;
     }
     @Override
     public View onCreateView(final LayoutInflater inflater , ViewGroup container , Bundle savedIntanceState){
@@ -200,6 +207,8 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         popupWindow.setOutsideTouchable(false);
         popupWindow.setFocusable(true);
         popupWindow.setAnimationStyle(R.style.PoupAnimation);
+        DefaultConfig defaultConfig=DefaultConfig.get();
+        showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
         //        refreshLayout.setHeaderView(refreshView);
 //        refreshLayout.setOnRefreshListener(new TwinklingRefreshLayout.OnRefreshListener(){
 //            @Override
@@ -234,6 +243,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 
     private void getCourse(){
         Log.i(TAG,"getCourse");
+        moreButton.setOnClickListener(null);
         Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> subscriber) {
@@ -248,10 +258,13 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             public void onCompleted() {
                 DefaultConfig defaultConfig=DefaultConfig.get();
                 FzuCookie fzuCookie=FzuCookie.get();
+                options=DefaultConfig.get().getOptions();
+                moreButton.setOnClickListener(fragment);
                 saveObjectUtils.setObject("config", defaultConfig);
                 saveObjectUtils.setObject("cookie",fzuCookie);
                 Log.i(TAG,defaultConfig.getCurYear()+" "+defaultConfig.getCurXuenian()+" "+defaultConfig.getNowWeek()+" "+defaultConfig.getUserAccount());
-                spinner.setSelection(defaultConfig.getNowWeek()-1);
+//                spinner.setSelection(defaultConfig.getNowWeek()-1);
+                niceSpinner.setSelectedIndex(defaultConfig.getNowWeek()-1);
                 showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
                 TextView headerNameText = (TextView) drawer.findViewById(R.id.nav_header_name);
                 TextView headerWeekText= (TextView) drawer.findViewById(R.id.nav_header_week);
@@ -278,16 +291,34 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 
     private void initData(){
         options=DefaultConfig.get().getOptions();
-        List<String> weeks = new ArrayList<>();
+        Log.i(TAG, "isNull:"+(options == null));
+        List<String> weeks = new LinkedList<>();
         for (int i=0;i<22;i++) {
             weeks.add("第 "+(i+1)+" 周");
         }
         courseBeanMap = new HashMap<>();
         ArrayAdapter<String> spinnerAdapter=new ArrayAdapter<String>(getActivity(), R.layout.item_week_spinner_show, weeks);
+
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerAdapter);
-        spinner.setSelection(DefaultConfig.get().getNowWeek()-1);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//        spinner.setAdapter(spinnerAdapter);
+//
+//        spinner.setSelection(DefaultConfig.get().getNowWeek()-1);
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                System.out.println("position:"+position);
+//                DefaultConfig.get().setNowWeek(position+1);
+//                showKB(position+1,DefaultConfig.get().getCurYear(),DefaultConfig.get().getCurXuenian());
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
+        niceSpinner.attachDataSource(weeks);
+        niceSpinner.setTextColor(Color.WHITE);
+        niceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 System.out.println("position:"+position);
@@ -300,6 +331,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 
             }
         });
+        niceSpinner.setSelectedIndex(DefaultConfig.get().getNowWeek()-1);
 
     }
 
@@ -486,7 +518,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             final TextView courseInfo = new TextView(getActivity());
             courseInfo.setId(courseBeanMap.size()+100);
             String name=kc.getKcName();
-            String location=kc.getKcLocation();
+
             if(name.length()>=13){
                 name = name.substring(0, 11);
                 name += "...";
@@ -578,7 +610,6 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
                             getHistoryCourse(options.get(options1));
                         }
                     }).build();
-                    Log.i(TAG, "size:" + options.size());
                     pickerView.setPicker(options);
                     pickerView.show(true);
                     break;
@@ -636,7 +667,6 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             public void call(Subscriber<? super Object> subscriber) {
                 HtmlParseUtil.getHistoryCourse(getActivity().getApplicationContext(),xueNian);
                 HtmlParseUtil.getBeginDate(xueNian);
-
                 subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
@@ -650,7 +680,8 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
                 saveObjectUtils.setObject("config", defaultConfig);
                 saveObjectUtils.setObject("cookie",fzuCookie);
                 Log.i(TAG,defaultConfig.getCurYear()+" "+defaultConfig.getCurXuenian()+" "+defaultConfig.getNowWeek()+" "+defaultConfig.getUserAccount());
-                spinner.setSelection(defaultConfig.getNowWeek()-1);
+//                spinner.setSelection(defaultConfig.getNowWeek()-1);
+                niceSpinner.setSelectedIndex(defaultConfig.getNowWeek()-1);
                 showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
             }
 

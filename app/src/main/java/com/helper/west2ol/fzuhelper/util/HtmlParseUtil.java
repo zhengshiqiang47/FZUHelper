@@ -57,6 +57,7 @@ public class HtmlParseUtil {
         ArrayList<String> optionStr = new ArrayList<>();
         for (Element element:options){
             optionStr.add(element.attr("value"));
+            Log.i(TAG,"添加历史学期"+element.attr("value"));
         }
         DefaultConfig.get().setOptions(optionStr);
         FzuCookie.get().setVIEWSTATE(VIEWSTATE.attr("value"));
