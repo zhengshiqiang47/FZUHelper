@@ -24,6 +24,10 @@
             android:id="@+id/item5"
             android:icon="@drawable/ic_others"
             android:title="易班"></item>
+        <item
+            android:id="@+id/item6"
+            android:icon="@drawable/ic_others"
+            android:title="空教室"></item>
     </group>
     <group
         android:checkableBehavior="single">

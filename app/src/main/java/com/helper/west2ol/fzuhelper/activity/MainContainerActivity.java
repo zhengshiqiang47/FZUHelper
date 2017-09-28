@@ -26,6 +26,7 @@ import com.helper.west2ol.fzuhelper.bean.User;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.dao.DaoMaster;
 import com.helper.west2ol.fzuhelper.fragment.CourseTableFragment;
+import com.helper.west2ol.fzuhelper.fragment.EmptyRoomFragment;
 import com.helper.west2ol.fzuhelper.fragment.GradeFragment;
 import com.helper.west2ol.fzuhelper.fragment.MathFragment;
 import com.helper.west2ol.fzuhelper.fragment.YibanFragment;
@@ -47,6 +48,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
     GradeFragment gradeFragment;
     MathFragment mathFragment;
     YibanFragment yibanFragment;
+    EmptyRoomFragment emptyRoomFragment;
 
     private Fragment current;
     NavigationView navigationView;
@@ -233,6 +235,12 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                     yibanFragment = new YibanFragment();
                 }
                 switchFragment(current,yibanFragment);
+                break;
+            case R.id.item6:
+                if (emptyRoomFragment == null) {
+                    emptyRoomFragment = new EmptyRoomFragment();
+                }
+                switchFragment(current,emptyRoomFragment);
                 break;
             case R.id.item8:
                 parameterToFragment.putString("id",id);

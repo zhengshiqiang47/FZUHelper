@@ -128,13 +128,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
     };
 
 
-    private int yearpre=2016;
-    private int weekpre=1;
-    private int xuenianpre=1;
     private View view;
-    private ImageView menuIcon;
-    private ImageView accountIcon;
-    private DrawerLayout mDrawerLayout;
     Button menu_button_in_course_table;
     @Bind(R.id.more_button_in_course_table)
     Button moreButton;
@@ -294,7 +288,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         Log.i(TAG, "isNull:"+(options == null));
         List<String> weeks = new LinkedList<>();
         for (int i=0;i<22;i++) {
-            weeks.add("第 "+(i+1)+" 周");
+            weeks.add("第 "+(i+1)+" 周") ;
         }
         courseBeanMap = new HashMap<>();
         ArrayAdapter<String> spinnerAdapter=new ArrayAdapter<String>(getActivity(), R.layout.item_week_spinner_show, weeks);
@@ -331,8 +325,11 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 
             }
         });
-        niceSpinner.setSelectedIndex(DefaultConfig.get().getNowWeek()-1);
-
+        try {
+            niceSpinner.setSelectedIndex(DefaultConfig.get().getNowWeek()-1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
