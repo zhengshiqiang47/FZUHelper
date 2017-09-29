@@ -359,7 +359,7 @@ public class HtmlParseUtil {
     }
     //解析开学时间
     public static boolean getBeginDate(String xq){
-        Map<String, Object> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         if (xq != null) {
             params.put("xq",DefaultConfig.get().getXqValues().get(xq));
         }

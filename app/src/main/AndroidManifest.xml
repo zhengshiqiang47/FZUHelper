@@ -39,6 +39,7 @@
             android:label="易班工具"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity android:name=".activity.EmptyRoomActivity"/>
 
 
         <receiver android:name=".activity.TableWidgetProvider" >

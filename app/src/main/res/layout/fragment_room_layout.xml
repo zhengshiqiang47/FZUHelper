@@ -7,17 +7,53 @@
         android:background="@color/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="54dp">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/room_search_btn"
+                android:text="其他日期"
+                android:layout_gravity="right|center_vertical"
+                android:gravity="center_vertical"
+                android:layout_marginRight="8dp"
+                android:textColor="@color/colorWhite"
+                android:background="@color/colorPrimary"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </LinearLayout>
 
     </android.support.design.widget.AppBarLayout>
     <LinearLayout
+        android:background="@color/colorWhite"
         android:layout_below="@id/room_bar"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <Button
-            android:id="@+id/room_search_btn"
-            android:text="testButton"
+        <TextView
+            android:text="空教室查询"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textColor="@color/colorBlackLight"
+            android:paddingTop="32dp"
+            android:paddingBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <com.bigkoo.pickerview.lib.WheelView
+            android:layout_marginTop="36dp"
+            android:id="@+id/room_wheel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/room_submit"
+            android:layout_marginTop="32dp"
+            android:textColor="@color/colorBlack"
+            android:layout_gravity="center_horizontal"
+            android:text="查询"
+            android:gravity="center"
+            android:background="@drawable/bg_button_common"
+            android:layout_width="96dp"
+            android:layout_height="32dp" />
     </LinearLayout>
 
 </RelativeLayout>

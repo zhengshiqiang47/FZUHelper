@@ -96,7 +96,6 @@ public class HttpUtil {
             return "网络出错";
         }
     }
-
     /**
      * http://59.77.226.35/student/xkjg/wdxk/xkjg_list.aspx
      * @param targetUrl
@@ -160,14 +159,14 @@ public class HttpUtil {
     }
 
 
-    public static String getHtmlByParam(String url,Map<String,Object> params){
+    public static String getHtmlByParam(String url,Map<String,String> params){
         String html=null;
         OkHttpClient okHttpClient=new OkHttpClient.Builder().build();
 //        Log.i(TAG, "id:" + FzuCookie.get().getId());
         FormBody.Builder formBodyBuilder=new FormBody.Builder();
-        Iterator<Map.Entry<String,Object>> iterator=params.entrySet().iterator();
+        Iterator<Map.Entry<String,String>> iterator=params.entrySet().iterator();
         while (iterator.hasNext()){
-            Map.Entry<String,Object> entry=iterator.next();
+            Map.Entry<String,String> entry=iterator.next();
             System.out.println("isNull:"+(entry==null)+" key:"+entry.getKey()+" value:"+entry.getValue());
             formBodyBuilder.add(entry.getKey(), (String) entry.getValue());
         }
@@ -182,12 +181,43 @@ public class HttpUtil {
         try {
             Response response = okHttpClient.newCall(request).execute();
             if(!response.message().equals("OK")){
-                Log.i(TAG,"获取数据，message不是Ok");
+                Log.i(TAG,"获取数据，message不是Ok"+response.message());
+                Log.i(TAG, new String(response.body().bytes(), "gb2312"));
                 return null;
             }
             String result=new String(response.body().bytes(),"gb2312");
 
-            Log.i(TAG, "getParams");
+//            Log.i(TAG, "getParams");
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return html;
+    }
+
+    public static String getEmptyByParam(String url,Map<String,String> params){
+        String html=null;
+        OkHttpClient okHttpClient=new OkHttpClient.Builder().build();
+//        Log.i(TAG, "id:" + FzuCookie.get().getId());
+        FormBody.Builder formBodyBuilder=new FormBody.Builder();
+        Iterator<Map.Entry<String,String>> iterator=params.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String,String> entry=iterator.next();
+            System.out.println("isNull:"+(entry==null)+" key:"+entry.getKey()+" value:"+entry.getValue());
+            formBodyBuilder.add(entry.getKey(), (String) entry.getValue());
+        }
+        RequestBody requestBody=formBodyBuilder.build();
+        Request request=new Request.Builder()
+                .url(url)
+                .addHeader("Cookie", FzuCookie.get().getCookie()+"")
+                .addHeader("Accept-Language","zh-CN,zh;q=0.8,en;q=0.6")
+                .addHeader("Connection","keep-alive")
+                .post(requestBody)
+                .build();
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            String result=new String(response.body().bytes());
+//            Log.i(TAG, "getParams");
             return result;
         } catch (IOException e) {
             e.printStackTrace();
