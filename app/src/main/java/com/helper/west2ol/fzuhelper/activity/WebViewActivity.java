@@ -21,7 +21,7 @@ import com.helper.west2ol.fzuhelper.R;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -36,13 +36,13 @@ public class WebViewActivity extends Activity {
         extraHeaders.put("User-Agent","FzuHelper");
     }
     
-    @Bind(R.id.yiban_webview)
+    @BindView(R.id.yiban_webview)
     WebView webView;
-    @Bind(R.id.webview_title)
+    @BindView(R.id.webview_title)
     TextView titleView;
-    @Bind(R.id.back_button_in_webview)
+    @BindView(R.id.back_button_in_webview)
     Button backButton;
-    @Bind(R.id.more_button_in_webview)
+    @BindView(R.id.more_button_in_webview)
     Button moreButton;
 
     private Activity context;

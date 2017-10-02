@@ -18,6 +18,7 @@
         android:src="@drawable/add_button"/>
 
     <LinearLayout
+        android:id="@+id/course_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -48,6 +49,23 @@
                     android:layout_height="wrap_content"
                     />
             </LinearLayout>
+            <RelativeLayout
+                android:id="@+id/course_table_loading_layout"
+                android:background="@color/colorWhite"
+                android:elevation="15dp"
+                android:alpha="0.5"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </RelativeLayout>
+            <com.wang.avi.AVLoadingIndicatorView
+                android:id="@+id/course_table_loading"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_centerInParent="true"
+                android:elevation="16dp"
+                app:indicatorColor="@color/colorPrimary"
+                app:indicatorName="BallPulseIndicator"/>
 
             <ScrollView
                 android:layout_below="@id/course_table_appbar"

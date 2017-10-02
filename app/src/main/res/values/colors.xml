@@ -9,6 +9,7 @@
     <color name="colorBackground">#47696c</color>
     <color name="colorAccent">#9B59B6</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorWhite_light">#f7f7f7</color>
     <color name="colorGray">#c1c0c0</color>
     <color name="colorRed">#EA0000</color>
     <color name="course_color0">#A0e0e0e0</color>

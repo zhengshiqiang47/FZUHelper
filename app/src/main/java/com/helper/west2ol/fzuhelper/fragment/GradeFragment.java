@@ -27,6 +27,7 @@ import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.util.CalculateUtil;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Observer;
@@ -56,16 +57,19 @@ public class GradeFragment extends Fragment {
     int color;
     boolean isHidden=false;
 
-    @Bind(R.id.menu_button_in_course_table)
+    @BindView(R.id.menu_button_in_course_table)
     Button menu_button_in_course_table;
-    @Bind(R.id.viewpager)
+    @BindView(R.id.viewpager)
     ViewPager viewPager;
-    @Bind(R.id.tab_layout)
+    @BindView(R.id.tab_layout)
     TabLayout mTabLayout;
-    @Bind(R.id.app_bar)
+    @BindView(R.id.app_bar)
     AppBarLayout appBarLayout;
-    @Bind(R.id.grade_title)
+    @BindView(R.id.grade_title)
     TextView title;
+    @BindView(R.id.grade_loading)
+    AVLoadingIndicatorView loadingView;
+
     List<android.support.v4.app.Fragment> fragments;
     Map<String,List<FDScore>> scoreMap;
     Map<Integer,String> tabTitle;
@@ -95,6 +99,7 @@ public class GradeFragment extends Fragment {
         Observable.create(new Observable.OnSubscribe<List<FDScore>>() {
             @Override
             public void call(Subscriber<? super List<FDScore>> subscriber) {
+                loadingView.show();
                 List<FDScore> scores=HtmlParseUtil.getScore(context,false);
                 subscriber.onNext(scores);
                 subscriber.onCompleted();
@@ -104,6 +109,7 @@ public class GradeFragment extends Fragment {
             @Override
             public void onCompleted() {
                 initViewPager();
+                loadingView.hide();
             }
 
             @Override
@@ -119,6 +125,7 @@ public class GradeFragment extends Fragment {
     }
 
     private void initView(){
+        loadingView.hide();
         color=getResources().getColor(R.color.colorPrimary);
         drawer = (DrawerLayout)getActivity().findViewById(R.id.drawer_layout);
         drawer.addDrawerListener(new DrawerLayout.DrawerListener() {

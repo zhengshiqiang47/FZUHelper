@@ -40,11 +40,11 @@ public class HtmlParseUtil {
     public static boolean getCurrentCourse(Context context,boolean isRefresh) {
         DBManager dbManager=new DBManager(context);
         ArrayList<CourseBean> tempKcs = new ArrayList<>();
-        ArrayList<CourseBean> kcs = CourseBeanLab.get(context).getCourses();
-        if(kcs.size()>=2&&!isRefresh){
-            Log.i(TAG, "已经解析过");
-            return true;
-        }
+//        ArrayList<CourseBean> kcs = CourseBeanLab.get(context).getCourses();
+//        if(kcs.size()>=2&&!isRefresh){
+//            Log.i(TAG, "已经解析过");
+//            return true;
+//        }
         String result = HttpUtil.getCookieHtml("http://59.77.226.35/student/xkjg/wdxk/xkjg_list.aspx");
 //        Log.i(TAG, result);
         Document document = Jsoup.parse(result);
@@ -150,10 +150,11 @@ public class HtmlParseUtil {
                 }
             }
         }
-        List<CourseBean> courseBeans= CourseBeanLab.get(context).getCourses();
-        for (int i=0;i<courseBeans.size();i++){
-            courseBeans.remove(tempKcs.get(0));
-        }
+//        List<CourseBean> courseBeans= CourseBeanLab.get(context).getCourses();
+//        for (int i=0;i<courseBeans.size();i++){
+//            courseBeans.remove(tempKcs.get(0));
+//        }
+        CourseBeanLab.get(context).getCourses().clear();
         CourseBeanLab.get(context).getCourses().addAll(tempKcs);
         Log.i(TAG,"共"+courseEles.size()+"个"+" 解析后:"+tempKcs.size()+"个");
         dbManager.dropCourseBeans();
@@ -167,7 +168,6 @@ public class HtmlParseUtil {
             HttpUtil.Login(context,DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
             getCurrentCourse(context,true);
         }
-
         String VIEWSTATE= FzuCookie.get().getVIEWSTATE();
         String EVENTVALIDATION= FzuCookie.get().getEVENTVALIDATION();
         Log.i(TAG,"VIEWSTATE:"+VIEWSTATE);
@@ -274,10 +274,11 @@ public class HtmlParseUtil {
                 }
             }
         }
-        List<CourseBean> courseBeans= CourseBeanLab.get(context).getCourses();
-        for (int i=0;i<courseBeans.size();i++){
-            courseBeans.remove(tempCourses.get(0));
-        }
+//        List<CourseBean> courseBeans= CourseBeanLab.get(context).getCourses();
+//        for (int i=0;i<courseBeans.size();i++){
+//            courseBeans.remove(tempCourses.get(0));
+//        }
+        CourseBeanLab.get(context).getCourses().clear();
         CourseBeanLab.get(context).getCourses().addAll(tempCourses);
         DBManager dbManager=new DBManager(context);
         dbManager.dropCourseBeans();
@@ -291,10 +292,10 @@ public class HtmlParseUtil {
     public static ArrayList<FDScore> getScore(Context context, boolean isRefresh){
         ArrayList<FDScore> tempScores = new ArrayList<>();
         ArrayList<FDScore> scores = FDScoreLB.get(context).getScores();
-        if (scores.size()>1&&!isRefresh){
-            Log.i(TAG,"已解析过且不刷新");
-            return scores;
-        }
+//        if (scores.size()>1&&!isRefresh){
+//            Log.i(TAG,"已解析过且不刷新");
+//            return scores;
+//        }
         String scoreHtml= HttpUtil.getCookieHtml("http://59.77.226.35/student/xyzk/cjyl/score_sheet.aspx");
         Document document = Jsoup.parse(scoreHtml);
         Elements courseEles = document.select("tr[onmouseover=c=this.style.backgroundColor;this.style.backgroundColor='#CCFFaa']");

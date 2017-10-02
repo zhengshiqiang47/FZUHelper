@@ -25,7 +25,7 @@ import com.helper.west2ol.fzuhelper.util.HttpUtil;
 import java.util.List;
 import java.util.Objects;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscriber;
@@ -38,9 +38,9 @@ import rx.schedulers.Schedulers;
 
 public class YibanFragment extends Fragment {
 
-    @Bind(R.id.yiban_recycler)
+    @BindView(R.id.yiban_recycler)
     RecyclerView recyclerView;
-    @Bind(R.id.menu_button_in_yiban)
+    @BindView(R.id.menu_button_in_yiban)
     Button menuButton;
 
     DrawerLayout drawerLayout;

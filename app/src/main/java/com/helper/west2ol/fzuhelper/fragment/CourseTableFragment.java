@@ -1,5 +1,6 @@
 package com.helper.west2ol.fzuhelper.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -28,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +47,7 @@ import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
 import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
 import com.lcodecore.tkrefreshlayout.header.SinaRefreshView;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.angmarch.views.NiceSpinner;
 
@@ -55,7 +59,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscriber;
@@ -130,12 +134,18 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 
     private View view;
     Button menu_button_in_course_table;
-    @Bind(R.id.more_button_in_course_table)
+    @BindView(R.id.more_button_in_course_table)
     Button moreButton;
 //    @Bind(R.id.course_table_spinner)
 //    Spinner spinner;
-    @Bind(R.id.course_table_nice_spinner)
+    @BindView(R.id.course_table_nice_spinner)
     NiceSpinner niceSpinner;
+    @BindView(R.id.course_layout)
+    LinearLayout layout;
+    @BindView(R.id.course_table_loading)
+    AVLoadingIndicatorView loadingView;
+    @BindView(R.id.course_table_loading_layout)
+    RelativeLayout loadingLayout;
 
     PopupWindow popupWindow;
     DrawerLayout drawer;
@@ -185,6 +195,13 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
     }
 
     private void initView(){
+        loadingView.hide();
+        loadingLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "onClick: 加载无法点击");
+            }
+        });
         if (DefaultConfig.get().getUserName()!=null&&!DefaultConfig.get().getUserName().isEmpty()) {
             TextView headerNameText = (TextView) drawer.findViewById(R.id.nav_header_name);
             TextView headerWeekText= (TextView) drawer.findViewById(R.id.nav_header_week);
@@ -235,50 +252,6 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 
     }
 
-    private void getCourse(){
-        Log.i(TAG,"getCourse");
-        moreButton.setOnClickListener(null);
-        Observable.create(new Observable.OnSubscribe<Object>() {
-            @Override
-            public void call(Subscriber<? super Object> subscriber) {
-                HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),false);
-                HtmlParseUtil.getStudentInfo(getActivity());
-                HtmlParseUtil.getBeginDate(null);
-                HtmlParseUtil.getDate();
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
-            @Override
-            public void onCompleted() {
-                DefaultConfig defaultConfig=DefaultConfig.get();
-                FzuCookie fzuCookie=FzuCookie.get();
-                options=DefaultConfig.get().getOptions();
-                moreButton.setOnClickListener(fragment);
-                saveObjectUtils.setObject("config", defaultConfig);
-                saveObjectUtils.setObject("cookie",fzuCookie);
-                Log.i(TAG,defaultConfig.getCurYear()+" "+defaultConfig.getCurXuenian()+" "+defaultConfig.getNowWeek()+" "+defaultConfig.getUserAccount());
-//                spinner.setSelection(defaultConfig.getNowWeek()-1);
-                niceSpinner.setSelectedIndex(defaultConfig.getNowWeek()-1);
-                showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
-                TextView headerNameText = (TextView) drawer.findViewById(R.id.nav_header_name);
-                TextView headerWeekText= (TextView) drawer.findViewById(R.id.nav_header_week);
-                TextView headerXnText= (TextView) drawer.findViewById(R.id.nav_header_xuenian);
-                headerNameText.setText(DefaultConfig.get().getUserName());
-                headerWeekText.setText("第 "+DefaultConfig.get().getNowWeek()+" 周");
-                headerXnText.setText(DefaultConfig.get().getCurYear()+"年"+DefaultConfig.get().getCurXuenian()+"学期");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Object o) {
-
-            }
-        });
-    }
 
 
 
@@ -291,25 +264,6 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             weeks.add("第 "+(i+1)+" 周") ;
         }
         courseBeanMap = new HashMap<>();
-        ArrayAdapter<String> spinnerAdapter=new ArrayAdapter<String>(getActivity(), R.layout.item_week_spinner_show, weeks);
-
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        spinner.setAdapter(spinnerAdapter);
-//
-//        spinner.setSelection(DefaultConfig.get().getNowWeek()-1);
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                System.out.println("position:"+position);
-//                DefaultConfig.get().setNowWeek(position+1);
-//                showKB(position+1,DefaultConfig.get().getCurYear(),DefaultConfig.get().getCurXuenian());
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
         niceSpinner.attachDataSource(weeks);
         niceSpinner.setTextColor(Color.WHITE);
         niceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -595,6 +549,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),true);
     }
 
+    @SuppressLint("ResourceType")
     @Override
     public void onClick(View view) {
         if (view.getId()<100||view.getId()>200){
@@ -605,6 +560,8 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
                         public void onOptionsSelect(int options1, int options2, int options3, View v) {
                             Log.i(TAG, options.get(options1));
                             getHistoryCourse(options.get(options1));
+                            DefaultConfig.get().setCurXuenian(Integer.parseInt(options.get(options1).substring(4,6)));
+                            DefaultConfig.get().setCurYear(Integer.parseInt(options.get(options2).substring(0,4)));
                         }
                     }).build();
                     pickerView.setPicker(options);
@@ -657,7 +614,59 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         titleLayout.startAnimation(scaleAnimation);
     }
 
+
+    private void getCourse(){
+        Log.i(TAG,"getCourse");
+        loadingView.show();
+        loadingLayout.setVisibility(View.VISIBLE);
+        moreButton.setOnClickListener(null);
+        Observable.create(new Observable.OnSubscribe<Object>() {
+            @Override
+            public void call(Subscriber<? super Object> subscriber) {
+                HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),false);
+                HtmlParseUtil.getStudentInfo(getActivity());
+                HtmlParseUtil.getBeginDate(null);
+                HtmlParseUtil.getDate();
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
+            @Override
+            public void onCompleted() {
+                DefaultConfig defaultConfig=DefaultConfig.get();
+                FzuCookie fzuCookie=FzuCookie.get();
+                options=DefaultConfig.get().getOptions();
+                moreButton.setOnClickListener(fragment);
+                saveObjectUtils.setObject("config", defaultConfig);
+                saveObjectUtils.setObject("cookie",fzuCookie);
+                Log.i(TAG,defaultConfig.getCurYear()+" "+defaultConfig.getCurXuenian()+" "+defaultConfig.getNowWeek()+" "+defaultConfig.getUserAccount());
+//                spinner.setSelection(defaultConfig.getNowWeek()-1);
+                niceSpinner.setSelectedIndex(defaultConfig.getNowWeek()-1);
+                showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
+                TextView headerNameText = (TextView) drawer.findViewById(R.id.nav_header_name);
+                TextView headerWeekText= (TextView) drawer.findViewById(R.id.nav_header_week);
+                TextView headerXnText= (TextView) drawer.findViewById(R.id.nav_header_xuenian);
+                headerNameText.setText(DefaultConfig.get().getUserName());
+                headerWeekText.setText("第 "+DefaultConfig.get().getNowWeek()+" 周");
+                headerXnText.setText(DefaultConfig.get().getCurYear()+"年"+DefaultConfig.get().getCurXuenian()+"学期");
+                loadingView.hide();
+                loadingLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        });
+    }
+
     private void getHistoryCourse(final String xueNian){
+        loadingView.show();
+        loadingLayout.setVisibility(View.VISIBLE);
         Log.i(TAG,"getHistoryCourse");
         Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
@@ -680,6 +689,9 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 //                spinner.setSelection(defaultConfig.getNowWeek()-1);
                 niceSpinner.setSelectedIndex(defaultConfig.getNowWeek()-1);
                 showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
+                Snackbar.make(layout,"切换至"+defaultConfig.getCurYear()+"学年"+defaultConfig.getCurXuenian()+"学期",Snackbar.LENGTH_SHORT).show();
+                loadingView.hide();
+                loadingLayout.setVisibility(View.GONE);
             }
 
             @Override

@@ -17,7 +17,7 @@ import com.helper.west2ol.fzuhelper.bean.FDScore;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -26,7 +26,7 @@ import butterknife.ButterKnife;
 
 public class GradeDetailFragment extends Fragment {
 
-    @Bind(R.id.grade_detail_recycler)
+    @BindView(R.id.grade_detail_recycler)
     RecyclerView gradeRecycler;
 
     Context context;

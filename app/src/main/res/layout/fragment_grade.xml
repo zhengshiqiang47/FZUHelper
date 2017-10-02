@@ -13,46 +13,51 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <RelativeLayout
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/menu_button_in_course_table"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@drawable/menu_button"
-                />
-            <TextView
-                android:id="@+id/grade_title"
-                android:gravity="center"
-                android:layout_marginTop="8dp"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/menu_button_in_course_table"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/menu_button"
+                    />
+                <TextView
+                    android:id="@+id/grade_title"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="成绩"
+                    android:textSize="18sp"
+                    android:textColor="@color/colorWhite"/>
+            </RelativeLayout>
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="成绩"
-                android:textSize="18sp"
-                android:textColor="@color/colorWhite"/>
-        </RelativeLayout>
+                app:tabMode="fixed"
+                app:tabGravity="fill"
+                app:tabIndicatorColor="#ffffff"
+                app:tabSelectedTextColor="#FFFFFFFF"
+                app:tabTextColor="#F0F0F0F0" />
+        </android.support.design.widget.AppBarLayout>
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tab_layout"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
-            app:tabIndicatorColor="#ffffff"
-            app:tabSelectedTextColor="#FFFFFFFF"
-            app:tabTextColor="#F0F0F0F0" />
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/grade_loading"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:indicatorColor="@color/colorPrimary"
+            android:layout_gravity="center"/>
     </android.support.design.widget.CoordinatorLayout>
     <!--<include layout="@layout/content_grade" />-->
 </LinearLayout>

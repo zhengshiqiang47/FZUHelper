@@ -1,32 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/empty_room_layout"
+    android:background="@color/colorWhite"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <android.support.design.widget.AppBarLayout
         android:id="@+id/room_bar"
         android:background="@color/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="54dp">
-        <LinearLayout
-            android:orientation="vertical"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/empty_room_back"
+                android:src="@drawable/arrow_down"
+                android:layout_centerVertical="true"
+                android:rotation="90"
+                android:layout_marginLeft="12dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp" />
             <TextView
-                android:id="@+id/room_other_date"
+                android:id="@+id/empty_room_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/colorWhite"
+                android:textSize="16sp"
+                android:gravity="center"/>
+            <TextView
+                android:id="@+id/empty_room_other_date"
                 android:text="其他日期"
-                android:layout_gravity="right|center_vertical"
+                android:layout_alignParentRight="true"
                 android:gravity="center_vertical"
                 android:layout_marginRight="8dp"
                 android:textColor="@color/colorWhite"
                 android:background="@color/colorPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
-        </LinearLayout>
+        </RelativeLayout>
     </android.support.design.widget.AppBarLayout>
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/empty_room_recycler"
+    <com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout
+        android:id="@+id/empty_room_refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/empty_room_recycler"
+            android:overScrollMode="never"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    </android.support.v7.widget.RecyclerView>
+        </android.support.v7.widget.RecyclerView>
+    </com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout>
+
 </LinearLayout>
