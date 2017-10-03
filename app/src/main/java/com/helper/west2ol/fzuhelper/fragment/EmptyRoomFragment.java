@@ -71,6 +71,7 @@ public class EmptyRoomFragment extends Fragment {
     private Map<String,String> roomMap=new HashMap<String,String>(){
         {put("西三","x3");put("西二","x2");put("西一","x1");put("中楼","zl");put("东一","d3");put("东二","d2");put("东三","d3");put("文楼","wkl");}
     };
+
     private List<String> sTimes = new ArrayList<String>();
     private List<List<String>> eTimes = new ArrayList<>();
 
@@ -153,6 +154,7 @@ public class EmptyRoomFragment extends Fragment {
                 build = roomMap.get(room.get(index));
             }
         });
+        wheelView.setCyclic(false);
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

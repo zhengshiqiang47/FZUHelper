@@ -89,7 +89,7 @@ public class TableWidgetProvider extends AppWidgetProvider {
             showKB(1,2017,1);
             course_table_layout.measure(0,0);
             course_table_layout.layout(0,0,0,0);
-            Bitmap bitmap=Bitmap.createBitmap(loadBitmapFromView(course_table_layout));
+            Bitmap bitmap=Bitmap.createBitmap(loadBitmapFromView(context,course_table_layout));
             if (bitmap==null)Log.i("MAIN","NULL Image");
             views.setImageViewBitmap(R.id.widget_image,bitmap);
 
@@ -104,10 +104,11 @@ public class TableWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    public static Bitmap loadBitmapFromView(View v) {
+    public static Bitmap loadBitmapFromView(Context context,View v) {
         if (v == null) {
             return null;
         }
+        v.setBackgroundColor(context.getResources().getColor(R.color.colorWhite));
         Bitmap screenshot;
         screenshot = Bitmap.createBitmap(v.getMeasuredWidth(), v.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(screenshot);
@@ -359,14 +360,14 @@ public class TableWidgetProvider extends AppWidgetProvider {
     private void refreshDate(){
         CourseBeanLab.get(context).getCourses().clear();
         FDScoreLB.get(context).getScores().clear();
-        HtmlParseUtil.getCurrentCourse(context,true);
+        HtmlParseUtil.getCurrentCourse(context);
     }
 
     private class getCourse extends AsyncTask<Void,Void,Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
-            HtmlParseUtil.getCurrentCourse(context,false);
+            HtmlParseUtil.getCurrentCourse(context);
             return null;
         }
 

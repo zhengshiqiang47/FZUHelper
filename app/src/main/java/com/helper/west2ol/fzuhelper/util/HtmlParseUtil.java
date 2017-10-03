@@ -34,10 +34,9 @@ public class HtmlParseUtil {
     /**
      * 获取当前学期课程表
      * @param context
-     * @param isRefresh
      * @return
      */
-    public static boolean getCurrentCourse(Context context,boolean isRefresh) {
+    public static boolean getCurrentCourse(Context context) {
         DBManager dbManager=new DBManager(context);
         ArrayList<CourseBean> tempKcs = new ArrayList<>();
 //        ArrayList<CourseBean> kcs = CourseBeanLab.get(context).getCourses();
@@ -166,7 +165,7 @@ public class HtmlParseUtil {
         ArrayList<CourseBean> tempCourses = new ArrayList<>();
         if (FzuCookie.get().getEVENTVALIDATION()==null||FzuCookie.get().getExpTime()<=System.currentTimeMillis()){
             HttpUtil.Login(context,DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
-            getCurrentCourse(context,true);
+            getCurrentCourse(context);
         }
         String VIEWSTATE= FzuCookie.get().getVIEWSTATE();
         String EVENTVALIDATION= FzuCookie.get().getEVENTVALIDATION();
@@ -333,6 +332,9 @@ public class HtmlParseUtil {
 
     //解析个人信息
     public static boolean getStudentInfo(Context context){
+        if (!StringUtil.isEmpty(FzuCookie.get().getId())) {
+            HttpUtil.Login(context, DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
+        }
         String result=HttpUtil.getCookieHtml("http://59.77.226.35/jcxx/xsxx/StudentInformation.aspx");
         if (result == null) {
             return false;
