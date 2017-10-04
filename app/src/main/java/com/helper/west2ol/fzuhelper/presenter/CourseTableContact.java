@@ -19,18 +19,19 @@ public interface CourseTableContact {
     interface CoursePresenter extends BasePresenter {
         void getCurrentCourse();
         void getHistoryCourse(String year);
-        void saveConfig();
         void addOptionPicker();
+        void addWeekPicker();
         void switchWeek(int week);
         void showCourse();
         void addPoupWindow(int viewId);
     }
 
     interface CourseView extends BaseView<CoursePresenter> {
-        void showKB(int week, int year, int xuenian, Map<Integer,CourseBean> courseBeanMap);
+        void showKB(List<CourseBean> courseBeans,int week, int year, int xuenian, Map<Integer,CourseBean> courseBeanMap);
         void showDrawerInfo(DefaultConfig defaultConfig);
         void showLoading(boolean isShow);
         void showOptionPicker(ArrayList<String> options);
+        void showWeekPicer(List<String> weeks);
         void finishGetCourse(DefaultConfig defaultConfig, ArrayList<String> options,boolean isHistoryCourse);
         void popupWindow(int viewId,CourseBean courseBean);
         Context getParentActivity();

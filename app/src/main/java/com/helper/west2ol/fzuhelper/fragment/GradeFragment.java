@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
@@ -12,11 +13,16 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.helper.west2ol.fzuhelper.R;
@@ -41,15 +47,16 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
 /**
  * Created by Administrator on 2016/10/20.
  */
 
-public class GradeFragment extends Fragment {
+public class GradeFragment extends android.support.v4.app.Fragment implements View.OnClickListener{
     private static final String TAG="GradeFrament";
-//    Button menu_button_in_grade;
+    //    Button menu_button_in_grade;
     DrawerLayout drawer;
 
     Context context;
@@ -67,8 +74,12 @@ public class GradeFragment extends Fragment {
     AppBarLayout appBarLayout;
     @BindView(R.id.grade_title)
     TextView title;
+    @BindView(R.id.grade_loading_layout)
+    RelativeLayout loadingLayout;
     @BindView(R.id.grade_loading)
     AVLoadingIndicatorView loadingView;
+    @BindView(R.id.grade_refresh)
+    ImageView refreshGrade;
 
     List<android.support.v4.app.Fragment> fragments;
     Map<String,List<FDScore>> scoreMap;
@@ -90,42 +101,57 @@ public class GradeFragment extends Fragment {
     }
 
     private void initData(){
+        showLoading(false);
         List<FDScore> fdScores= DBManager.getInstance(getActivity()).queryFDScoreList();
         if (fdScores != null && fdScores.size() >= 1) {
             scoreMap= CalculateUtil.getTermScores(fdScores);
             initViewPager();
+
             return;
         }
         Observable.create(new Observable.OnSubscribe<List<FDScore>>() {
             @Override
             public void call(Subscriber<? super List<FDScore>> subscriber) {
                 loadingView.show();
-                List<FDScore> scores=HtmlParseUtil.getScore(context,false);
+                List<FDScore> scores=HtmlParseUtil.getScore(context);
                 subscriber.onNext(scores);
                 subscriber.onCompleted();
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<List<FDScore>>() {
+        })
+                .subscribeOn(Schedulers.io())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        showLoading(true);
+                    }
+                })
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<FDScore>>() {
 
-            @Override
-            public void onCompleted() {
-                initViewPager();
-                loadingView.hide();
-            }
+                    @Override
+                    public void onCompleted() {
+                        initViewPager();
+                        showLoading(false);
+                        Snackbar.make(viewPager,"刷新成功",Snackbar.LENGTH_LONG).show();
+                    }
 
-            @Override
-            public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        showLoading(false);
+                        Snackbar.make(viewPager,"服务器出错",Snackbar.LENGTH_LONG).show();
+                    }
 
-            }
-
-            @Override
-            public void onNext(List<FDScore> scores) {
-                scoreMap= CalculateUtil.getTermScores(scores);
-            }
-        });
+                    @Override
+                    public void onNext(List<FDScore> scores) {
+                        scoreMap= CalculateUtil.getTermScores(scores);
+                    }
+                });
     }
 
     private void initView(){
-        loadingView.hide();
+        refreshGrade.setOnClickListener(this);
         color=getResources().getColor(R.color.colorPrimary);
         drawer = (DrawerLayout)getActivity().findViewById(R.id.drawer_layout);
         drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -162,31 +188,53 @@ public class GradeFragment extends Fragment {
         });
     }
 
+    public void showLoading(boolean isShow) {
+        if (isShow) {
+            loadingLayout.setVisibility(View.VISIBLE);
+            loadingView.show();
+        }else {
+            loadingLayout.setVisibility(View.GONE);
+            loadingView.setVisibility(View.GONE);
+            loadingView.hide();
+        }
+    }
+
     private void refreshData(){
+        mAdapter=null;
+        RotateAnimation rotateAnimation = new RotateAnimation(0, -360,refreshGrade.getPivotX(),refreshGrade.getPivotY());
+        rotateAnimation.setDuration(1000l);
+        rotateAnimation.setInterpolator(new DecelerateInterpolator());
+        refreshGrade.startAnimation(rotateAnimation);
+        showLoading(true);
         Observable.create(new Observable.OnSubscribe<List<FDScore>>() {
             @Override
             public void call(Subscriber<? super List<FDScore>> subscriber) {
-                List<FDScore> scores=HtmlParseUtil.getScore(context,false);
+                List<FDScore> scores=HtmlParseUtil.getScore(context);
                 subscriber.onNext(scores);
                 subscriber.onCompleted();
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<List<FDScore>>() {
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<FDScore>>() {
 
-            @Override
-            public void onCompleted() {
-                initViewPager();
-            }
+                    @Override
+                    public void onCompleted() {
+                        Log.i(TAG, "onCompleted: 刷新成绩完成");
+                        showLoading(false);
+                        initViewPager();//Here is a Bug
+                    }
 
-            @Override
-            public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
 
-            }
-
-            @Override
-            public void onNext(List<FDScore> scores) {
-                scoreMap= CalculateUtil.getTermScores(scores);
-            }
-        });
+                    @Override
+                    public void onNext(List<FDScore> scores) {
+                        scoreMap= CalculateUtil.getTermScores(scores);
+                    }
+                });
     }
 
     //设置过渡颜色
@@ -260,7 +308,7 @@ public class GradeFragment extends Fragment {
             fragments.add(GradeDetailFragment.getInstance(entry.getValue(),getActivity()));
             tabTitle.put(tabTitle.size(),entry.getKey());
         }
-        mAdapter = new FragAdapter(((MainContainerActivity)getActivity()).getSupportFragmentManager(), fragments);
+        mAdapter = new FragAdapter(getChildFragmentManager(), fragments);
         viewPager.setAdapter(mAdapter);
         viewPager.setCurrentItem(0);
         InitTabLayout();
@@ -279,6 +327,15 @@ public class GradeFragment extends Fragment {
         mTabLayout.setupWithViewPager(viewPager);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.grade_refresh:
+                refreshData();
+                break;
+        }
+    }
+
 
     class FragAdapter extends FragmentPagerAdapter {
         private List<android.support.v4.app.Fragment> fragments;
@@ -287,8 +344,6 @@ public class GradeFragment extends Fragment {
             super(fm);
             this.fragments=fragments;
         }
-
-
 
         @Override
         public int getCount() {
@@ -311,4 +366,5 @@ public class GradeFragment extends Fragment {
         isHidden=hidden;
         super.onHiddenChanged(hidden);
     }
+
 }

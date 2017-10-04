@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -27,12 +28,32 @@
                 android:text="易班工具"
                 android:textSize="18sp"
                 android:textColor="@color/colorWhite"/>
+            <ImageView
+                android:id="@+id/yiban_refresh"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_refresh"/>
         </RelativeLayout>
     </android.support.design.widget.AppBarLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/yiban_recycler"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </android.support.v7.widget.RecyclerView>
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/yiban_loading"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_centerInParent="true"
+            android:elevation="4dp"
+            app:indicatorColor="@color/colorPrimary"
+            app:indicatorName="BallTrianglePathIndicator"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/yiban_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+    </RelativeLayout>
+
 </LinearLayout>

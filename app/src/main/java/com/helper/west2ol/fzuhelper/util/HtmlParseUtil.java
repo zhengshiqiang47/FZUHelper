@@ -288,13 +288,12 @@ public class HtmlParseUtil {
 
 
 
-    public static ArrayList<FDScore> getScore(Context context, boolean isRefresh){
+    public static ArrayList<FDScore> getScore(Context context){
         ArrayList<FDScore> tempScores = new ArrayList<>();
         ArrayList<FDScore> scores = FDScoreLB.get(context).getScores();
-//        if (scores.size()>1&&!isRefresh){
-//            Log.i(TAG,"已解析过且不刷新");
-//            return scores;
-//        }
+        if (FzuCookie.get().getExpTime() <= System.currentTimeMillis()) {
+            HttpUtil.Login(context, DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
+        }
         String scoreHtml= HttpUtil.getCookieHtml("http://59.77.226.35/student/xyzk/cjyl/score_sheet.aspx");
         Document document = Jsoup.parse(scoreHtml);
         Elements courseEles = document.select("tr[onmouseover=c=this.style.backgroundColor;this.style.backgroundColor='#CCFFaa']");

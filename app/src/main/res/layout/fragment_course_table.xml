@@ -9,13 +9,6 @@
     tools:context="com.helper.west2ol.fzuhelper.activity.MainContainerActivity">
 
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/more_button_in_coursetable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/add_button"/>
 
     <LinearLayout
         android:id="@+id/course_layout"
@@ -60,12 +53,12 @@
             </RelativeLayout>
             <com.wang.avi.AVLoadingIndicatorView
                 android:id="@+id/course_table_loading"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
                 android:layout_centerInParent="true"
                 android:elevation="16dp"
                 app:indicatorColor="@color/colorPrimary"
-                app:indicatorName="BallPulseIndicator"/>
+                app:indicatorName="BallTrianglePathIndicator"/>
 
             <ScrollView
                 android:layout_below="@id/course_table_appbar"
@@ -77,19 +70,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
             </ScrollView>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/course_table_footer"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/colorPrimary"
+                android:visibility="invisible">
+                <!-- Put view you like -->
+            </android.support.v7.widget.Toolbar>
+
         </RelativeLayout>
-
-
-
-
-        <!--<com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout-->
-        <!--android:id="@+id/course_table_myscrollview"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_width="match_parent">-->
-
-        <!--</com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout>-->
     </LinearLayout>
 
-
+    <include layout="@layout/item_fab_layout"/>
 
 </android.support.design.widget.CoordinatorLayout>

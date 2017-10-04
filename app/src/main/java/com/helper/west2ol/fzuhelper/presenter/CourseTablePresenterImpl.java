@@ -9,6 +9,8 @@ import android.view.View;
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
+import com.helper.west2ol.fzuhelper.dao.DBManager;
+import com.helper.west2ol.fzuhelper.util.CalculateUtil;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.FzuCookie;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
@@ -24,6 +26,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
 /**
@@ -39,6 +42,7 @@ public class CourseTablePresenterImpl implements CourseTableContact.CoursePresen
     private Context activity;
     private DefaultConfig defaultConfig;
     Map<Integer,CourseBean> courseBeanMap;
+    private List<CourseBean> courseBeans;
 
     public CourseTablePresenterImpl(CourseTableContact.CourseView courseFragment) {
         this.courseFragment = courseFragment;
@@ -46,25 +50,32 @@ public class CourseTablePresenterImpl implements CourseTableContact.CoursePresen
         activity=courseFragment.getParentActivity();
     }
 
-
+    /**
+     * 初始化工作
+     */
     @Override
     public void start() {
         courseBeanMap = new HashMap<>();
         defaultConfig=DefaultConfig.get();
         options= DefaultConfig.get().getOptions();
         saveObjectUtils=new SaveObjectUtils(courseFragment.getParentActivity(),"config");
-        if (CourseBeanLab.get(activity).getCourses() == null||CourseBeanLab.get(activity).getCourses().size()<=1) {
+        courseBeans=CourseBeanLab.get(activity).getCourses();
+        if (courseBeans == null||courseBeans.size()<=1||DefaultConfig.get().getNowWeek()==0|| StringUtil.isEmpty(defaultConfig.getUserName())||defaultConfig.getCurXuenian()==0) {
             getCurrentCourse();
+        }else {
+            courseFragment.showKB(courseBeans,defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian(),courseBeanMap);
         }
         if (!StringUtil.isEmpty(DefaultConfig.get().getUserName())) {
             courseFragment.showDrawerInfo(defaultConfig);
         }
-        courseFragment.showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian(),courseBeanMap);
+
     }
 
+    /**
+     * 获取当前课表
+     */
     @Override
     public void getCurrentCourse() {
-        courseFragment.showLoading(true);
         Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> subscriber) {
@@ -73,8 +84,16 @@ public class CourseTablePresenterImpl implements CourseTableContact.CoursePresen
                 HtmlParseUtil.getStudentInfo(activity);
                 HtmlParseUtil.getDate();
                 subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
+            }})
+                .subscribeOn(Schedulers.io())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        courseFragment.showLoading(true);
+                    }
+                })
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
             @Override
             public void onCompleted() {
                 DefaultConfig defaultConfig = DefaultConfig.get();
@@ -96,18 +115,23 @@ public class CourseTablePresenterImpl implements CourseTableContact.CoursePresen
 
     }
 
+    /**
+     * 获取历史课表
+     * @param xueNian 学年学期 如:201701
+     */
 
     @Override
     public void getHistoryCourse(final String xueNian) {
         courseFragment.showLoading(true);
-        Observable.create(new Observable.OnSubscribe<Object>() {
+        Observable.create(new Observable.OnSubscribe<List<CourseBean>>() {
             @Override
-            public void call(Subscriber<? super Object> subscriber) {
-                HtmlParseUtil.getHistoryCourse(activity,xueNian);
+            public void call(Subscriber<? super List<CourseBean>> subscriber) {
+                List<CourseBean> courseBeans=HtmlParseUtil.getHistoryCourse(activity,xueNian);
                 HtmlParseUtil.getBeginDate(xueNian);
+                subscriber.onNext(courseBeans);
                 subscriber.onCompleted();
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<List<CourseBean>>() {
             @Override
             public void onCompleted() {
                 DefaultConfig defaultConfig=DefaultConfig.get();
@@ -130,15 +154,10 @@ public class CourseTablePresenterImpl implements CourseTableContact.CoursePresen
             }
 
             @Override
-            public void onNext(Object o) {
-
+            public void onNext(List<CourseBean> courseBeans) {
+                CourseTablePresenterImpl.this.courseBeans=courseBeans;
             }
         });
-    }
-
-    @Override
-    public void saveConfig() {
-
     }
 
     @Override
@@ -150,15 +169,36 @@ public class CourseTablePresenterImpl implements CourseTableContact.CoursePresen
     }
 
     @Override
-    public void switchWeek(int week) {
-        courseFragment.showKB(week,DefaultConfig.get().getCurYear(),DefaultConfig.get().getCurXuenian(),courseBeanMap);
+    public void addWeekPicker() {
+        List<String> weeks = new ArrayList<>();
+        for (int i=1;i<=22;i++) {
+            weeks.add("第"+i+"周");
+        }
+        courseFragment.showWeekPicer(weeks);
     }
 
+    /**
+     * 切换周数
+     * @param week
+     */
+    @Override
+    public void switchWeek(int week) {
+        courseFragment.showKB(courseBeans,week,DefaultConfig.get().getCurYear(),DefaultConfig.get().getCurXuenian(),courseBeanMap);
+    }
+
+    /**
+     * 显示课表
+     */
     @Override
     public void showCourse() {
-        courseFragment.showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian(),courseBeanMap);
+        courseFragment.showKB(courseBeans,defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian(),courseBeanMap);
     }
 
+    /**
+     * 课程详情弹窗
+     * @param viewId 对应的课程viewID
+     *
+     */
     @Override
     public void addPoupWindow(int viewId) {
         CourseBean courseBean=courseBeanMap.get(viewId);

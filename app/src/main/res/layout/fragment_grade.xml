@@ -34,6 +34,14 @@
                     android:text="成绩"
                     android:textSize="18sp"
                     android:textColor="@color/colorWhite"/>
+                <ImageView
+                    android:id="@+id/grade_refresh"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_refresh"/>
             </RelativeLayout>
 
             <android.support.design.widget.TabLayout
@@ -52,12 +60,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-        <com.wang.avi.AVLoadingIndicatorView
-            android:id="@+id/grade_loading"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            app:indicatorColor="@color/colorPrimary"
-            android:layout_gravity="center"/>
+        <RelativeLayout
+            android:id="@+id/grade_loading_layout"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.wang.avi.AVLoadingIndicatorView
+                android:id="@+id/grade_loading"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                app:indicatorName="BallTrianglePathIndicator"
+                app:indicatorColor="@color/colorPrimary"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
     </android.support.design.widget.CoordinatorLayout>
     <!--<include layout="@layout/content_grade" />-->
 </LinearLayout>

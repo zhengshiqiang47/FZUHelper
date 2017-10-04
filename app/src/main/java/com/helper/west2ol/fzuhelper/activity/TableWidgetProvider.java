@@ -340,28 +340,6 @@ public class TableWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    showKB(weekpre,yearpre,xuenianpre);
-//                    swipeRefreshLayout.setRefreshing(false);
-                    Toast.makeText(context, "刷新成功", Toast.LENGTH_SHORT).show();
-                    //swipeRefreshLayout.setEnabled(false);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
-    private void refreshDate(){
-        CourseBeanLab.get(context).getCourses().clear();
-        FDScoreLB.get(context).getScores().clear();
-        HtmlParseUtil.getCurrentCourse(context);
-    }
 
     private class getCourse extends AsyncTask<Void,Void,Void> {
 

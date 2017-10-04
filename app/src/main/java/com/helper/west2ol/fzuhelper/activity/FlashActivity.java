@@ -102,7 +102,7 @@ public class FlashActivity extends Activity {
                         e.printStackTrace();
                     }
                 }
-                Intent intent = new Intent(FlashActivity.this , LoginActivity.class);
+                Intent intent = new Intent(FlashActivity.this , LoginActivity_1.class);
                 intent.putExtra("id" , "");
                 startActivity(intent);
                 finish();

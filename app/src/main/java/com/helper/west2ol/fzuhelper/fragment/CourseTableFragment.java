@@ -1,7 +1,7 @@
 package com.helper.west2ol.fzuhelper.fragment;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
-import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -12,14 +12,18 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
@@ -36,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
@@ -49,6 +54,7 @@ import com.helper.west2ol.fzuhelper.util.FzuCookie;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
 import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
+import com.helper.west2ol.fzuhelper.view.MyFab;
 import com.lcodecore.tkrefreshlayout.header.SinaRefreshView;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -104,10 +110,24 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
     /** 课程表body部分布局 */
     @BindView(R.id.test_course_rl)
     RelativeLayout course_table_layout;
+    @BindView(R.id.fab)
+    MyFab fab;
+    @BindView(R.id.course_table_footer)
+    Toolbar toolbar;
+    @BindView(R.id.fab_sheet_item_setting)
+    RelativeLayout settingBtn;
+    @BindView(R.id.fab_sheet_item_refresh)
+    RelativeLayout refreshBtn;
+    @BindView(R.id.fab_sheet_item_create)
+    RelativeLayout createBtn;
+    @BindView(R.id.fab_sheet_item_date)
+    RelativeLayout dateBtn;
+
     private View view;
 
     PopupWindow popupWindow;
     DrawerLayout drawer;
+    MaterialSheetFab materialSheetFab;
 
     private int leftWidth=0;//第一列(课表序号列)所占宽度
 
@@ -133,13 +153,16 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 
     private void initView(View rootView){
         loadingView.hide();
-        FloatingActionButton add = (FloatingActionButton) rootView.findViewById(R.id.more_button_in_coursetable);
         drawer = (DrawerLayout)getActivity().findViewById(R.id.drawer_layout);
         menu_button_in_course_table = (Button)rootView.findViewById(R.id.menu_button_in_course_table);
-        add.setOnClickListener(this);
+        fab.setOnClickListener(this);
         menu_button_in_course_table.setOnClickListener(this);
         moreButton.setOnClickListener(this);
         loadingLayout.setOnClickListener(this);
+        refreshBtn.setOnClickListener(this);
+        settingBtn.setOnClickListener(this);
+        dateBtn.setOnClickListener(this);
+        createBtn.setOnClickListener(this);
         popupWindow= new PopupWindow(getActivity());
         popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -148,6 +171,14 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         popupWindow.setOutsideTouchable(false);
         popupWindow.setFocusable(true);
         popupWindow.setAnimationStyle(R.style.PoupAnimation);
+        View sheetView = rootView.findViewById(R.id.fab_sheet);
+        View overlay = rootView.findViewById(R.id.overlay);
+        int sheetColor = getResources().getColor(R.color.colorPrimary);
+        int fabColor = getResources().getColor(R.color.colorPrimary);
+        // Initialize material sheet FAB
+        materialSheetFab = new MaterialSheetFab<>(fab, sheetView, overlay,
+                sheetColor, fabColor);
+
 
         List<String> weeks = new LinkedList<>();
         for (int i=0;i<22;i++) {
@@ -169,6 +200,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             }
         });
         try {
+            Log.i(TAG, "initView: NowWeek:"+DefaultConfig.get().getNowWeek());
             niceSpinner.setSelectedIndex(DefaultConfig.get().getNowWeek()-1);
         } catch (Exception e) {
             e.printStackTrace();
@@ -233,7 +265,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
      * @param year 年份
      * @param xuenian 学年 1或 2
      */
-    public void showKB(int week, int year, int xuenian,Map<Integer,CourseBean> courseBeanMap){
+    public void showKB(List<CourseBean> kcs,int week, int year, int xuenian,Map<Integer,CourseBean> courseBeanMap){
         leftWidth=CalculateUtil.dp2px(getActivity(),20);
         if (course_table_layout != null) {
             course_table_layout.removeAllViews();
@@ -275,7 +307,6 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         }
 
         // 添加课程信息
-        ArrayList<CourseBean> kcs = CourseBeanLab.get(getActivity()).getCourses();
         Log.i(TAG, "课程数" + kcs.size());
         int[][][] mark=new int[8][13][26];
         for(int j=0;j<8;j++) {
@@ -286,9 +317,8 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             }
         }
 
-        List<CourseBean> courseBeen=CourseBeanLab.get(getActivity().getApplicationContext()).getCourses();
         for (int i=0;i<kcs.size();i++) {
-            CourseBean kc= courseBeen.get(i);
+            CourseBean kc= kcs.get(i);
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;
             }
@@ -306,7 +336,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         }
 
         for (int i=0;i<kcs.size();i++) {
-            CourseBean kc= courseBeen.get(i);
+            CourseBean kc= kcs.get(i);
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;
             }
@@ -378,19 +408,21 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         TextView headerNameText = (TextView) drawer.findViewById(R.id.nav_header_name);
         TextView headerWeekText= (TextView) drawer.findViewById(R.id.nav_header_week);
         TextView headerXnText= (TextView) drawer.findViewById(R.id.nav_header_xuenian);
-        headerNameText.setText(DefaultConfig.get().getUserName());
-        headerWeekText.setText("第 "+DefaultConfig.get().getNowWeek()+" 周");
-        headerXnText.setText(DefaultConfig.get().getCurYear()+"年"+DefaultConfig.get().getCurXuenian()+"学期");
+        headerNameText.setText(defaultConfig.getUserName());
+        headerWeekText.setText("第 "+defaultConfig.getNowWeek()+" 周");
+        headerXnText.setText(defaultConfig.getCurYear()+"年"+defaultConfig.getCurXuenian()+"学期");
     }
 
     @Override
     public void showLoading(boolean isShow) {
         if (isShow) {
             loadingLayout.setVisibility(View.VISIBLE);
+            loadingView.setVisibility(View.VISIBLE);
             loadingView.show();
         }else {
             loadingLayout.setVisibility(View.GONE);
             loadingView.hide();
+            loadingView.setVisibility(View.GONE);
         }
     }
 
@@ -409,6 +441,22 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         pickerView.show(true);
     }
 
+    @Override
+    public void showWeekPicer(final List<String> weeks) {
+        OptionsPickerView pickerView=new OptionsPickerView.Builder(getActivity(), new OptionsPickerView.OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                int week=Integer.parseInt(weeks.get(options1).replaceAll("\\D*(\\d*)\\D*","$1"));
+                Log.i(TAG, "第"+week+"周");
+                DefaultConfig.get().setNowWeek(week);
+                niceSpinner.setSelectedIndex(options1);
+                coursePresenter.showCourse();
+            }
+        }).build();
+        pickerView.setPicker(weeks);
+        pickerView.show(true);
+    }
+
 
     @Override
     public void finishGetCourse(DefaultConfig defaultConfig,ArrayList<String> options,boolean isHistoryCourse) {
@@ -418,12 +466,14 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             coursePresenter.showCourse();
             showDrawerInfo(defaultConfig);
             showLoading(false);
+            String content="加载"+defaultConfig.getCurYear()+"学年"+defaultConfig.getCurXuenian()+"学期课表数据完成";
+            Snackbar.make(layout,content,Snackbar.LENGTH_SHORT).show();
         }else {
             niceSpinner.setSelectedIndex(defaultConfig.getNowWeek()-1);
             coursePresenter.showCourse();
-            Snackbar.make(layout,"切换至"+defaultConfig.getCurYear()+"学年"+defaultConfig.getCurXuenian()+"学期",Snackbar.LENGTH_SHORT).show();
+            String content="切换至"+defaultConfig.getCurYear()+"学年"+defaultConfig.getCurXuenian()+"学期";
+            Snackbar.make(layout,content,Snackbar.LENGTH_SHORT).show();
         }
-
     }
 
     @Override
@@ -478,7 +528,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 
     @SuppressLint("ResourceType")
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         switch (view.getId()) {
             case R.id.more_button_in_course_table:
                 coursePresenter.addOptionPicker();
@@ -488,6 +538,21 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.course_table_loading_layout:
                 Log.i(TAG, "onClick: loading中");
+                break;
+            case R.id.fab_sheet_item_refresh:
+                coursePresenter.getCurrentCourse();
+                materialSheetFab.hideSheet();
+                break;
+            case R.id.fab_sheet_item_setting:
+                coursePresenter.addWeekPicker();
+                materialSheetFab.hideSheet();
+                break;
+            case R.id.fab_sheet_item_date:
+                coursePresenter.addOptionPicker();
+                materialSheetFab.hideSheet();
+                break;
+            case R.id.fab_sheet_item_create:
+                materialSheetFab.hideSheet();
                 break;
             default:
                 coursePresenter.addPoupWindow(view.getId());
