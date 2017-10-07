@@ -4,7 +4,7 @@ apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion'25.0.0'
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.helper.west2ol.fzuhelper"
         minSdkVersion 19
