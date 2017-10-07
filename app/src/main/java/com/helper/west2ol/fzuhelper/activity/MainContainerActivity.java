@@ -27,6 +27,7 @@ import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.dao.DaoMaster;
 import com.helper.west2ol.fzuhelper.fragment.CourseTableFragment;
 import com.helper.west2ol.fzuhelper.fragment.EmptyRoomFragment;
+import com.helper.west2ol.fzuhelper.fragment.ExamFragment;
 import com.helper.west2ol.fzuhelper.fragment.GradeFragment;
 import com.helper.west2ol.fzuhelper.fragment.MathFragment;
 import com.helper.west2ol.fzuhelper.fragment.YibanFragment;
@@ -47,6 +48,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
     public CourseTableFragment courseTableFragment;
     GradeFragment gradeFragment;
     MathFragment mathFragment;
+    ExamFragment examFragment;
     YibanFragment yibanFragment;
     EmptyRoomFragment emptyRoomFragment;
 
@@ -197,11 +199,6 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
                 }
-//                courseTableFragment.setArguments(parameterToFragment);
-//                getFragmentManager().beginTransaction()
-//                        .replace(R.id.main_container , courseTableFragment)
-//                        .commit();
-//                current=courseTableFragment;
                 break;
             case R.id.item2:
                 parameterToFragment.putString("id",id);
@@ -209,22 +206,13 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                     gradeFragment = new GradeFragment();
                 }
                 switchFragment(current,gradeFragment);
-
-//                gradeFragment.setArguments(parameterToFragment);
-//                getFragmentManager().beginTransaction()
-//                        .replace(R.id.main_container , gradeFragment)
-//                        .commit();
-//                current = gradeFragment;
                 break;
-//            case R.id.item3:
-//                if (mathFragment == null) {
-//                    mathFragment = new MathFragment();
-//                }
-//                switchFragment(current,mathFragment);
-////                getFragmentManager().beginTransaction()
-////                        .replace(R.id.main_container , mathFragment)
-////                        .commit();
-//                break;
+            case R.id.item3:
+                if (examFragment == null) {
+                    examFragment = new ExamFragment();
+                }
+                switchFragment(current,examFragment);
+                break;
 //            case R.id.item4:
 //                Intent intent4 = new Intent(MainContainerActivity.this , OtherActivity.class);
 ////                intent4.putExtra("id" , id);

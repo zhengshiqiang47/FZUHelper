@@ -12,10 +12,9 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@drawable/logo"/>
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/icon_f"/>
 
     <TextView
         android:id="@+id/nav_header_name"

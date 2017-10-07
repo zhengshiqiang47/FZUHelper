@@ -48,7 +48,7 @@ dependencies {
 }
 
 greendao {
-    schemaVersion 7
+    schemaVersion 8
     daoPackage 'com.helper.west2ol.fzuhelper.dao'
     targetGenDir 'src/main/java'
 }

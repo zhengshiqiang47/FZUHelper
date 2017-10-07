@@ -39,4 +39,5 @@ public class MyFab extends FloatingActionButton implements AnimatedFab {
     public void hide() {
         setVisibility(View.INVISIBLE);
     }
+
 }

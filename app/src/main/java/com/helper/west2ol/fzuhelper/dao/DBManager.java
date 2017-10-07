@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
+import com.helper.west2ol.fzuhelper.bean.Exam;
 import com.helper.west2ol.fzuhelper.bean.FDScore;
 import com.helper.west2ol.fzuhelper.bean.User;
 
@@ -208,7 +209,54 @@ public class DBManager {
         FDScoreDao FDScoreDao = daoSession.getFDScoreDao();
         FDScoreDao.deleteAll();
     }
+    
+    //考场
 
+    public void insertExams(List<Exam> Exams) {
+        DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
+        DaoSession daoSession = daoMaster.newSession();
+        ExamDao ExamDao = daoSession.getExamDao();
+        for (Exam exam:Exams){
+            ExamDao.insert(exam);
+        }
+    }
+
+    public void insertExam(Exam Exam) {
+        DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
+        DaoSession daoSession = daoMaster.newSession();
+        ExamDao ExamDao = daoSession.getExamDao();
+        ExamDao.insert(Exam);
+    }
+
+    public void deleteExam(Exam Exam) {
+        DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
+        DaoSession daoSession = daoMaster.newSession();
+        ExamDao ExamDao = daoSession.getExamDao();
+        ExamDao.delete(Exam);
+    }
+
+    public void updateExam(Exam Exam) {
+        DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
+        DaoSession daoSession = daoMaster.newSession();
+        ExamDao ExamDao = daoSession.getExamDao();
+        ExamDao.update(Exam);
+    }
+
+    public List<Exam> queryExamList() {
+        DaoMaster daoMaster = new DaoMaster(getReadableDatabase());
+        DaoSession daoSession = daoMaster.newSession();
+        ExamDao ExamDao = daoSession.getExamDao();
+        QueryBuilder<Exam> qb = ExamDao.queryBuilder();
+        List<Exam> list = qb.list();
+        return list;
+    }
+
+    public void dropExams(){
+        DaoMaster daoMaster = new DaoMaster(getWritableDatabase());
+        DaoSession daoSession = daoMaster.newSession();
+        ExamDao ExamDao = daoSession.getExamDao();
+        ExamDao.deleteAll();
+    }
 
 
 }

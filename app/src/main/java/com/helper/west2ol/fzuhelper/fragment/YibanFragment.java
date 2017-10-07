@@ -2,6 +2,7 @@ package com.helper.west2ol.fzuhelper.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -113,6 +114,8 @@ public class YibanFragment extends Fragment implements View.OnClickListener{
                     @Override
                     public void onCompleted() {
                         yibanLoading.hide();
+                        String content="刷新成功";
+                        Snackbar.make(recyclerView,content,Snackbar.LENGTH_SHORT).show();
                     }
 
                     @Override

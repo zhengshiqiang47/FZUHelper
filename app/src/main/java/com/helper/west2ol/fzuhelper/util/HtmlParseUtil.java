@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
+import com.helper.west2ol.fzuhelper.bean.Exam;
 import com.helper.west2ol.fzuhelper.bean.FDScore;
 import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
 import com.helper.west2ol.fzuhelper.bean.User;
@@ -288,7 +289,7 @@ public class HtmlParseUtil {
 
 
 
-    public static ArrayList<FDScore> getScore(Context context){
+    public static ArrayList<FDScore> getScore(Context context){//获取成绩
         ArrayList<FDScore> tempScores = new ArrayList<>();
         ArrayList<FDScore> scores = FDScoreLB.get(context).getScores();
         if (FzuCookie.get().getExpTime() <= System.currentTimeMillis()) {
@@ -329,6 +330,37 @@ public class HtmlParseUtil {
         return tempScores;
     }
 
+    //解析考场信息
+    public static List<Exam> getExamInfo(Context context){
+        List<Exam> exams = new ArrayList<>();
+        if (StringUtil.isEmpty(FzuCookie.get().getId()) || FzuCookie.get().getExpTime() <= System.currentTimeMillis()) {
+            HttpUtil.Login(context, DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
+        }
+        String result=HttpUtil.getCookieHtml("http://59.77.226.35/student/xkjg/examination/exam_list.aspx");
+        if (result == null) {
+            return null;
+        }
+        Document document = Jsoup.parse(result);
+        Elements examElements=document.select("table[id=ContentPlaceHolder1_DataList_xxk]").select("tr[style=height:30px; border-bottom:1px solid gray; border-left:1px solid gray; vertical-align:middle;]");
+        Log.i(TAG, "getExamInfo: examList:" + examElements.size());
+        for (int i=0;i<examElements.size();i++) {
+            Element element = examElements.get(i);
+            Elements tds=element.select("td");
+            String name = tds.get(0).text();
+            String xuefen=tds.get(1).text();
+            String teacher = tds.get(2).text();
+            String address = tds.get(3).text();
+            String zuohao = tds.get(4).text();
+            Exam exam = new Exam(name, xuefen, teacher, address, zuohao);
+            exams.add(exam);
+        }
+//        DBManager manager=DBManager.getInstance(context);
+//        manager.dropExams();
+//        manager.insertExams(exams);
+        Log.i(TAG, "getExamInfo: 考场数量"+exams.size()+" "+exams.get(0).getName());
+        return exams;
+    }
+
     //解析个人信息
     public static boolean getStudentInfo(Context context){
         if (!StringUtil.isEmpty(FzuCookie.get().getId())) {
@@ -359,6 +391,7 @@ public class HtmlParseUtil {
         dbManager.updateUser(user);
         return true;
     }
+
     //解析开学时间
     public static boolean getBeginDate(String xq){
         Map<String, String> params = new HashMap<>();
@@ -429,7 +462,7 @@ public class HtmlParseUtil {
         return yibanResult.getData();
     }
 
-    public   static class YibanResult{
+    public static class YibanResult{
 
         private List<Yiban> data;
 

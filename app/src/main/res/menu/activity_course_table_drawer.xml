@@ -21,6 +21,10 @@
             <!--android:icon="@drawable/ic_others"-->
             <!--android:title="工具箱"></item>-->
         <item
+            android:id="@+id/item3"
+            android:icon="@drawable/icon_yiban"
+            android:title="考场查询"></item>
+        <item
             android:id="@+id/item5"
             android:icon="@drawable/icon_yiban"
             android:title="易班"></item>
@@ -29,25 +33,25 @@
             android:icon="@drawable/icon_room"
             android:title="空教室"></item>
     </group>
-    <group
-        android:checkableBehavior="single">
-        <item android:title="生活服务">
-            <menu>
-                <!--<item-->
-                    <!--android:id="@+id/item6"-->
-                    <!--android:icon="@drawable/ic_wheretogo"-->
-                    <!--android:title="校园导航"></item>-->
-                <!--<item-->
-                    <!--android:id="@+id/item6"-->
-                    <!--android:icon="@drawable/ic_xiaobai"-->
-                    <!--android:title="小白定位"></item>-->
-                <!--<item-->
-                    <!--android:id="@+id/item7"-->
-                    <!--android:icon="@drawable/ic_lts"-->
-                    <!--android:title="路透社"></item>-->
-            </menu>
-        </item>
-    </group>
+    <!--<group-->
+        <!--android:checkableBehavior="single">-->
+        <!--<item android:title="生活服务">-->
+            <!--<menu>-->
+                <!--&lt;!&ndash;<item&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:id="@+id/item6"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:icon="@drawable/ic_wheretogo"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:title="校园导航"></item>&ndash;&gt;-->
+                <!--&lt;!&ndash;<item&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:id="@+id/item6"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:icon="@drawable/ic_xiaobai"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:title="小白定位"></item>&ndash;&gt;-->
+                <!--&lt;!&ndash;<item&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:id="@+id/item7"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:icon="@drawable/ic_lts"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:title="路透社"></item>&ndash;&gt;-->
+            <!--</menu>-->
+        <!--</item>-->
+    <!--</group>-->
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/item8"

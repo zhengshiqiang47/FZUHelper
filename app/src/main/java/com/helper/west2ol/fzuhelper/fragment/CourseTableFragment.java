@@ -112,8 +112,6 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
     RelativeLayout course_table_layout;
     @BindView(R.id.fab)
     MyFab fab;
-    @BindView(R.id.course_table_footer)
-    Toolbar toolbar;
     @BindView(R.id.fab_sheet_item_setting)
     RelativeLayout settingBtn;
     @BindView(R.id.fab_sheet_item_refresh)
@@ -452,7 +450,10 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
                 niceSpinner.setSelectedIndex(options1);
                 coursePresenter.showCourse();
             }
-        }).build();
+        })
+                .setSelectOptions(DefaultConfig.get().getNowWeek()-1)
+                .setTitleText("当前周")
+                .build();
         pickerView.setPicker(weeks);
         pickerView.show(true);
     }

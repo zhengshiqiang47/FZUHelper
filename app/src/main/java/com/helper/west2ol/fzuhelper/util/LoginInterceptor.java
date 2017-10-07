@@ -36,6 +36,7 @@ public class LoginInterceptor implements Interceptor {
         if (cookie != null) {
             FzuCookie.get().setCookie(cookie);
             FzuCookie.get().setLastUpdateTime(System.currentTimeMillis());
+            FzuCookie.get().setExpTime(System.currentTimeMillis()+5*60*1000l);
         }
         String idStr=response.header("Location");
         if (idStr != null) {

@@ -71,15 +71,6 @@
                     android:layout_height="match_parent"/>
             </ScrollView>
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/course_table_footer"
-                android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_alignParentBottom="true"
-                android:background="@color/colorPrimary"
-                android:visibility="invisible">
-                <!-- Put view you like -->
-            </android.support.v7.widget.Toolbar>
 
         </RelativeLayout>
     </LinearLayout>
