@@ -21,7 +21,7 @@ import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Observer;
@@ -36,11 +36,11 @@ import rx.schedulers.Schedulers;
 
 public class LoginActivity extends Activity implements View.OnClickListener{
     private static final String TAG="LoginActivity";
-    @Bind(R.id.login_button)
+    @BindView(R.id.login_button)
     Button login_button;
-    @Bind(R.id.muser_editText)
+    @BindView(R.id.muser_editText)
     EditText muserEd;
-    @Bind(R.id.passwd_editText)
+    @BindView(R.id.passwd_editText)
     EditText passwdEd;
 
     private String id_1;

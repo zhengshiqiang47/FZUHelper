@@ -14,4 +14,8 @@ public class DateTest {
         HtmlParseUtil.getBeginDate(null);
         HtmlParseUtil.getBeginDate("201502");
     }
+
+    public static void testRegex() {
+
+    }
 }

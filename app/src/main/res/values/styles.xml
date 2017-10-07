@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Base.Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -49,6 +49,24 @@
     <style name="PoupAnimation">
         <item name="android:windowEnterAnimation">@anim/poupwindow_anim_enter</item>
         <item name="android:windowExitAnimation">@anim/poupwindow_anim_exit</item>
+    </style>
+    <style name="SheetLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+    <style name="SheetItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">60dp</item>
+        <item name="android:gravity">center_vertical|left</item>
+    </style>
+
+    <style name="SheetImage">
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_width">28dp</item>
+        <item name="android:layout_height">28dp</item>
+        <item name="android:layout_centerVertical">true</item>
     </style>
 
 </resources>

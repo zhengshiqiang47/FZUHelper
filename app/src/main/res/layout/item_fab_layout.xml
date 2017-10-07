@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Your FAB implementation -->
+    <com.helper.west2ol.fzuhelper.view.MyFab
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/add_button"/>
+
+    <!-- Overlay that dims the screen -->
+    <com.gordonwong.materialsheetfab.DimOverlayFrameLayout
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Circular reveal container for the sheet -->
+    <io.codetail.widget.RevealLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="end|bottom"
+        android:orientation="vertical">
+
+        <!-- Sheet that contains your items -->
+        <android.support.v7.widget.CardView
+            android:id="@+id/fab_sheet"
+            android:layout_width="160dp"
+            android:layout_height="250dp">
+
+            <!-- TODO: Put your sheet items here -->
+            <!-- Sheet items -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <RelativeLayout
+                    android:id="@+id/fab_sheet_item_refresh"
+                    style="@style/SheetLayout">
+                    <ImageView
+                        style="@style/SheetImage"
+                        android:src="@drawable/ic_refresh"
+                        />
+                    <TextView
+
+                        android:textColor="@color/colorWhite"
+                        style="@style/SheetItem"
+                        android:text="刷新" />
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:id="@+id/fab_sheet_item_setting"
+                    style="@style/SheetLayout">
+                    <ImageView
+                        style="@style/SheetImage"
+                        android:src="@drawable/icon_settings"
+                        />
+                    <TextView
+                        android:textColor="@color/colorWhite"
+                        style="@style/SheetItem"
+                        android:text="设置当前周" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/fab_sheet_item_date"
+                    style="@style/SheetLayout">
+                    <ImageView
+                        style="@style/SheetImage"
+                        android:src="@drawable/icon_date"
+                        />
+                    <TextView
+                        android:textColor="@color/colorWhite"
+                        style="@style/SheetItem"
+                        android:text="切换学期" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/fab_sheet_item_create"
+                    android:background="@color/colorWhite"
+                    style="@style/SheetLayout">
+                    <ImageView
+                        style="@style/SheetImage"
+                        android:src="@drawable/icon_create_blue"
+                        />
+                    <TextView
+                        android:textColor="@color/colorPrimary"
+                        style="@style/SheetItem"
+                        android:text="添加课程" />
+                </RelativeLayout>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+    </io.codetail.widget.RevealLinearLayout>
+
+</RelativeLayout>

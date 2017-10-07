@@ -1,7 +1,7 @@
 package com.helper.west2ol.fzuhelper.activity;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -114,7 +114,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         if (isFirst&&hasFocus) {
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_container , courseTableFragment)
                     .commit();
             isFirst=false;
@@ -274,7 +274,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
         saveObjectUtils.setObject("config", config);
         CourseBeanLab.get(this).getCourses().clear();
         ActivityController.finashAll();
-        Intent intent = new Intent(MainContainerActivity.this , LoginActivity.class);
+        Intent intent = new Intent(MainContainerActivity.this , LoginActivity_1.class);
         startActivity(intent);
         finish();
     }
@@ -282,9 +282,9 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
     private void switchFragment(Fragment from, Fragment to){
         if(current !=to){
             if(!to.isAdded()){
-                getFragmentManager().beginTransaction().add(R.id.main_container,to).hide(from).show(to).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.main_container,to).hide(from).show(to).commit();
             }else {
-                getFragmentManager().beginTransaction().hide(from).show(to).commit();
+                getSupportFragmentManager().beginTransaction().hide(from).show(to).commit();
             }
             current=to;
         }

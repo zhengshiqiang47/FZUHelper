@@ -1,6 +1,7 @@
 package com.helper.west2ol.fzuhelper.fragment;
 
-import android.app.Fragment;
+import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -10,14 +11,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
@@ -28,22 +34,29 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
 import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
+import com.helper.west2ol.fzuhelper.presenter.CourseTableContact;
+import com.helper.west2ol.fzuhelper.presenter.CourseTablePresenterImpl;
+import com.helper.west2ol.fzuhelper.util.CalculateUtil;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.FzuCookie;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
 import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
+import com.helper.west2ol.fzuhelper.view.MyFab;
 import com.lcodecore.tkrefreshlayout.header.SinaRefreshView;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.angmarch.views.NiceSpinner;
 
@@ -55,7 +68,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscriber;
@@ -66,133 +79,90 @@ import rx.schedulers.Schedulers;
  * Created by Administrator on 2016/10/20.
  */
 
-public class CourseTableFragment extends Fragment implements View.OnClickListener{
-
+public class CourseTableFragment extends Fragment implements View.OnClickListener,CourseTableContact.CourseView{
     private static final String TAG = "CourseTableFragment";
-    /** 第一个无内容的格子 */
-    protected TextView empty;
-    /** 星期一的格子 */
-    protected TextView monColum;
-    /** 星期二的格子 */
-    protected TextView tueColum;
-    /** 星期三的格子 */
-    protected TextView wedColum;
-    /** 星期四的格子 */
-    protected TextView thrusColum;
-    /** 星期五的格子 */
-    protected TextView friColum;
-    /** 星期六的格子 */
-    protected TextView satColum;
-    /** 星期日的格子 */
-    protected TextView sunColum;
-    /** 课程表body部分布局 */
-    protected RelativeLayout course_table_layout;
-    /** 屏幕宽度 **/
-    protected int screenWidth;
-    /** 课程格子平均宽度 **/
-    protected int aveWidth;
 
+    protected TextView empty;/** 第一个无内容的格子 */
     int[] background = {
-            R.drawable.course_bg1,
-            R.drawable.course_bg2,
-            R.drawable.course_bg3,
-            R.drawable.course_bg4,
-            R.drawable.course_bg5,
-            R.drawable.course_bg6,
-            R.drawable.course_bg7,
-            R.drawable.course_bg8,
-            R.drawable.course_bg9,
-            R.drawable.course_bg10,
-            R.drawable.course_bg11,
-            R.drawable.course_bg12,
-            R.drawable.course_bg13,
-            R.drawable.course_bg14,
-            R.drawable.course_bg15,
-            R.drawable.course_bg16,
-            R.drawable.course_bg1,
-            R.drawable.course_bg2,
-            R.drawable.course_bg3,
-            R.drawable.course_bg4,
-            R.drawable.course_bg5,
-            R.drawable.course_bg6,
-            R.drawable.course_bg7,
-            R.drawable.course_bg8,
-            R.drawable.course_bg9,
-            R.drawable.course_bg10,
-            R.drawable.course_bg11,
-            R.drawable.course_bg12,
-            R.drawable.course_bg13,
-            R.drawable.course_bg14,
-            R.drawable.course_bg15,
-            R.drawable.course_bg16,
+            R.drawable.course_bg1, R.drawable.course_bg2, R.drawable.course_bg3, R.drawable.course_bg4,
+            R.drawable.course_bg5, R.drawable.course_bg6, R.drawable.course_bg7, R.drawable.course_bg8,
+            R.drawable.course_bg9, R.drawable.course_bg10, R.drawable.course_bg11, R.drawable.course_bg12,
+            R.drawable.course_bg13, R.drawable.course_bg14, R.drawable.course_bg15, R.drawable.course_bg16,
+            R.drawable.course_bg1, R.drawable.course_bg2, R.drawable.course_bg3, R.drawable.course_bg4,
+            R.drawable.course_bg5, R.drawable.course_bg6, R.drawable.course_bg7, R.drawable.course_bg8,
+            R.drawable.course_bg9, R.drawable.course_bg10, R.drawable.course_bg11, R.drawable.course_bg12,
+            R.drawable.course_bg13, R.drawable.course_bg14, R.drawable.course_bg15, R.drawable.course_bg16,
     };
 
+    Button menu_button_in_course_table;
+    @BindView(R.id.more_button_in_course_table)
+    Button moreButton;
+    @BindView(R.id.course_table_nice_spinner)
+    NiceSpinner niceSpinner;
+    @BindView(R.id.course_layout)
+    LinearLayout layout;
+    @BindView(R.id.course_table_loading)
+    AVLoadingIndicatorView loadingView;
+    @BindView(R.id.course_table_loading_layout)
+    RelativeLayout loadingLayout;
+    @BindView(R.id.weekday_layout)
+    RelativeLayout weekLayout;
+    /** 课程表body部分布局 */
+    @BindView(R.id.test_course_rl)
+    RelativeLayout course_table_layout;
+    @BindView(R.id.fab)
+    MyFab fab;
+    @BindView(R.id.course_table_footer)
+    Toolbar toolbar;
+    @BindView(R.id.fab_sheet_item_setting)
+    RelativeLayout settingBtn;
+    @BindView(R.id.fab_sheet_item_refresh)
+    RelativeLayout refreshBtn;
+    @BindView(R.id.fab_sheet_item_create)
+    RelativeLayout createBtn;
+    @BindView(R.id.fab_sheet_item_date)
+    RelativeLayout dateBtn;
 
     private View view;
-    Button menu_button_in_course_table;
-    @Bind(R.id.more_button_in_course_table)
-    Button moreButton;
-//    @Bind(R.id.course_table_spinner)
-//    Spinner spinner;
-    @Bind(R.id.course_table_nice_spinner)
-    NiceSpinner niceSpinner;
 
     PopupWindow popupWindow;
     DrawerLayout drawer;
+    MaterialSheetFab materialSheetFab;
 
-    private boolean isRefresh=false;
-    ArrayList<String> options = new ArrayList<>();
-    private int leftWidth=0;//第一列所占宽度
-    Map<Integer,CourseBean> courseBeanMap;
-    SaveObjectUtils saveObjectUtils;
+    private int leftWidth=0;//第一列(课表序号列)所占宽度
+
     private CourseTableFragment fragment;
+    private CourseTableContact.CoursePresenter coursePresenter;
 
     @Override
     public void onCreate(Bundle savedIntenceState){
         super.onCreate(savedIntenceState);
         fragment=this;
+        coursePresenter=new CourseTablePresenterImpl(this);
     }
     @Override
-    public View onCreateView(final LayoutInflater inflater , ViewGroup container , Bundle savedIntanceState){
+    public View onCreateView(LayoutInflater inflater , ViewGroup container , Bundle savedIntanceState){
         View rootView = inflater.inflate(R.layout.fragment_course_table , container , false);
-        view=rootView;
         ButterKnife.bind(this, rootView);
-        saveObjectUtils=new SaveObjectUtils(getActivity(),"config");
-        FloatingActionButton add = (FloatingActionButton) rootView.findViewById(R.id.more_button_in_coursetable);
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("CourseTable" , "onClick");
-                // add onClick
-            }
-        });
-        drawer = (DrawerLayout)getActivity().findViewById(R.id.drawer_layout);
-        menu_button_in_course_table = (Button)rootView.findViewById(R.id.menu_button_in_course_table);
-        menu_button_in_course_table.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawer.openDrawer(Gravity.LEFT);
-            }
-        });
-        moreButton.setOnClickListener(this);
-        if (CourseBeanLab.get(this.getActivity()).getCourses() == null||CourseBeanLab.get(this.getActivity()).getCourses().size()<=1) {
-            getCourse();
-        }
-        initData();
-        initView();
+        view=rootView;
+        initView(rootView);
+        coursePresenter.start();
         Log.i("CourseTable", "初始化完成");
         return rootView;
     }
 
-    private void initView(){
-        if (DefaultConfig.get().getUserName()!=null&&!DefaultConfig.get().getUserName().isEmpty()) {
-            TextView headerNameText = (TextView) drawer.findViewById(R.id.nav_header_name);
-            TextView headerWeekText= (TextView) drawer.findViewById(R.id.nav_header_week);
-            TextView headerXnText= (TextView) drawer.findViewById(R.id.nav_header_xuenian);
-            headerNameText.setText(DefaultConfig.get().getUserName());
-            headerWeekText.setText("第 "+DefaultConfig.get().getNowWeek()+" 周");
-            headerXnText.setText(DefaultConfig.get().getCurYear()+"年"+DefaultConfig.get().getCurXuenian()+"学期");
-        }
+    private void initView(View rootView){
+        loadingView.hide();
+        drawer = (DrawerLayout)getActivity().findViewById(R.id.drawer_layout);
+        menu_button_in_course_table = (Button)rootView.findViewById(R.id.menu_button_in_course_table);
+        fab.setOnClickListener(this);
+        menu_button_in_course_table.setOnClickListener(this);
+        moreButton.setOnClickListener(this);
+        loadingLayout.setOnClickListener(this);
+        refreshBtn.setOnClickListener(this);
+        settingBtn.setOnClickListener(this);
+        dateBtn.setOnClickListener(this);
+        createBtn.setOnClickListener(this);
         popupWindow= new PopupWindow(getActivity());
         popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -201,115 +171,19 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         popupWindow.setOutsideTouchable(false);
         popupWindow.setFocusable(true);
         popupWindow.setAnimationStyle(R.style.PoupAnimation);
-        DefaultConfig defaultConfig=DefaultConfig.get();
-        showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
-        //        refreshLayout.setHeaderView(refreshView);
-//        refreshLayout.setOnRefreshListener(new TwinklingRefreshLayout.OnRefreshListener(){
-//            @Override
-//            public void onRefresh(final TwinklingRefreshLayout refreshLayout) {
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        try {
-//                            Thread.sleep(500);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                        getActivity().runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                refreshLayout.finishRefreshing();
-//                            }
-//                        });
-//                    }
-//                }).start();
-//            }
-//        });
-//        refreshLayout.setEnableLoadmore(false);
-//        refreshLayout.setEnableOverlayRefreshView(true);
-//        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
-//                R.color.colorRed,
-//                R.color.colorAccent,
-//                R.color.colorBackground);
-//        swipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
-
-    }
-
-    private void getCourse(){
-        Log.i(TAG,"getCourse");
-        moreButton.setOnClickListener(null);
-        Observable.create(new Observable.OnSubscribe<Object>() {
-            @Override
-            public void call(Subscriber<? super Object> subscriber) {
-                HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),false);
-                HtmlParseUtil.getStudentInfo(getActivity());
-                HtmlParseUtil.getBeginDate(null);
-                HtmlParseUtil.getDate();
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
-            @Override
-            public void onCompleted() {
-                DefaultConfig defaultConfig=DefaultConfig.get();
-                FzuCookie fzuCookie=FzuCookie.get();
-                options=DefaultConfig.get().getOptions();
-                moreButton.setOnClickListener(fragment);
-                saveObjectUtils.setObject("config", defaultConfig);
-                saveObjectUtils.setObject("cookie",fzuCookie);
-                Log.i(TAG,defaultConfig.getCurYear()+" "+defaultConfig.getCurXuenian()+" "+defaultConfig.getNowWeek()+" "+defaultConfig.getUserAccount());
-//                spinner.setSelection(defaultConfig.getNowWeek()-1);
-                niceSpinner.setSelectedIndex(defaultConfig.getNowWeek()-1);
-                showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
-                TextView headerNameText = (TextView) drawer.findViewById(R.id.nav_header_name);
-                TextView headerWeekText= (TextView) drawer.findViewById(R.id.nav_header_week);
-                TextView headerXnText= (TextView) drawer.findViewById(R.id.nav_header_xuenian);
-                headerNameText.setText(DefaultConfig.get().getUserName());
-                headerWeekText.setText("第 "+DefaultConfig.get().getNowWeek()+" 周");
-                headerXnText.setText(DefaultConfig.get().getCurYear()+"年"+DefaultConfig.get().getCurXuenian()+"学期");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Object o) {
-
-            }
-        });
-    }
+        View sheetView = rootView.findViewById(R.id.fab_sheet);
+        View overlay = rootView.findViewById(R.id.overlay);
+        int sheetColor = getResources().getColor(R.color.colorPrimary);
+        int fabColor = getResources().getColor(R.color.colorPrimary);
+        // Initialize material sheet FAB
+        materialSheetFab = new MaterialSheetFab<>(fab, sheetView, overlay,
+                sheetColor, fabColor);
 
 
-
-
-    private void initData(){
-        options=DefaultConfig.get().getOptions();
-        Log.i(TAG, "isNull:"+(options == null));
         List<String> weeks = new LinkedList<>();
         for (int i=0;i<22;i++) {
             weeks.add("第 "+(i+1)+" 周") ;
         }
-        courseBeanMap = new HashMap<>();
-        ArrayAdapter<String> spinnerAdapter=new ArrayAdapter<String>(getActivity(), R.layout.item_week_spinner_show, weeks);
-
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        spinner.setAdapter(spinnerAdapter);
-//
-//        spinner.setSelection(DefaultConfig.get().getNowWeek()-1);
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                System.out.println("position:"+position);
-//                DefaultConfig.get().setNowWeek(position+1);
-//                showKB(position+1,DefaultConfig.get().getCurYear(),DefaultConfig.get().getCurXuenian());
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
         niceSpinner.attachDataSource(weeks);
         niceSpinner.setTextColor(Color.WHITE);
         niceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -317,7 +191,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 System.out.println("position:"+position);
                 DefaultConfig.get().setNowWeek(position+1);
-                showKB(position+1,DefaultConfig.get().getCurYear(),DefaultConfig.get().getCurXuenian());
+                coursePresenter.switchWeek(position+1);
             }
 
             @Override
@@ -326,101 +200,63 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             }
         });
         try {
+            Log.i(TAG, "initView: NowWeek:"+DefaultConfig.get().getNowWeek());
             niceSpinner.setSelectedIndex(DefaultConfig.get().getNowWeek()-1);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
     private void initKB(View v){
         empty = (TextView) v.findViewById(R.id.test_empty);
-        monColum = (TextView) v.findViewById(R.id.test_monday_course);
-        tueColum = (TextView) v.findViewById(R.id.test_tuesday_course);
-        wedColum = (TextView) v.findViewById(R.id.test_wednesday_course);
-        thrusColum = (TextView) v.findViewById(R.id.test_thursday_course);
-        friColum = (TextView) v.findViewById(R.id.test_friday_course);
-        satColum  = (TextView) v.findViewById(R.id.test_saturday_course);
-        sunColum = (TextView) v.findViewById(R.id.test_sunday_course);
-        course_table_layout = (RelativeLayout) v.findViewById(R.id.test_course_rl);
+        weekLayout.removeAllViews();
+        DisplayMetrics dm = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels-leftWidth;//屏幕宽度
+        int aveWidth = width / 7;//平均宽度
+        for (int i=1;i<=7;i++) {
+            //相对布局参数
+            RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(aveWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+            rp.leftMargin=(i-1)*aveWidth-CalculateUtil.dp2px(getActivity(),2);
+            rp.topMargin =5;
+
+            TextView tx = new TextView(getActivity());
+            tx.setGravity(Gravity.CENTER);
+            tx.setId((i - 1) * 8  + 1);
+            tx.setSingleLine(true);
+            //设置周数的序号（星期一到星期日）
+            tx.setText("周"+CalculateUtil.getWeekChinese(i));
+            tx.setTextSize(12);
+            //设置他们的相对位置
+            tx.setTextColor(getResources().getColor(R.color.colorBlack));
+            tx.setLayoutParams(rp);
+            weekLayout.addView(tx);
+        }
+
         int curWeek=DefaultConfig.get().getNowWeek();
         long beginDate=DefaultConfig.get().getBeginDate();
         Calendar calendar=Calendar.getInstance();
         calendar.setTimeInMillis(beginDate);
         calendar.add(Calendar.WEEK_OF_MONTH,+curWeek-1);
-        System.out.println("");
-//        calendar.add(Calendar.DAY_OF_WEEK,-calendar.get(Calendar.DAY_OF_WEEK)+1);
-        //设置课表对应日期，这样写万不得已，有空重构！！！
-        int month=calendar.get(Calendar.MONTH)+1;
-        int day=calendar.get(Calendar.DAY_OF_MONTH);
-        monColum.setText(month+"-"+day);
-        calendar.add(Calendar.DAY_OF_MONTH,1);
-        month=calendar.get(Calendar.MONTH)+1;
-        day=calendar.get(Calendar.DAY_OF_MONTH);
-        tueColum.setText(month+"-"+day);
-        calendar.add(Calendar.DAY_OF_MONTH,1);
-        month=calendar.get(Calendar.MONTH)+1;
-        day=calendar.get(Calendar.DAY_OF_MONTH);
-        wedColum.setText(month+"-"+day);
-        calendar.add(Calendar.DAY_OF_MONTH,1);
-        month=calendar.get(Calendar.MONTH)+1;
-        day=calendar.get(Calendar.DAY_OF_MONTH);
-        thrusColum.setText(month+"-"+day);
-        calendar.add(Calendar.DAY_OF_MONTH,1);
-        month=calendar.get(Calendar.MONTH)+1;
-        day=calendar.get(Calendar.DAY_OF_MONTH);
-        friColum.setText(month+"-"+day);
-        calendar.add(Calendar.DAY_OF_MONTH,1);
-        month=calendar.get(Calendar.MONTH)+1;
-        day=calendar.get(Calendar.DAY_OF_MONTH);
-        satColum.setText(month+"-"+day);
-        calendar.add(Calendar.DAY_OF_MONTH,1);
-        month=calendar.get(Calendar.MONTH)+1;
-        day=calendar.get(Calendar.DAY_OF_MONTH);
-        sunColum.setText(month+"-"+day);
-        SinaRefreshView refreshView = new SinaRefreshView(getActivity());
-
-        DisplayMetrics dm = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-        //屏幕宽度
-        int width = dm.widthPixels;
-        //平均宽度
-        int aveWidth = width / 7;
-        //第一个空白格子设置为25宽
-        this.screenWidth = width;
-        this.aveWidth = aveWidth;
-
-        int height = dm.heightPixels;
-        int gridHeight = height / 11;
-        for(int i = 1; i <= 11; i ++) {
-            //i为行,j为列
-            for (int j = 1; j <= 8; j++) {
-                TextView tx = new TextView(getActivity().getApplicationContext());
-                tx.setId((i - 1) * 8 + j);
-                //除了最后一列，都使用course_text_view_bg背景（最后一列没有右边框）
-                //相对布局参数
-                RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(aveWidth * 33 / 32 + 1, gridHeight);
-                //文字对齐方式
-                tx.setGravity(Gravity.CENTER);
-                if (j == 1) {
-                    tx.setText(i+"");
-                    rp.width = aveWidth * 2 / 5;
-
-                    leftWidth=rp.width;
-                    //设置他们的相对位置
-                    if (i == 1)
-                        rp.addRule(RelativeLayout.BELOW, empty.getId());
-                    else
-                        rp.addRule(RelativeLayout.BELOW, (i - 1) * 8);
-                    if((i-1)%4==0&&i>=2){
-                        rp.topMargin=gridHeight/4;
-                    }
-                }
-                tx.setTextColor(getResources().getColor(R.color.colorBlack));
-                tx.setLayoutParams(rp);
-                course_table_layout.addView(tx);
-            }
+        for (int i = 1; i <= 7; i++) {
+            int month=calendar.get(Calendar.MONTH)+1;
+            int day=calendar.get(Calendar.DAY_OF_MONTH);
+            calendar.add(Calendar.DAY_OF_MONTH,1);
+            RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(aveWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+            rp.leftMargin=(i-1)*aveWidth-CalculateUtil.dp2px(getActivity(),2);
+            rp.addRule(RelativeLayout.BELOW,(i - 1) * 8  + 1);
+            TextView tx = new TextView(getActivity());
+            tx.setGravity(Gravity.CENTER);
+            tx.setSingleLine(true);
+            //设置周数的序号（星期一到星期日）
+            tx.setText(month+"-"+day);
+            tx.setTextSize(12);
+            //设置他们的相对位置
+            tx.setTextColor(getResources().getColor(R.color.colorBlack));
+            tx.setLayoutParams(rp);
+            weekLayout.addView(tx);
         }
+
     }
 
     /**
@@ -429,7 +265,8 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
      * @param year 年份
      * @param xuenian 学年 1或 2
      */
-    public void showKB(int week, int year, int xuenian){
+    public void showKB(List<CourseBean> kcs,int week, int year, int xuenian,Map<Integer,CourseBean> courseBeanMap){
+        leftWidth=CalculateUtil.dp2px(getActivity(),20);
         if (course_table_layout != null) {
             course_table_layout.removeAllViews();
         }
@@ -438,46 +275,38 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         //屏幕宽度
-        int width = dm.widthPixels;
+        int width = dm.widthPixels-leftWidth;
         //平均宽度
-        int aveWidth = (width-leftWidth-50) / 7;
+        int aveWidth = (width) / 7;
         //第一个空白格子设置为25宽
-        screenWidth = width;
-        aveWidth = aveWidth;
         int height = dm.heightPixels;
+        int gridHeight = height / 11;
 
-        int gridHeight = height / 12;
         //设置课表界面
-        //动态生成12 * maxCourseNum个textview
-        for(int i = 1; i <= 12; i ++){
-            //i为行,j为列
-            for(int j = 2; j <= 8; j ++){
-                TextView tx = new TextView(getActivity().getApplicationContext());
-                tx.setId((i - 1) * 8  + j);
-                //相对布局参数
-                RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(aveWidth * 33 / 32 + 1, gridHeight);
-                //文字对齐方式
-                tx.setGravity(Gravity.CENTER);
-                //如果是第一列，需要设置课的序号（1 到 12）
-                if (j == 1) {
-                    tx.setText(i+"");
-                    rp.width = aveWidth * 3 / 4;
-                    //设置他们的相对位置
-                    if (i == 1)
-                        rp.addRule(RelativeLayout.BELOW, empty.getId());
-                    else
-                        rp.addRule(RelativeLayout.BELOW, (i - 1) * 8);
-                }
-                rp.addRule(RelativeLayout.RIGHT_OF, (i - 1) * 8  + j - 1);
-                rp.addRule(RelativeLayout.ALIGN_TOP, (i - 1) * 8  + j - +1);
-                tx.setLayoutParams(rp);
-                course_table_layout.addView(tx);
+        //动态生成11 * maxCourseNum个textview
+        for(int i = 1; i <= 11; i ++){
+            TextView tx = new TextView(getActivity());
+            tx.setId((i - 1) * 8  + 1);
+            //相对布局参数
+            RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(aveWidth, gridHeight);
+            tx.setGravity(Gravity.CENTER);
+//          设置课的序号（1 到 12）
+            tx.setText(i+"");
+            rp.width = leftWidth;
+            //设置他们的相对位置
+            if (i == 1)
+                rp.addRule(RelativeLayout.BELOW, empty.getId());
+            else
+                rp.addRule(RelativeLayout.BELOW, (i - 2) * 8+1);
+            if((i-1)%4==0&&i>=2){
+                rp.topMargin=gridHeight/4;
             }
+            tx.setTextColor(getResources().getColor(R.color.colorBlack));
+            tx.setLayoutParams(rp);
+            course_table_layout.addView(tx);
         }
-        //课表颜色背景
 
         // 添加课程信息
-        ArrayList<CourseBean> kcs = CourseBeanLab.get(getActivity().getApplicationContext()).getCourses();
         Log.i(TAG, "课程数" + kcs.size());
         int[][][] mark=new int[8][13][26];
         for(int j=0;j<8;j++) {
@@ -488,9 +317,8 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             }
         }
 
-        List<CourseBean> courseBeen=CourseBeanLab.get(getActivity().getApplicationContext()).getCourses();
         for (int i=0;i<kcs.size();i++) {
-            CourseBean kc= courseBeen.get(i);
+            CourseBean kc= kcs.get(i);
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;
             }
@@ -508,11 +336,11 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         }
 
         for (int i=0;i<kcs.size();i++) {
-            CourseBean kc= courseBeen.get(i);
+            CourseBean kc= kcs.get(i);
             if(kc.getKcXuenian() !=xuenian||kc.getKcYear()!=year){
                 continue;
             }
-            final TextView courseInfo = new TextView(getActivity());
+            TextView courseInfo = new TextView(getActivity());
             courseInfo.setId(courseBeanMap.size()+100);
             String name=kc.getKcName();
 
@@ -524,16 +352,13 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             courseInfo.setText(name+"\n\n"+kc.getKcLocation());
             //该textview的高度根据其节数的跨度来设置
             int timecount = Math.abs(kc.getKcEndTime()-kc.getKcStartTime()+1) ;
-            RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(aveWidth * 31 / 32, (gridHeight - 5) * timecount +timecount/4*5);
+            RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(aveWidth-8, (gridHeight - 5) * timecount +timecount/4*5);
             //textview的位置由课程开始节数和上课的时间（day of week）确定
             rlp.topMargin = 5 + (kc.getKcStartTime()- 1) * gridHeight+(kc.getKcStartTime()/4*(gridHeight/4));
-            rlp.leftMargin = 2;
-            // 偏移由这节课是星期几决定
-            rlp.addRule(RelativeLayout.RIGHT_OF, kc.getKcWeekend());
-            //字体居中
+            rlp.leftMargin = leftWidth+(kc.getKcWeekend()-1)*(aveWidth); // 偏移由这节课是星期几决定
+//          rlp.addRule(RelativeLayout.RIGHT_OF, kc.getKcWeekend());
             courseInfo.setGravity(Gravity.CENTER);
             // 设置一种背景 根据当前周数设定
-
             if(kc.getKcStartWeek()<=week&&kc.getKcEndWeek()>=week){
                 if(kc.isKcIsSingle()&&week%2==1){
                     for(int j=kc.getKcStartTime();j<=kc.getKcEndTime();j++) {
@@ -549,9 +374,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
                     courseInfo.setBackgroundResource(background[kc.getKcBackgroundId()]);
                     courseInfo.getBackground().setAlpha(200);
                 }
-
             }
-
             courseInfo.setTextColor(Color.WHITE);
             if(kc.getKcStartWeek()>week||kc.getKcEndWeek()<week||(!kc.isKcIsDouble()&&week%2==0)||(!kc.isKcIsSingle()&&week%2==1)){
                 int flag=0;
@@ -575,50 +398,90 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
             }
             courseInfo.setTextSize(12);
             courseInfo.setLayoutParams(rlp);
-            Log.i(TAG,courseInfo.getId()+" "+kc.getKcName());
             courseBeanMap.put(courseInfo.getId(),kc);
-            //设置不透明度
             course_table_layout.addView(courseInfo);
         }
     }
 
-    private void refreshDate(){
-        CourseBeanLab.get(getActivity()).getCourses().clear();
-        FDScoreLB.get(getActivity()).getScores().clear();
-//        KCLB.get(getActivity()).getKcs().clear();
-//        FDScoreLB.get(getActivity()).getScores().clear();
-//        String Xuehao = getActivity().getSharedPreferences("userinfo", Context.MODE_PRIVATE).getString("passwd","");
-//        Log.i("KBFragment", "密码" +).getSharedPreferences("userinfo", Context.MODE_PRIVATE).getString("username", "");
-//        String Passwd = getActivity( Passwd);
-//        Log.i("KBFragment", "学号" + UserInformation.get(getActivity()).getXuehao());
-//        HtmlAnalyze.getScore(getActivity(), Xuehao, Passwd);
-        HtmlParseUtil.getCurrentCourse(getActivity().getApplicationContext(),true);
+    @Override
+    public void showDrawerInfo(DefaultConfig defaultConfig) {
+        TextView headerNameText = (TextView) drawer.findViewById(R.id.nav_header_name);
+        TextView headerWeekText= (TextView) drawer.findViewById(R.id.nav_header_week);
+        TextView headerXnText= (TextView) drawer.findViewById(R.id.nav_header_xuenian);
+        headerNameText.setText(defaultConfig.getUserName());
+        headerWeekText.setText("第 "+defaultConfig.getNowWeek()+" 周");
+        headerXnText.setText(defaultConfig.getCurYear()+"年"+defaultConfig.getCurXuenian()+"学期");
     }
 
     @Override
-    public void onClick(View view) {
-        if (view.getId()<100||view.getId()>200){
-            switch (view.getId()) {
-                case R.id.more_button_in_course_table:
-                    OptionsPickerView pickerView=new OptionsPickerView.Builder(getActivity(), new OptionsPickerView.OnOptionsSelectListener() {
-                        @Override
-                        public void onOptionsSelect(int options1, int options2, int options3, View v) {
-                            Log.i(TAG, options.get(options1));
-                            getHistoryCourse(options.get(options1));
-                        }
-                    }).build();
-                    pickerView.setPicker(options);
-                    pickerView.show(true);
-                    break;
-            }
-            return;
+    public void showLoading(boolean isShow) {
+        if (isShow) {
+            loadingLayout.setVisibility(View.VISIBLE);
+            loadingView.setVisibility(View.VISIBLE);
+            loadingView.show();
+        }else {
+            loadingLayout.setVisibility(View.GONE);
+            loadingView.hide();
+            loadingView.setVisibility(View.GONE);
         }
-        popupWindow(view.getId());
     }
 
-    private void popupWindow(int viewId){
-        CourseBean courseBean=courseBeanMap.get(viewId);
-        Log.i(TAG, "name：" + courseBean.getKcName());
+    @Override
+    public void showOptionPicker(final ArrayList<String> options) {
+        OptionsPickerView pickerView=new OptionsPickerView.Builder(getActivity(), new OptionsPickerView.OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                Log.i(TAG, options.get(options1));
+                coursePresenter.getHistoryCourse(options.get(options1));
+                DefaultConfig.get().setCurXuenian(Integer.parseInt(options.get(options1).substring(4,6)));
+                DefaultConfig.get().setCurYear(Integer.parseInt(options.get(options2).substring(0,4)));
+            }
+        }).build();
+        pickerView.setPicker(options);
+        pickerView.show(true);
+    }
+
+    @Override
+    public void showWeekPicer(final List<String> weeks) {
+        OptionsPickerView pickerView=new OptionsPickerView.Builder(getActivity(), new OptionsPickerView.OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int options1, int options2, int options3, View v) {
+                int week=Integer.parseInt(weeks.get(options1).replaceAll("\\D*(\\d*)\\D*","$1"));
+                Log.i(TAG, "第"+week+"周");
+                DefaultConfig.get().setNowWeek(week);
+                niceSpinner.setSelectedIndex(options1);
+                coursePresenter.showCourse();
+            }
+        }).build();
+        pickerView.setPicker(weeks);
+        pickerView.show(true);
+    }
+
+
+    @Override
+    public void finishGetCourse(DefaultConfig defaultConfig,ArrayList<String> options,boolean isHistoryCourse) {
+        if (!isHistoryCourse) {
+            moreButton.setOnClickListener(fragment);
+            niceSpinner.setSelectedIndex(defaultConfig.getNowWeek()-1);
+            coursePresenter.showCourse();
+            showDrawerInfo(defaultConfig);
+            showLoading(false);
+            String content="加载"+defaultConfig.getCurYear()+"学年"+defaultConfig.getCurXuenian()+"学期课表数据完成";
+            Snackbar.make(layout,content,Snackbar.LENGTH_SHORT).show();
+        }else {
+            niceSpinner.setSelectedIndex(defaultConfig.getNowWeek()-1);
+            coursePresenter.showCourse();
+            String content="切换至"+defaultConfig.getCurYear()+"学年"+defaultConfig.getCurXuenian()+"学期";
+            Snackbar.make(layout,content,Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public Context getParentActivity() {
+        return getActivity();
+    }
+
+    public void popupWindow(int viewId,CourseBean courseBean){
         WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
         lp.alpha =0.5f; //0.0-1.0
         getActivity().getWindow().setAttributes(lp);
@@ -657,40 +520,42 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         titleLayout.startAnimation(scaleAnimation);
     }
 
-    private void getHistoryCourse(final String xueNian){
-        Log.i(TAG,"getHistoryCourse");
-        Observable.create(new Observable.OnSubscribe<Object>() {
-            @Override
-            public void call(Subscriber<? super Object> subscriber) {
-                HtmlParseUtil.getHistoryCourse(getActivity().getApplicationContext(),xueNian);
-                HtmlParseUtil.getBeginDate(xueNian);
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber() {
-            @Override
-            public void onCompleted() {
-                DefaultConfig defaultConfig=DefaultConfig.get();
-                defaultConfig.setCurYear(Integer.parseInt(xueNian.substring(0,4)));
-                defaultConfig.setCurXuenian(Integer.parseInt(xueNian.substring(4,6)));
-                defaultConfig.setNowWeek(1);
-                FzuCookie fzuCookie=FzuCookie.get();
-                saveObjectUtils.setObject("config", defaultConfig);
-                saveObjectUtils.setObject("cookie",fzuCookie);
-                Log.i(TAG,defaultConfig.getCurYear()+" "+defaultConfig.getCurXuenian()+" "+defaultConfig.getNowWeek()+" "+defaultConfig.getUserAccount());
-//                spinner.setSelection(defaultConfig.getNowWeek()-1);
-                niceSpinner.setSelectedIndex(defaultConfig.getNowWeek()-1);
-                showKB(defaultConfig.getNowWeek(), defaultConfig.getCurYear(), defaultConfig.getCurXuenian());
-            }
 
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-            }
+    @Override
+    public void setPresenter(CourseTableContact.CoursePresenter presenter) {
+        this.coursePresenter=presenter;
+    }
 
-            @Override
-            public void onNext(Object o) {
-
-            }
-        });
+    @SuppressLint("ResourceType")
+    @Override
+    public void onClick(final View view) {
+        switch (view.getId()) {
+            case R.id.more_button_in_course_table:
+                coursePresenter.addOptionPicker();
+                break;
+            case R.id.menu_button_in_course_table:
+                drawer.openDrawer(Gravity.LEFT);
+                break;
+            case R.id.course_table_loading_layout:
+                Log.i(TAG, "onClick: loading中");
+                break;
+            case R.id.fab_sheet_item_refresh:
+                coursePresenter.getCurrentCourse();
+                materialSheetFab.hideSheet();
+                break;
+            case R.id.fab_sheet_item_setting:
+                coursePresenter.addWeekPicker();
+                materialSheetFab.hideSheet();
+                break;
+            case R.id.fab_sheet_item_date:
+                coursePresenter.addOptionPicker();
+                materialSheetFab.hideSheet();
+                break;
+            case R.id.fab_sheet_item_create:
+                materialSheetFab.hideSheet();
+                break;
+            default:
+                coursePresenter.addPoupWindow(view.getId());
+        }
     }
 }

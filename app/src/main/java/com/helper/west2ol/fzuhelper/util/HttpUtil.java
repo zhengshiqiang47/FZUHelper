@@ -76,6 +76,7 @@ public class HttpUtil {
             if (result.contains("charset=gb2312")){
                 result=new String(result.getBytes(),"gb2312");
             }
+            Log.i(TAG, "Login: "+result);
             Log.i(TAG, result);
             if(result.contains("密码错误，请重新登录，或与学院教学办联系！")||result.contains("用户名错误，请确认是否输入错误，用户名前请不要加字母！！")){
                 Log.i(TAG,"密码错误");
@@ -204,7 +205,7 @@ public class HttpUtil {
         while (iterator.hasNext()){
             Map.Entry<String,String> entry=iterator.next();
             System.out.println("isNull:"+(entry==null)+" key:"+entry.getKey()+" value:"+entry.getValue());
-            formBodyBuilder.add(entry.getKey(), (String) entry.getValue());
+            formBodyBuilder.add(entry.getKey(), entry.getValue());
         }
         RequestBody requestBody=formBodyBuilder.build();
         Request request=new Request.Builder()

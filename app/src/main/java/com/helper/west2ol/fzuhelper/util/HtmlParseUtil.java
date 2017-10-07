@@ -34,17 +34,16 @@ public class HtmlParseUtil {
     /**
      * 获取当前学期课程表
      * @param context
-     * @param isRefresh
      * @return
      */
-    public static boolean getCurrentCourse(Context context,boolean isRefresh) {
+    public static boolean getCurrentCourse(Context context) {
         DBManager dbManager=new DBManager(context);
         ArrayList<CourseBean> tempKcs = new ArrayList<>();
-        ArrayList<CourseBean> kcs = CourseBeanLab.get(context).getCourses();
-        if(kcs.size()>=2&&!isRefresh){
-            Log.i(TAG, "已经解析过");
-            return true;
-        }
+//        ArrayList<CourseBean> kcs = CourseBeanLab.get(context).getCourses();
+//        if(kcs.size()>=2&&!isRefresh){
+//            Log.i(TAG, "已经解析过");
+//            return true;
+//        }
         String result = HttpUtil.getCookieHtml("http://59.77.226.35/student/xkjg/wdxk/xkjg_list.aspx");
 //        Log.i(TAG, result);
         Document document = Jsoup.parse(result);
@@ -150,10 +149,11 @@ public class HtmlParseUtil {
                 }
             }
         }
-        List<CourseBean> courseBeans= CourseBeanLab.get(context).getCourses();
-        for (int i=0;i<courseBeans.size();i++){
-            courseBeans.remove(tempKcs.get(0));
-        }
+//        List<CourseBean> courseBeans= CourseBeanLab.get(context).getCourses();
+//        for (int i=0;i<courseBeans.size();i++){
+//            courseBeans.remove(tempKcs.get(0));
+//        }
+        CourseBeanLab.get(context).getCourses().clear();
         CourseBeanLab.get(context).getCourses().addAll(tempKcs);
         Log.i(TAG,"共"+courseEles.size()+"个"+" 解析后:"+tempKcs.size()+"个");
         dbManager.dropCourseBeans();
@@ -165,9 +165,8 @@ public class HtmlParseUtil {
         ArrayList<CourseBean> tempCourses = new ArrayList<>();
         if (FzuCookie.get().getEVENTVALIDATION()==null||FzuCookie.get().getExpTime()<=System.currentTimeMillis()){
             HttpUtil.Login(context,DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
-            getCurrentCourse(context,true);
+            getCurrentCourse(context);
         }
-
         String VIEWSTATE= FzuCookie.get().getVIEWSTATE();
         String EVENTVALIDATION= FzuCookie.get().getEVENTVALIDATION();
         Log.i(TAG,"VIEWSTATE:"+VIEWSTATE);
@@ -274,10 +273,11 @@ public class HtmlParseUtil {
                 }
             }
         }
-        List<CourseBean> courseBeans= CourseBeanLab.get(context).getCourses();
-        for (int i=0;i<courseBeans.size();i++){
-            courseBeans.remove(tempCourses.get(0));
-        }
+//        List<CourseBean> courseBeans= CourseBeanLab.get(context).getCourses();
+//        for (int i=0;i<courseBeans.size();i++){
+//            courseBeans.remove(tempCourses.get(0));
+//        }
+        CourseBeanLab.get(context).getCourses().clear();
         CourseBeanLab.get(context).getCourses().addAll(tempCourses);
         DBManager dbManager=new DBManager(context);
         dbManager.dropCourseBeans();
@@ -288,12 +288,11 @@ public class HtmlParseUtil {
 
 
 
-    public static ArrayList<FDScore> getScore(Context context, boolean isRefresh){
+    public static ArrayList<FDScore> getScore(Context context){
         ArrayList<FDScore> tempScores = new ArrayList<>();
         ArrayList<FDScore> scores = FDScoreLB.get(context).getScores();
-        if (scores.size()>1&&!isRefresh){
-            Log.i(TAG,"已解析过且不刷新");
-            return scores;
+        if (FzuCookie.get().getExpTime() <= System.currentTimeMillis()) {
+            HttpUtil.Login(context, DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
         }
         String scoreHtml= HttpUtil.getCookieHtml("http://59.77.226.35/student/xyzk/cjyl/score_sheet.aspx");
         Document document = Jsoup.parse(scoreHtml);
@@ -332,6 +331,9 @@ public class HtmlParseUtil {
 
     //解析个人信息
     public static boolean getStudentInfo(Context context){
+        if (!StringUtil.isEmpty(FzuCookie.get().getId())) {
+            HttpUtil.Login(context, DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
+        }
         String result=HttpUtil.getCookieHtml("http://59.77.226.35/jcxx/xsxx/StudentInformation.aspx");
         if (result == null) {
             return false;

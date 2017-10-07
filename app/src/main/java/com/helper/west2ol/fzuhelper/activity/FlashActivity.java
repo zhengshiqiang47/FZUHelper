@@ -1,6 +1,7 @@
 package com.helper.west2ol.fzuhelper.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,13 +30,15 @@ import rx.schedulers.Schedulers;
 
 public class FlashActivity extends Activity {
 
-    private static final String TAG="LoginActivity";
+    private static final String TAG="FlashActivity";
+    private Context context;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_flash);
+        context=this;
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         flashLogin();
     }
@@ -57,62 +60,74 @@ public class FlashActivity extends Activity {
             config.setOptions(defaultConfig.getOptions());
             config.setLogin(defaultConfig.isLogin());
         }
-        final DBManager dbManager=new DBManager(this);
-        final List<User> users=dbManager.queryUserList();
-        if (users != null) {
-                    Observable.create(new Observable.OnSubscribe<Object>() {
-                        @Override
-                        public void call(Subscriber<? super Object> subscriber) {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+
+        Observable.create(new Observable.OnSubscribe<Object>() {
+            @Override
+            public void call(Subscriber<? super Object> subscriber) {
+                DBManager dbManager=new DBManager(context);
+                List<User> users=dbManager.queryUserList();
+                if (users != null) {
+                    for (User user : users) {
+                        Log.i(TAG, "call: userName:"+user.getFzuAccount()+" pass:"+user.getFzuPasssword()+" isLogin:"+user.getIsLogin());
+                        if (user.isLogin() == true) {
+                            Log.i(TAG, "call: 调用Login ");
+                            DefaultConfig.get().setUserAccount(user.getFzuAccount());
+                            final String loginResponse = HttpUtil.Login(getApplicationContext(),user);
+                            subscriber.onNext(loginResponse);
+//                                    for (User otherUser : users) {
+//                                        if (!otherUser.getFzuAccount().equals(user.getFzuAccount())) {
+//                                            otherUser.setIsLogin(false);
+//                                            dbManager.updateUser(otherUser);
+//                                        }
+//                                    }
+                            switch (loginResponse){
+                                case "网络错误":
+                                    break;
+                                case "密码错误":
+                                case "登录失败，请检查用户名和密码是否正确!":
+                                    user.setIsLogin(false);
+                                    dbManager.updateUser(user);
+                                    Log.i(TAG, "密码错误");
+                                    break;
+                                case "登录成功":
+                                    subscriber.onCompleted();
+                                    return;
                             }
-                            for (User user : users) {
-                                if (user.isLogin() == true) {
-                                    DefaultConfig.get().setUserAccount(user.getFzuAccount());
-                                    final String loginResponse = HttpUtil.Login(getApplicationContext(),user);
-                                    subscriber.onNext(loginResponse);
-                                    switch (loginResponse){
-                                        case "网络错误":
-                                            break;
-                                        case "密码错误":
-                                            user.setIsLogin(false);
-                                            dbManager.updateUser(user);
-                                            Log.i(TAG, "密码错误");
-                                            break;
-                                        case "登录成功":
-                                            subscriber.onCompleted();
-                                            return;
-                                    }
-                                }
-                            }
-                            Intent intent = new Intent(FlashActivity.this , LoginActivity.class);
-                            intent.putExtra("id" , "");
-                            startActivity(intent);
-                            finish();
                         }
-                    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<Object>() {
+                    }
 
-                        @Override
-                        public void onCompleted() {
-                            Intent intent = new Intent(FlashActivity.this , MainContainerActivity.class);
-                            intent.putExtra("id" , "");
-                            startActivity(intent);
-                            finish();
-                        }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Intent intent = new Intent(FlashActivity.this , LoginActivity_1.class);
+                intent.putExtra("id" , "");
+                startActivity(intent);
+                finish();
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<Object>() {
 
-                        @Override
-                        public void onError(Throwable e) {
+            @Override
+            public void onCompleted() {
+                Intent intent = new Intent(FlashActivity.this , MainContainerActivity.class);
+                intent.putExtra("id" , "");
+                startActivity(intent);
+                finish();
+            }
 
-                        }
+            @Override
+            public void onError(Throwable e) {
 
-                        @Override
-                        public void onNext(Object o) {
-                            Toast.makeText(getApplicationContext(), (String)o, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
+            }
+
+            @Override
+            public void onNext(Object o) {
+                Toast.makeText(getApplicationContext(), (String)o, Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
     }
 }
