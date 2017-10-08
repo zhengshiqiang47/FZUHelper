@@ -14,9 +14,11 @@ import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.bean.User;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
+import com.helper.west2ol.fzuhelper.util.FzuCookie;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
 import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import rx.Observable;
@@ -60,7 +62,10 @@ public class FlashActivity extends Activity {
             config.setOptions(defaultConfig.getOptions());
             config.setLogin(defaultConfig.isLogin());
         }
-
+        FzuCookie fzuCookie = saveObjectUtils.getObject("cookie", FzuCookie.class);
+        if (fzuCookie != null) {
+            FzuCookie.get(fzuCookie);
+        }
         Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> subscriber) {
@@ -70,7 +75,11 @@ public class FlashActivity extends Activity {
                     for (User user : users) {
                         Log.i(TAG, "call: userName:"+user.getFzuAccount()+" pass:"+user.getFzuPasssword()+" isLogin:"+user.getIsLogin());
                         if (user.isLogin() == true) {
-                            Log.i(TAG, "call: 调用Login ");
+                            Log.i(TAG, "call: 调用Login "+FzuCookie.get().getExpTime());
+                            if (FzuCookie.get().getExpTime()>=System.currentTimeMillis()){
+                                subscriber.onCompleted();
+                                return;
+                            }
                             DefaultConfig.get().setUserAccount(user.getFzuAccount());
                             final String loginResponse = HttpUtil.Login(getApplicationContext(),user);
                             subscriber.onNext(loginResponse);

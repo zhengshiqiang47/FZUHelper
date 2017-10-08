@@ -99,6 +99,7 @@ public class CourseTablePresenterImpl implements CourseTableContact.CoursePresen
                 DefaultConfig defaultConfig = DefaultConfig.get();
                 options=DefaultConfig.get().getOptions();
                 saveObjectUtils.setObject("config", defaultConfig);
+                saveObjectUtils.setObject("cookie",FzuCookie.get());
                 courseFragment.finishGetCourse(defaultConfig,options,false);
             }
 

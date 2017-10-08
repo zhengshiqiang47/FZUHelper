@@ -24,9 +24,26 @@ public class FzuCookie implements Serializable{
 
     }
 
+    private FzuCookie(FzuCookie cookie) {
+
+        this.expTime=cookie.getExpTime();
+        this.cookie = cookie.getCookie();
+        this.id=cookie.getId();
+        this.VIEWSTATE=cookie.getVIEWSTATE();
+        this.EVENTVALIDATION=cookie.getEVENTVALIDATION();
+        this.lastUpdateTime=cookie.getLastUpdateTime();
+    }
+
     public static FzuCookie get(){
         if (fzuCookie == null) {
             fzuCookie=new FzuCookie();
+        }
+        return fzuCookie;
+    }
+
+    public static FzuCookie get(FzuCookie cookie){
+        if (fzuCookie == null) {
+            fzuCookie=new FzuCookie(cookie);
         }
         return fzuCookie;
     }

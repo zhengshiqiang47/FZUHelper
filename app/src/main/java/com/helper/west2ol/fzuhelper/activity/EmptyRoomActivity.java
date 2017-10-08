@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.bigkoo.pickerview.TimePickerView;
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.adapter.EmptyAdapter;
+import com.helper.west2ol.fzuhelper.dto.Empty;
 import com.helper.west2ol.fzuhelper.dto.EmptyRoom;
 import com.helper.west2ol.fzuhelper.util.West2Server;
 import com.lcodecore.tkrefreshlayout.RefreshListenerAdapter;
@@ -62,7 +63,7 @@ public class EmptyRoomActivity extends Activity {
     TimePickerView pvTime;
 
     private Context context;
-    private Map<String, List<EmptyAdapter.Empty>> emptyMap = new HashMap<>();
+    private Map<String, List<Empty>> emptyMap = new HashMap<>();
     String selectDate;
     String build;
     String time;

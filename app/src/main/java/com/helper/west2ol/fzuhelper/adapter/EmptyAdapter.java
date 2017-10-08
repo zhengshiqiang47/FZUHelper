@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.helper.west2ol.fzuhelper.R;
+import com.helper.west2ol.fzuhelper.dto.Empty;
 import com.helper.west2ol.fzuhelper.dto.EmptyRoom;
 
 import java.util.ArrayList;
@@ -88,46 +89,61 @@ public class EmptyAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onViewRecycled(RecyclerView.ViewHolder holder) {
-        holder.setIsRecyclable(false);
-        super.onViewRecycled(holder);
-    }
-
-    @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int pos) {
-//        Log.i(TAG, "onBindViewHolder: "+pos);
+        Log.i(TAG, "onBindViewHolder: "+pos);
         final Empty empty = empties.get(pos);
         switch (empty.type) {
             case TYPE_PARENT:
                 final EmptyRoomParentHolder parentHolder = (EmptyRoomParentHolder) holder;
+                TextView textView=parentHolder.textView;
+                TextView countView=parentHolder.countView;
+                RelativeLayout layout=parentHolder.layout;
+                final ImageView arrowIcon=parentHolder.arrowIcon;
                 if (empty.isOpen) {
-                    parentHolder.arrowIcon.setRotation(90);
-                }
-                parentHolder.textView.setText(empty.roomName+" 节");
-                parentHolder.countView.setText("共 "+emptyMap.get(empty.getRoomName()).size()+" 间");
-                parentHolder.layout.setOnClickListener(new View.OnClickListener() {
+                    arrowIcon.setRotation(90);
+                }else arrowIcon.setRotation(0);
+                textView.setText(empty.roomName+" 节");
+                countView.setText("共 "+emptyMap.get(empty.getRoomName()).size()+" 间");
+                layout.setTag(pos);
+                layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        int position=pos;
-                        float centerX = parentHolder.arrowIcon.getPivotX();
-                        float centerY = parentHolder.arrowIcon.getPivotY();
-                        float sRotation=0;
+                        int position= (int) view.getTag();
+                        if (position>=empties.size()){
+                            notifyDataSetChanged();
+                            Log.i(TAG, "onClick: here "+position);
+                            return;
+                        }
+                        final Empty empty = empties.get(position);
+                        float centerX = arrowIcon.getPivotX();
+                        float centerY = arrowIcon.getPivotY();
+//                        float sRotation=0;
 //                        Log.i(TAG, "onClick: rotaion" + rotaition);
                         RotateAnimation rotateAnimation =null;
                         if (empty.isOpen) {//收缩
                             //箭头动画
-                            rotateAnimation = new RotateAnimation(sRotation,sRotation-90,centerX,centerY);
-
+                            if (arrowIcon.getRotation() >= 90) {
+                                rotateAnimation = new RotateAnimation(0, 0-90,centerX,centerY);
+                            }else if (arrowIcon.getRotation()>=0){
+                                rotateAnimation = new RotateAnimation(90, 0,centerX,centerY);
+                            }
                             List<Empty> rmEmpties=emptyMap.get(empty.getRoomName());
                             empties.removeAll(rmEmpties);
-                            notifyItemRangeRemoved(position+1,rmEmpties.size());
-                            empty.isOpen=false;
+                            empty.setOpen(false);
                             empty.setRotation(0);
+                            notifyItemRangeRemoved(position+1,rmEmpties.size());
+                            notifyItemRangeChanged(position+1,empties.size());
 //                            Log.i(TAG, " onClick:"+empties.size()+" position:"+position+" roomName:"+empty.getRoomName());
                         }else {//展开
-                            rotateAnimation = new RotateAnimation(sRotation,sRotation+90,centerX,centerY);
-
+                            if (arrowIcon.getRotation() >= 90) {
+                                rotateAnimation = new RotateAnimation(-90, 0,centerX,centerY);
+                            }else if (arrowIcon.getRotation()>=0){
+                                rotateAnimation = new RotateAnimation(0, 90,centerX,centerY);
+                            }
                             List<Empty> rmEmpties=emptyMap.get(empty.getRoomName());
+                            if (rmEmpties == null) {
+                                return;
+                            }
                             for (Empty e : rmEmpties) {
                                 e.setType(TYPE_CHILD);
                             }
@@ -136,29 +152,28 @@ public class EmptyAdapter extends RecyclerView.Adapter {
                             empty.isOpen=true;
                             empty.setRotation(90);
                             notifyItemRangeInserted(position+1,rmEmpties.size());
+                            notifyItemRangeChanged(position+1,empties.size());
                         }
                         rotateAnimation.setDuration(300l);
                         rotateAnimation.setFillAfter(true);
-                        parentHolder.arrowIcon.setAnimation(rotateAnimation);
                         rotateAnimation.setInterpolator(new DecelerateInterpolator());
-                        rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {
-
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                recyclerView.getRecycledViewPool().clear();
-                                notifyDataSetChanged();
-                                parentHolder.arrowIcon.setRotation(empty.getRotation());
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {
-
-                            }
-                        });
+//                        rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
+//                            @Override
+//                            public void onAnimationStart(Animation animation) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onAnimationEnd(Animation animation) {
+//                                arrowIcon.setRotation(empty.getRotation());
+//                            }
+//
+//                            @Override
+//                            public void onAnimationRepeat(Animation animation) {
+//
+//                            }
+//                        });
+                        arrowIcon.startAnimation(rotateAnimation);
                     }
                 });
                 break;
@@ -181,10 +196,6 @@ public class EmptyAdapter extends RecyclerView.Adapter {
         return empties.get(position).type;
     }
 
-    @Override
-    public long getItemId(int position) {
-        return super.getItemId(position);
-    }
 
     private class EmptyRoomParentHolder extends RecyclerView.ViewHolder {
         TextView textView;
@@ -207,55 +218,6 @@ public class EmptyAdapter extends RecyclerView.Adapter {
         public EmptyRoomChildHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.item_empty_room_child);
-        }
-    }
-
-    public static class Empty{
-        int type;
-        String roomName;
-        boolean isOpen=false;
-        float rotation;
-//        @Override
-//        public boolean equals(Object obj) {
-//            Empty empty = (Empty) obj;
-//            if (empty.getId() == id) {
-//                return true;
-//            }else {
-//                return false;
-//            }
-//        }
-
-
-        public float getRotation() {
-            return rotation;
-        }
-
-        public void setRotation(float rotation) {
-            this.rotation = rotation;
-        }
-
-        public int getType() {
-            return type;
-        }
-
-        public void setType(int type) {
-            this.type = type;
-        }
-
-        public String getRoomName() {
-            return roomName;
-        }
-
-        public void setRoomName(String roomName) {
-            this.roomName = roomName;
-        }
-
-        public boolean isOpen() {
-            return isOpen;
-        }
-
-        public void setOpen(boolean open) {
-            isOpen = open;
         }
     }
 

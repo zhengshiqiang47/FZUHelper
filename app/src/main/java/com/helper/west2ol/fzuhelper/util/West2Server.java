@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.helper.west2ol.fzuhelper.adapter.EmptyAdapter;
+import com.helper.west2ol.fzuhelper.dto.Empty;
 import com.helper.west2ol.fzuhelper.dto.EmptyRoom;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class West2Server {
 //        getEmptyRoom("2017-09-30","x1");
     }
 
-    public static Map<String,List<EmptyAdapter.Empty>> getEmptyRoom(String date, String build,String time, Map<String,List<EmptyAdapter.Empty>> emptyMap){
+    public static Map<String,List<Empty>> getEmptyRoom(String date, String build, String time, Map<String,List<Empty>> emptyMap){
         for (int j=1;j<=9;j++) {
             Map<String, String> params = new HashMap<>();
             params.put("time", date);
@@ -58,9 +59,9 @@ public class West2Server {
             String result=HttpUtil.getEmptyByParam("https://fzuhelper.learning2learn.cn/fzuhelper/blankclassroom",params);
             EmptyRoom emptyRoom = new Gson().fromJson(result, EmptyRoom.class);
             List<EmptyRoom.DataListBean.DataBean> dataList = emptyRoom.getDataList().getData();
-            List<EmptyAdapter.Empty> empties = new ArrayList<>();
+            List<Empty> empties = new ArrayList<>();
             for (int i = 0; i < dataList.size(); i++) {
-                EmptyAdapter.Empty empty = new EmptyAdapter.Empty();
+                Empty empty = new Empty();
                 empty.setRoomName(dataList.get(i).getRoomName());
                 empty.setType(EmptyAdapter.TYPE_CHILD);
                 if (i != dataList.size() - 1) {

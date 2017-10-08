@@ -33,6 +33,7 @@ import com.helper.west2ol.fzuhelper.fragment.MathFragment;
 import com.helper.west2ol.fzuhelper.fragment.YibanFragment;
 import com.helper.west2ol.fzuhelper.util.ActivityController;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
+import com.helper.west2ol.fzuhelper.util.FzuCookie;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
 import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
@@ -141,8 +142,10 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
     public void onDestroy(){
         Log.i(TAG,"onDestroy");
         DefaultConfig defaultConfig = DefaultConfig.get();
+        FzuCookie fzuCookie = FzuCookie.get();
         SaveObjectUtils saveObjectUtils = new SaveObjectUtils(this,"config");
         saveObjectUtils.setObject("config", defaultConfig);
+        saveObjectUtils.setObject("cookie",fzuCookie);
         super.onDestroy();
 //        CourseBeanLab.get(this).getCourses().clear();
 //        ActivityController.removeActivity(this);
@@ -259,7 +262,8 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
         SaveObjectUtils saveObjectUtils=new SaveObjectUtils(getApplicationContext(),"config");
         DefaultConfig config=saveObjectUtils.getObject("config", DefaultConfig.class);
         config.setUserAccount("");
-        saveObjectUtils.setObject("config", config);
+        saveObjectUtils.setObject("config", null);
+        saveObjectUtils.setObject("cookie", null);
         CourseBeanLab.get(this).getCourses().clear();
         ActivityController.finashAll();
         Intent intent = new Intent(MainContainerActivity.this , LoginActivity_1.class);

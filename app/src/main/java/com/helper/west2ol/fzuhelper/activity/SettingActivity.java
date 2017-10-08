@@ -71,6 +71,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                 dbManager.dropFDScores();
                 SaveObjectUtils saveObjectUtils=new SaveObjectUtils(getApplicationContext(),"config");
                 saveObjectUtils.setObject("config",null);
+                saveObjectUtils.setObject("cookie",null);
                 CourseBeanLab.get(this).getCourses().clear();
                 ActivityController.finashAll();
                 Intent intent = new Intent(SettingActivity.this , LoginActivity_1.class);

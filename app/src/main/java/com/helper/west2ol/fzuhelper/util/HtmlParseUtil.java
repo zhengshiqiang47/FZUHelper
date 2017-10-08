@@ -40,13 +40,10 @@ public class HtmlParseUtil {
     public static boolean getCurrentCourse(Context context) {
         DBManager dbManager=new DBManager(context);
         ArrayList<CourseBean> tempKcs = new ArrayList<>();
-//        ArrayList<CourseBean> kcs = CourseBeanLab.get(context).getCourses();
-//        if(kcs.size()>=2&&!isRefresh){
-//            Log.i(TAG, "已经解析过");
-//            return true;
-//        }
+        if (FzuCookie.get().getExpTime()<=System.currentTimeMillis()){
+            HttpUtil.Login(context,DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
+        }
         String result = HttpUtil.getCookieHtml("http://59.77.226.35/student/xkjg/wdxk/xkjg_list.aspx");
-//        Log.i(TAG, result);
         Document document = Jsoup.parse(result);
         Log.i(TAG,"解析课表");
 
