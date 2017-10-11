@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.crashlytics.android.Crashlytics;
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
@@ -42,6 +43,8 @@ import com.helper.west2ol.fzuhelper.util.StatusBarCompat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainContainerActivity extends FragmentActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG="MainActivity";
@@ -67,6 +70,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
         System.out.println("onCreate");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main_container);
         ActivityController.addActivity(this);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

@@ -42,7 +42,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.crashlytics.android.Crashlytics;
 import com.helper.west2ol.fzuhelper.R;
+import com.helper.west2ol.fzuhelper.bean.Exam;
 import com.helper.west2ol.fzuhelper.bean.User;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.util.CalculateUtil;
@@ -50,6 +52,7 @@ import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import io.fabric.sdk.android.Fabric;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
@@ -93,6 +96,7 @@ public class LoginActivity_1 extends AppCompatActivity implements LoaderCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_login_1);
         //沉浸状态栏
         setLayout();

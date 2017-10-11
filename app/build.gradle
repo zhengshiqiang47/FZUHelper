@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 24
@@ -19,6 +20,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     } }
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -44,6 +49,9 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.6.0'
     compile 'com.gordonwong:material-sheet-fab:1.2.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
+    compile('com.crashlytics.sdk.android:crashlytics:2.7.0@aar') {
+        transitive = true;
+    }
     compile files('libs/jsoup-1.9.2.jar')
 }
 

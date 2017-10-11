@@ -12,7 +12,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        >
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="098a84963d6ef9140af3fd93f40cfade4db47921" />
         <activity android:name=".activity.FlashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
