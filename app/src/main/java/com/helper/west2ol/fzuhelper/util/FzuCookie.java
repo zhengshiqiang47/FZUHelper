@@ -18,6 +18,8 @@ public class FzuCookie implements Serializable{
     String VIEWSTATE;
     String EVENTVALIDATION;
     long lastUpdateTime;
+    String SCORE_VIEWSTATE;
+    String SCORE_EVENTVALIDATION;
 
 
     private FzuCookie() {
@@ -46,6 +48,22 @@ public class FzuCookie implements Serializable{
             fzuCookie=new FzuCookie(cookie);
         }
         return fzuCookie;
+    }
+
+    public String getSCORE_VIEWSTATE() {
+        return SCORE_VIEWSTATE;
+    }
+
+    public void setSCORE_VIEWSTATE(String SCORE_VIEWSTATE) {
+        this.SCORE_VIEWSTATE = SCORE_VIEWSTATE;
+    }
+
+    public String getSCORE_EVENTVALIDATION() {
+        return SCORE_EVENTVALIDATION;
+    }
+
+    public void setSCORE_EVENTVALIDATION(String SCORE_EVENTVALIDATION) {
+        this.SCORE_EVENTVALIDATION = SCORE_EVENTVALIDATION;
     }
 
     public long getExpTime() {

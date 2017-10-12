@@ -69,4 +69,9 @@
         <item name="android:layout_centerVertical">true</item>
     </style>
 
+    <style name="ExamItem">
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
 </resources>

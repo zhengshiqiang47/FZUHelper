@@ -8,7 +8,7 @@ android {
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.helper.west2ol.fzuhelper"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
@@ -56,7 +56,7 @@ dependencies {
 }
 
 greendao {
-    schemaVersion 8
+    schemaVersion 10
     daoPackage 'com.helper.west2ol.fzuhelper.dao'
     targetGenDir 'src/main/java'
 }

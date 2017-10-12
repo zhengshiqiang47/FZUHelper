@@ -11,7 +11,7 @@ import org.greenrobot.greendao.annotation.Generated;
 public class Exam {
 
     @Id(autoincrement = true)
-    private long examId;
+    private Long examId;
 
     private String name;
     private String xuefen;
@@ -29,8 +29,8 @@ public class Exam {
         this.zuohao = zuohao;
     }
 
-    @Generated(hash = 1243453165)
-    public Exam(long examId, String name, String xuefen, String teacher, String address,
+    @Generated(hash = 1610439285)
+    public Exam(Long examId, String name, String xuefen, String teacher, String address,
             String zuohao) {
         this.examId = examId;
         this.name = name;
@@ -48,7 +48,7 @@ public class Exam {
         this.name = name;
     }
 
-    public long getExamId() {
+    public Long getExamId() {
         return examId;
     }
 
@@ -86,5 +86,9 @@ public class Exam {
 
     public void setZuohao(String zuohao) {
         this.zuohao = zuohao;
+    }
+
+    public void setExamId(Long examId) {
+        this.examId = examId;
     }
 }

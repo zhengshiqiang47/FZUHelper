@@ -24,7 +24,7 @@ public class ExamDao extends AbstractDao<Exam, Long> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property ExamId = new Property(0, long.class, "examId", true, "_id");
+        public final static Property ExamId = new Property(0, Long.class, "examId", true, "_id");
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
         public final static Property Xuefen = new Property(2, String.class, "xuefen", false, "XUEFEN");
         public final static Property Teacher = new Property(3, String.class, "teacher", false, "TEACHER");
@@ -45,7 +45,7 @@ public class ExamDao extends AbstractDao<Exam, Long> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"EXAM\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ," + // 0: examId
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: examId
                 "\"NAME\" TEXT," + // 1: name
                 "\"XUEFEN\" TEXT," + // 2: xuefen
                 "\"TEACHER\" TEXT," + // 3: teacher
@@ -62,7 +62,11 @@ public class ExamDao extends AbstractDao<Exam, Long> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, Exam entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getExamId());
+ 
+        Long examId = entity.getExamId();
+        if (examId != null) {
+            stmt.bindLong(1, examId);
+        }
  
         String name = entity.getName();
         if (name != null) {
@@ -93,7 +97,11 @@ public class ExamDao extends AbstractDao<Exam, Long> {
     @Override
     protected final void bindValues(SQLiteStatement stmt, Exam entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getExamId());
+ 
+        Long examId = entity.getExamId();
+        if (examId != null) {
+            stmt.bindLong(1, examId);
+        }
  
         String name = entity.getName();
         if (name != null) {
@@ -123,13 +131,13 @@ public class ExamDao extends AbstractDao<Exam, Long> {
 
     @Override
     public Long readKey(Cursor cursor, int offset) {
-        return cursor.getLong(offset + 0);
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public Exam readEntity(Cursor cursor, int offset) {
         Exam entity = new Exam( //
-            cursor.getLong(offset + 0), // examId
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // examId
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // xuefen
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // teacher
@@ -141,7 +149,7 @@ public class ExamDao extends AbstractDao<Exam, Long> {
      
     @Override
     public void readEntity(Cursor cursor, Exam entity, int offset) {
-        entity.setExamId(cursor.getLong(offset + 0));
+        entity.setExamId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setXuefen(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setTeacher(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
@@ -166,7 +174,7 @@ public class ExamDao extends AbstractDao<Exam, Long> {
 
     @Override
     public boolean hasKey(Exam entity) {
-        throw new UnsupportedOperationException("Unsupported for entities with a non-null key");
+        return entity.getExamId() != null;
     }
 
     @Override

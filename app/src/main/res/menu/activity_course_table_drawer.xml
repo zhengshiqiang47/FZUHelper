@@ -22,7 +22,7 @@
             <!--android:title="工具箱"></item>-->
         <item
             android:id="@+id/item3"
-            android:icon="@drawable/icon_yiban"
+            android:icon="@drawable/icon_exam"
             android:title="考场查询"></item>
         <item
             android:id="@+id/item5"

@@ -337,6 +337,56 @@ public class HtmlParseUtil {
         if (result == null) {
             return null;
         }
+
+        Document document = Jsoup.parse(result);
+        FzuCookie fzuCookie=FzuCookie.get();
+        String VIEWSTATE = document.select("input[name=__VIEWSTATE]").get(0).attr("value");
+        String EVENTVALIDATION=document.select("input[name=__EVENTVALIDATION]").get(0).attr("value");
+        fzuCookie.setSCORE_EVENTVALIDATION(EVENTVALIDATION);
+        fzuCookie.setSCORE_VIEWSTATE(VIEWSTATE);
+
+        Elements examElements=document.select("table[id=ContentPlaceHolder1_DataList_xxk]").select("tr[style=height:30px; border-bottom:1px solid gray; border-left:1px solid gray; vertical-align:middle;]");
+        Log.i(TAG, "getExamInfo: examList:" + examElements.size());
+        for (int i=0;i<examElements.size();i++) {
+            Element element = examElements.get(i);
+            Elements tds=element.select("td");
+            String name = tds.get(0).text();
+            String xuefen=tds.get(1).text();
+            String teacher = tds.get(2).text();
+            String address = tds.get(3).text();
+            String zuohao = tds.get(4).text();
+            Exam exam = new Exam(name, xuefen, teacher, address, zuohao);
+            exams.add(exam);
+        }
+        DBManager manager=DBManager.getInstance(context);
+        manager.dropExams();
+        manager.insertExams(exams);
+        Log.i(TAG, "getExamInfo: 考场数量"+exams.size()+" "+exams.get(0).getName());
+        return exams;
+    }
+
+    //解析历史考场信息
+    public static List<Exam> getHistoryExamInfo(Context context,String xuenian){
+        List<Exam> exams = new ArrayList<>();
+        FzuCookie fzuCookie=FzuCookie.get();
+        if (StringUtil.isEmpty(FzuCookie.get().getId()) || FzuCookie.get().getExpTime() <= System.currentTimeMillis()) {
+            HttpUtil.Login(context, DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
+        }
+        if (StringUtil.isEmpty(fzuCookie.getSCORE_VIEWSTATE())) {
+            getExamInfo(context);
+        }
+        String VIEWSTATE = fzuCookie.getSCORE_VIEWSTATE();
+        String EVENTVALIDATION = fzuCookie.getSCORE_EVENTVALIDATION();
+        Map<String, String> params = new HashMap<>();
+        params.put("__VIEWSTATE", VIEWSTATE);
+        params.put("__EVENTVALIDATION", EVENTVALIDATION);
+        params.put("ctl00$ContentPlaceHolder1$DDL_xnxq", xuenian);
+        params.put("ctl00$ContentPlaceHolder1$BT_submit", "确定");
+        String result=HttpUtil.getExamByParam("http://59.77.226.35/student/xkjg/examination/exam_list.aspx",params);
+        if (result == null) {
+            return null;
+        }
+        Log.i(TAG, "getHistoryExamInfo: result"+result);
         Document document = Jsoup.parse(result);
         Elements examElements=document.select("table[id=ContentPlaceHolder1_DataList_xxk]").select("tr[style=height:30px; border-bottom:1px solid gray; border-left:1px solid gray; vertical-align:middle;]");
         Log.i(TAG, "getExamInfo: examList:" + examElements.size());
@@ -351,9 +401,9 @@ public class HtmlParseUtil {
             Exam exam = new Exam(name, xuefen, teacher, address, zuohao);
             exams.add(exam);
         }
-//        DBManager manager=DBManager.getInstance(context);
-//        manager.dropExams();
-//        manager.insertExams(exams);
+        DBManager manager=DBManager.getInstance(context);
+        manager.dropExams();
+        manager.insertExams(exams);
         Log.i(TAG, "getExamInfo: 考场数量"+exams.size()+" "+exams.get(0).getName());
         return exams;
     }
