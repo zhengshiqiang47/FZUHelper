@@ -93,10 +93,13 @@ public class SaveObjectUtils {
                 return t;
             } catch (StreamCorruptedException e) {
                 e.printStackTrace();
+                DataCleanUtil.cleanSharedPreference(context);
             } catch (IOException e) {
                 e.printStackTrace();
+                DataCleanUtil.cleanSharedPreference(context);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+                DataCleanUtil.cleanSharedPreference(context);
             } finally {
                 try {
                     if (bais != null) {

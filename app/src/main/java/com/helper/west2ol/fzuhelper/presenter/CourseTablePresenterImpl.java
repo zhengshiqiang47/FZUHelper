@@ -5,6 +5,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.bigkoo.pickerview.OptionsPickerView;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
@@ -79,10 +80,15 @@ public class CourseTablePresenterImpl implements CourseTableContact.CoursePresen
         Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> subscriber) {
-                HtmlParseUtil.getCurrentCourse(activity);
-                HtmlParseUtil.getBeginDate(null);
-                HtmlParseUtil.getStudentInfo(activity);
-                HtmlParseUtil.getDate();
+                try {
+                    HtmlParseUtil.getCurrentCourse(activity);
+                    HtmlParseUtil.getBeginDate(null);
+                    HtmlParseUtil.getStudentInfo(activity);
+                    HtmlParseUtil.getDate();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                    return;
+                }
                 subscriber.onCompleted();
             }})
                 .subscribeOn(Schedulers.io())
@@ -105,7 +111,8 @@ public class CourseTablePresenterImpl implements CourseTableContact.CoursePresen
 
             @Override
             public void onError(Throwable e) {
-
+                e.printStackTrace();
+                courseFragment.onRefreshError();
             }
 
             @Override
@@ -127,7 +134,12 @@ public class CourseTablePresenterImpl implements CourseTableContact.CoursePresen
         Observable.create(new Observable.OnSubscribe<List<CourseBean>>() {
             @Override
             public void call(Subscriber<? super List<CourseBean>> subscriber) {
-                List<CourseBean> courseBeans=HtmlParseUtil.getHistoryCourse(activity,xueNian);
+                List<CourseBean> courseBeans= null;
+                try {
+                    courseBeans = HtmlParseUtil.getHistoryCourse(activity,xueNian);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 HtmlParseUtil.getBeginDate(xueNian);
                 subscriber.onNext(courseBeans);
                 subscriber.onCompleted();
@@ -152,6 +164,7 @@ public class CourseTablePresenterImpl implements CourseTableContact.CoursePresen
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
+                courseFragment.onRefreshError();
             }
 
             @Override

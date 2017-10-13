@@ -3,15 +3,13 @@ package com.helper.west2ol.fzuhelper.util;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.helper.west2ol.fzuhelper.bean.User;
-import com.helper.west2ol.fzuhelper.dao.DBManager;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import okhttp3.Cookie;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -34,7 +32,7 @@ import okhttp3.Response;
  * Referer:http://jwch.fzu.edu.cn/
  * Upgrade-Insecure-Requests:1
  * User-Agent:Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.22 Safari/537.36 SE 2.X MetaSr 1.0
-*/
+ */
 
 public class HttpUtil {
     private static final String TAG = "HttpUtil";
@@ -55,7 +53,7 @@ public class HttpUtil {
     public static final String getEmptyClassRoom = "kkgl/kbcx/kbcx_choose.aspx"; //空教室
 
 
-    public static String Login(Context context,User user){
+    public static String Login(Context context,User user) throws Exception{
         Log.i(TAG, "user:" + user.getFzuAccount()+" pass:"+user.getFzuPasssword());
         OkHttpClient okHttpClient = new OkHttpClient.Builder().addNetworkInterceptor(new LoginInterceptor()).build();
         FormBody formBody=new FormBody.Builder().add("muser",user.getFzuAccount()).add("passwd",user.getFzuPasssword()).build();
@@ -66,36 +64,27 @@ public class HttpUtil {
                 .addHeader("Referer","http://jwch.fzu.edu.cn/")
                 .addHeader("Connection","keep-alive")
                 .build();
-        try {
-            Response response=okHttpClient.newCall(request).execute();
-            if(!response.message().equals("OK")){
-                Log.i(TAG,"网络出错");
-                return "网络出错";
-            }
-            String result = new String(response.body().bytes());
-            if (result.contains("charset=gb2312")){
-                result=new String(result.getBytes(),"gb2312");
-            }
-            Log.i(TAG, "Login: "+result);
-            Log.i(TAG, result);
-            if(result.contains("密码错误，请重新登录，或与学院教学办联系！")||result.contains("用户名错误，请确认是否输入错误，用户名前请不要加字母！！")){
-                Log.i(TAG,"密码错误");
-                return "密码错误";
-            }
-            if (result.contains("left.aspx")){
-                Log.i(TAG, "登录成功");
-                return "登录成功";
-            }
-            return "登录失败，请检查用户名和密码是否正确!";
-        } catch (IOException e) {
+
+        Response response=okHttpClient.newCall(request).execute();
+        if(!response.message().equals("OK")){
             Log.i(TAG,"网络出错");
-            e.printStackTrace();
-            return "网络出错";
-        } catch (Exception e){
-            Log.i(TAG,"网络出错");
-            e.printStackTrace();
             return "网络出错";
         }
+        String result = new String(response.body().bytes());
+        if (result.contains("charset=gb2312")){
+            result=new String(result.getBytes(),"gb2312");
+        }
+        Log.i(TAG, "Login: "+result);
+        Log.i(TAG, result);
+        if(result.contains("密码错误，请重新登录，或与学院教学办联系！")||result.contains("用户名错误，请确认是否输入错误，用户名前请不要加字母！！")){
+            Log.i(TAG,"密码错误");
+            return "密码错误";
+        }
+        if (result.contains("left.aspx")){
+            Log.i(TAG, "登录成功");
+            return "登录成功";
+        }
+        return "登录失败，请检查用户名和密码是否正确!";
     }
     /**
      * http://59.77.226.35/student/xkjg/wdxk/xkjg_list.aspx
@@ -251,24 +240,60 @@ public class HttpUtil {
     }
 
 
-    public static String getHtml(String url) {
+    public static String getHtml(String url) throws Exception{
         OkHttpClient client = new OkHttpClient();
         Request request=new Request.Builder().url(url)
                 .addHeader("Accept-Language","zh-CN,zh;q=0.8,en;q=0.6")
                 .addHeader("Accept","text/html,application/xhtml+xml,application/xml;charset=utf-8;q=0.9,image/webp,*/*;q=0.8")
                 .addHeader("Accept-Encoding","gzip, deflate, sdch").build();
-        try {
-            Response response=client.newCall(request).execute();
-            if (response.isSuccessful()) {
-                String result = new String(response.body().bytes(),"gb2312");
-                return result;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        Response response=client.newCall(request).execute();
+        if (response.isSuccessful()) {
+            String result = new String(response.body().bytes(),"gb2312");
+            return result;
         }
-
         return null;
     }
 
+    public static Version getVeison() throws Exception{
+        OkHttpClient client = new OkHttpClient();
+        Request request=new Request.Builder().url("http://url.w2fzu.com/version.json")
+                .addHeader("Accept-Language","zh-CN,zh;q=0.8,en;q=0.6")
+                .addHeader("Accept","text/html,application/xhtml+xml,application/xml;charset=utf-8;q=0.9,image/webp,*/*;q=0.8")
+                .addHeader("Accept-Encoding","gzip, deflate, sdch").build();
+        Response response=client.newCall(request).execute();
+        if (response.isSuccessful()) {
+            String result = new String(response.body().bytes());
+            Version version = new Gson().fromJson(result, Version.class);
+            return version;
+        }
+        return null;
+    }
+
+    public static class Version{
+
+        /**
+         * version : 1.0
+         * url : http://url.w2fzu.com/fzuHelper_beta.apk
+         */
+
+        private String version;
+        private String url;
+
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+    }
 
 }

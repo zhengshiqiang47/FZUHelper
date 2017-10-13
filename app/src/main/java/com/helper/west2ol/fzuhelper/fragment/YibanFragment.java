@@ -16,6 +16,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.adapter.YibanAdapter;
@@ -96,7 +97,12 @@ public class YibanFragment extends Fragment implements View.OnClickListener{
         Observable.create(new Observable.OnSubscribe<List<Yiban>>() {
             @Override
             public void call(Subscriber<? super List<Yiban>> subscriber) {
-                List<Yiban> dataBeens=HtmlParseUtil.getYibanList();
+                List<Yiban> dataBeens= null;
+                try {
+                    dataBeens = HtmlParseUtil.getYibanList();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 subscriber.onNext(dataBeens);
                 subscriber.onCompleted();
             }
@@ -121,6 +127,7 @@ public class YibanFragment extends Fragment implements View.OnClickListener{
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        Toast.makeText(getActivity(),"获取列表数据出错 ！请稍后手动刷新", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

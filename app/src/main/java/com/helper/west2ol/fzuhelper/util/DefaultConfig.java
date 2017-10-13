@@ -27,6 +27,7 @@ public class DefaultConfig implements Serializable {
     private String userName;
 
     private boolean isLogin;
+    private String newVersionUrl;
 
     private DefaultConfig() {
 
@@ -37,6 +38,14 @@ public class DefaultConfig implements Serializable {
             defaultConfig = new DefaultConfig();
         }
         return defaultConfig;
+    }
+
+    public String getNewVersionUrl() {
+        return newVersionUrl;
+    }
+
+    public void setNewVersionUrl(String newVersionUrl) {
+        this.newVersionUrl = newVersionUrl;
     }
 
     public String getUserName() {

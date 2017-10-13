@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
@@ -20,17 +22,27 @@ import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Administrator on 2016/10/20.
  */
 
 public class SettingActivity extends AppCompatActivity implements View.OnClickListener{
     View logout;
+    @BindView(R.id.back_button_in_setting)
     Button back_Button;
+    @BindView(R.id.share_app)
+    RelativeLayout shareLayout;
+    @BindView(R.id.about_us)
+    RelativeLayout aboutLayout;
+
     @Override
     public void onCreate(Bundle savedIntanceState){
         super.onCreate(savedIntanceState);
         setContentView(R.layout.activity_setting);
+        ButterKnife.bind(this);
         ActivityController.addActivity(this);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -43,9 +55,9 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         }
-        back_Button = (Button)findViewById(R.id.back_button_in_setting);
         back_Button.setOnClickListener(this);
         logout = findViewById(R.id.logout_button);
+        shareLayout.setOnClickListener(this);
         logout.setOnClickListener(this);
     }
     @Override
@@ -79,6 +91,17 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.back_button_in_setting:
                 this.finish();
+                break;
+            case R.id.share_app:
+                Intent textIntent = new Intent(Intent.ACTION_SEND);
+                textIntent.setType("text/plain");
+                textIntent.putExtra(Intent.EXTRA_TEXT, DefaultConfig.get().getNewVersionUrl());
+                Log.i("Setting", "onClick: share");
+                startActivity(Intent.createChooser(textIntent, "分享"));
+                break;
+            default:
+                Toast.makeText(getApplicationContext(), "此功能即将来袭，敬请期待!!!", Toast.LENGTH_SHORT).show();
+                break;
         }
     }
     //011917

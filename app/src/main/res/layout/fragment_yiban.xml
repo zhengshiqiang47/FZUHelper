@@ -30,12 +30,9 @@
                 android:textColor="@color/colorWhite"/>
             <ImageView
                 android:id="@+id/yiban_refresh"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginRight="16dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_refresh"/>
+                style="@style/RefreshIcon"
+                android:src="@drawable/ic_refresh"
+                />
         </RelativeLayout>
     </android.support.design.widget.AppBarLayout>
     <RelativeLayout

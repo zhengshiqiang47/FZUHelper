@@ -33,6 +33,7 @@ public interface CourseTableContact {
         void showOptionPicker(ArrayList<String> options);
         void showWeekPicer(List<String> weeks);
         void finishGetCourse(DefaultConfig defaultConfig, ArrayList<String> options,boolean isHistoryCourse);
+        void onRefreshError();
         void popupWindow(int viewId,CourseBean courseBean);
         Context getParentActivity();
     }

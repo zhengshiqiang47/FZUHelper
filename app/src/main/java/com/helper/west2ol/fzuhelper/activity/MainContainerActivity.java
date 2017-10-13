@@ -1,6 +1,10 @@
 package com.helper.west2ol.fzuhelper.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,6 +15,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +39,7 @@ import com.helper.west2ol.fzuhelper.fragment.MathFragment;
 import com.helper.west2ol.fzuhelper.fragment.YibanFragment;
 import com.helper.west2ol.fzuhelper.util.ActivityController;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
+import com.helper.west2ol.fzuhelper.util.DownloadAPK;
 import com.helper.west2ol.fzuhelper.util.FzuCookie;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
@@ -45,9 +51,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
+import rx.Observable;
+import rx.Observer;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainContainerActivity extends FragmentActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG="MainActivity";
+    private static final String VERSION="1.0";
 
     public CourseTableFragment courseTableFragment;
     GradeFragment gradeFragment;
@@ -61,6 +74,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
     MenuItem course_Item;
     private String id;
     SaveObjectUtils saveObjectUtils;
+    private Activity activity;
 
     Bundle parameterToFragment;
 
@@ -70,7 +84,9 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
         System.out.println("onCreate");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
+        activity=this;
         Fabric.with(this, new Crashlytics());
+        checkVersion();
         setContentView(R.layout.activity_main_container);
         ActivityController.addActivity(this);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -286,5 +302,69 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
         }
 
     }
+
+    private void checkVersion(){
+        Log.i(TAG, "checkVersion:检测版本号");
+        Observable.create(new Observable.OnSubscribe<Object>() {
+
+            @Override
+            public void call(Subscriber<? super Object> subscriber) {
+                try {
+                    HttpUtil.Version version=HttpUtil.getVeison();
+                    if (version != null) {
+                        subscriber.onNext(version);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Object>() {
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                        final HttpUtil.Version version=(HttpUtil.Version)o;
+                        DefaultConfig.get().setNewVersionUrl(version.getUrl());
+                        String versionStr=version.getVersion();
+                        if (!versionStr.equals(VERSION)){
+                            Log.i(TAG, "onNext: 版本不对应"+"远程服务器版本"+versionStr);
+                            AlertDialog.Builder normalDialog =
+                                    new AlertDialog.Builder(MainContainerActivity.this);
+                            normalDialog.setIcon(R.drawable.icon_f);
+                            normalDialog.setTitle("检测到新版本");
+                            normalDialog.setMessage("是否更新"+versionStr+"版本?\n(由于此是beta版本，使用强制更新策略，这意味着你不更新无法使用这个版本)");
+                            normalDialog.setPositiveButton("确定",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            DownloadAPK.getInstance(version.getUrl()).download(activity);
+                                        }
+                                    });
+                            normalDialog.setNegativeButton("退出",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            finish();
+                                        }
+                                    });
+                            normalDialog.show();
+                        }
+
+                    }
+                });
+    }
+
 
 }

@@ -37,7 +37,7 @@ public class HtmlParseUtil {
      * @param context
      * @return
      */
-    public static boolean getCurrentCourse(Context context) {
+    public static boolean getCurrentCourse(Context context) throws Exception{
         DBManager dbManager=new DBManager(context);
         ArrayList<CourseBean> tempKcs = new ArrayList<>();
         if (FzuCookie.get().getExpTime()<=System.currentTimeMillis()){
@@ -159,7 +159,7 @@ public class HtmlParseUtil {
         return true;
     }
 
-    public static ArrayList<CourseBean> getHistoryCourse(Context context, String xueNian){//学年格式 201702
+    public static ArrayList<CourseBean> getHistoryCourse(Context context, String xueNian) throws Exception{//学年格式 201702
         ArrayList<CourseBean> tempCourses = new ArrayList<>();
         if (FzuCookie.get().getEVENTVALIDATION()==null||FzuCookie.get().getExpTime()<=System.currentTimeMillis()){
             HttpUtil.Login(context,DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
@@ -286,7 +286,7 @@ public class HtmlParseUtil {
 
 
 
-    public static ArrayList<FDScore> getScore(Context context){//获取成绩
+    public static ArrayList<FDScore> getScore(Context context) throws Exception{//获取成绩
         ArrayList<FDScore> tempScores = new ArrayList<>();
         ArrayList<FDScore> scores = FDScoreLB.get(context).getScores();
         if (FzuCookie.get().getExpTime() <= System.currentTimeMillis()) {
@@ -328,7 +328,7 @@ public class HtmlParseUtil {
     }
 
     //解析考场信息
-    public static List<Exam> getExamInfo(Context context){
+    public static List<Exam> getExamInfo(Context context) throws Exception{
         List<Exam> exams = new ArrayList<>();
         if (StringUtil.isEmpty(FzuCookie.get().getId()) || FzuCookie.get().getExpTime() <= System.currentTimeMillis()) {
             HttpUtil.Login(context, DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
@@ -366,7 +366,7 @@ public class HtmlParseUtil {
     }
 
     //解析历史考场信息
-    public static List<Exam> getHistoryExamInfo(Context context,String xuenian){
+    public static List<Exam> getHistoryExamInfo(Context context,String xuenian) throws Exception{
         List<Exam> exams = new ArrayList<>();
         FzuCookie fzuCookie=FzuCookie.get();
         if (StringUtil.isEmpty(FzuCookie.get().getId()) || FzuCookie.get().getExpTime() <= System.currentTimeMillis()) {
@@ -409,8 +409,11 @@ public class HtmlParseUtil {
     }
 
     //解析个人信息
-    public static boolean getStudentInfo(Context context){
+    public static boolean getStudentInfo(Context context) throws Exception{
         if (!StringUtil.isEmpty(FzuCookie.get().getId())) {
+            if (DefaultConfig.get().getUserAccount() == null) {
+                return false;
+            }
             HttpUtil.Login(context, DBManager.getInstance(context).queryUser(DefaultConfig.get().getUserAccount()));
         }
         String result=HttpUtil.getCookieHtml("http://59.77.226.35/jcxx/xsxx/StudentInformation.aspx");
@@ -484,7 +487,7 @@ public class HtmlParseUtil {
     }
 
     //解析当前学期
-    public static void getDate(){
+    public static void getDate() throws Exception{
         String html=HttpUtil.getHtml("http://59.77.226.32/tt.asp");
         Document document = Jsoup.parse(html);
         String curWeek=document.select("font[color=#FF0000]").get(0).text();
@@ -501,7 +504,7 @@ public class HtmlParseUtil {
     }
 
     //获取易班动态列表
-    public static List<Yiban> getYibanList(){
+    public static List<Yiban> getYibanList() throws Exception{
         String result=HttpUtil.getHtml("https://fzuhelper.learning2learn.cn/fzuhelper/yibanlist");
         Log.i(TAG,result);
         YibanResult yibanResult=new Gson().fromJson(result,YibanResult.class);

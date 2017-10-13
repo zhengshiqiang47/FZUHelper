@@ -104,7 +104,13 @@ public class LoginActivity extends Activity implements View.OnClickListener{
                             dbManager.insertUser(user);
                         }
                         DefaultConfig.get().setUserAccount(user.getFzuAccount());
-                        String loginResponse = HttpUtil.Login(getApplicationContext(),user);
+                        String loginResponse=null;
+                        try {
+                             loginResponse= HttpUtil.Login(getApplicationContext(),user);
+                        } catch (Exception e) {
+                            subscriber.onError(e);
+                        }
+
                         subscriber.onNext(loginResponse);
                     }
                 }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<String>() {
@@ -115,7 +121,8 @@ public class LoginActivity extends Activity implements View.OnClickListener{
 
                     @Override
                     public void onError(Throwable e) {
-
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "登录失败,请检查网络连接", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

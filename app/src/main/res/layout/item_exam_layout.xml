@@ -16,12 +16,15 @@
         android:id="@+id/item_exam_layout"
         android:background="@color/course_color0"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
         <TextView
             android:id="@+id/item_exam_address_text"
-            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             style="@style/ExamItem"
+            android:textSize="15sp"
             android:textColor="@color/colorBlackLight_2"
             android:text="2015年12月20日   08:30-10:30    文4-102"/>
     </LinearLayout>

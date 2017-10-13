@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/exam_root_layout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/exam_bar"
-        android:background="@color/colorPrimary"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="54dp">
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/exam_tool_bar"
+        android:layout_height="match_parent">
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/exam_bar"
+            android:background="@color/colorPrimary"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="54dp">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -30,17 +30,41 @@
                     android:textColor="@color/colorWhite"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
+                <ImageView
+                    android:id="@+id/exam_refresh"
+                    android:layout_alignParentRight="true"
+                    style="@style/RefreshIcon"
+                    android:src="@drawable/ic_refresh"/>
             </RelativeLayout>
-        </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.AppBarLayout>
 
+        <com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout
+            android:id="@+id/exam_twinkRefresh"
 
-    </android.support.design.widget.AppBarLayout>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/exam_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                </android.support.v7.widget.RecyclerView>
+                <RelativeLayout
+                    android:id="@+id/item_exam_loading_layout"
+                    android:layout_centerInParent="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <com.wang.avi.AVLoadingIndicatorView
+                        android:id="@+id/item_exam_loading"
+                        android:layout_width="128dp"
+                        android:layout_height="128dp"
+                        app:indicatorName="BallTrianglePathIndicator"
+                        app:indicatorColor="@color/colorPrimary"/>
+                </RelativeLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/exam_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </android.support.v7.widget.RecyclerView>
-
-</LinearLayout>
+            </RelativeLayout>
+        </com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout>
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

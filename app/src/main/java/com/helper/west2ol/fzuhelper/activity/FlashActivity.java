@@ -10,7 +10,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.helper.west2ol.fzuhelper.R;
+import com.helper.west2ol.fzuhelper.bean.Exam;
 import com.helper.west2ol.fzuhelper.bean.User;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
@@ -19,8 +21,10 @@ import com.helper.west2ol.fzuhelper.util.HttpUtil;
 import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.ConnectException;
 import java.util.List;
 
+import io.fabric.sdk.android.Fabric;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -49,19 +53,31 @@ public class FlashActivity extends Activity {
 
     private void flashLogin() {
         SaveObjectUtils saveObjectUtils=new SaveObjectUtils(this,"config");
-        DefaultConfig defaultConfig=saveObjectUtils.getObject("config",DefaultConfig.class);
-        DefaultConfig config=DefaultConfig.get();
-        if (defaultConfig != null) {
-            config.setBeginDate(defaultConfig.getBeginDate());
-            config.setUserAccount(defaultConfig.getUserAccount());
-            config.setUserName(defaultConfig.getUserName());
-            config.setNowWeek(defaultConfig.getNowWeek());
-            config.setCurXuenian(defaultConfig.getCurXuenian());
-            config.setCurYear(defaultConfig.getCurYear());
-            config.setXqValues(defaultConfig.getXqValues());
-            config.setOptions(defaultConfig.getOptions());
-            config.setLogin(defaultConfig.isLogin());
+        try {
+            DefaultConfig defaultConfig=saveObjectUtils.getObject("config",DefaultConfig.class);
+            DefaultConfig config=DefaultConfig.get();
+            if (defaultConfig != null) {
+                config.setBeginDate(defaultConfig.getBeginDate());
+                config.setUserAccount(defaultConfig.getUserAccount());
+                config.setUserName(defaultConfig.getUserName());
+                config.setNowWeek(defaultConfig.getNowWeek());
+                config.setCurXuenian(defaultConfig.getCurXuenian());
+                config.setCurYear(defaultConfig.getCurYear());
+                config.setXqValues(defaultConfig.getXqValues());
+                config.setOptions(defaultConfig.getOptions());
+                config.setLogin(defaultConfig.isLogin());
+            }else {
+                Intent intent = new Intent(FlashActivity.this , LoginActivity_1.class);
+                intent.putExtra("id" , "");
+                startActivity(intent);
+                finish();
+            }
+        } catch (Exception e) {
+            Log.i(TAG, "flashLogin: 捕获到出错!");
+            e.printStackTrace();
+            
         }
+       
         FzuCookie fzuCookie = saveObjectUtils.getObject("cookie", FzuCookie.class);
         if (fzuCookie != null) {
             FzuCookie.get(fzuCookie);
@@ -75,13 +91,19 @@ public class FlashActivity extends Activity {
                     for (User user : users) {
                         Log.i(TAG, "call: userName:"+user.getFzuAccount()+" pass:"+user.getFzuPasssword()+" isLogin:"+user.getIsLogin());
                         if (user.isLogin() == true) {
-                            Log.i(TAG, "call: 调用Login "+FzuCookie.get().getExpTime());
                             if (FzuCookie.get().getExpTime()>=System.currentTimeMillis()){
                                 subscriber.onCompleted();
                                 return;
                             }
                             DefaultConfig.get().setUserAccount(user.getFzuAccount());
-                            final String loginResponse = HttpUtil.Login(getApplicationContext(),user);
+                            String loginResponse=null;
+                            try {
+                                loginResponse = HttpUtil.Login(getApplicationContext(),user);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Fabric.with(context, new Crashlytics());
+                                subscriber.onError(new RuntimeException("网路错误"));
+                            }
                             subscriber.onNext(loginResponse);
 //                                    for (User otherUser : users) {
 //                                        if (!otherUser.getFzuAccount().equals(user.getFzuAccount())) {
@@ -89,8 +111,10 @@ public class FlashActivity extends Activity {
 //                                            dbManager.updateUser(otherUser);
 //                                        }
 //                                    }
+                            Log.i(TAG, "loginResponse:"+loginResponse);
                             switch (loginResponse){
                                 case "网络错误":
+                                    subscriber.onError(new RuntimeException("网路错误"));
                                     break;
                                 case "密码错误":
                                 case "登录失败，请检查用户名和密码是否正确!":
@@ -128,7 +152,12 @@ public class FlashActivity extends Activity {
 
             @Override
             public void onError(Throwable e) {
-
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(),"请检查网络连接，某些功能可能无法使用!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(FlashActivity.this , MainContainerActivity.class);
+                intent.putExtra("id" , "");
+                startActivity(intent);
+                finish();
             }
 
             @Override

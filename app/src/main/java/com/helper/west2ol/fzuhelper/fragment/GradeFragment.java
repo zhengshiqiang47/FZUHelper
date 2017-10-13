@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.activity.MainContainerActivity;
@@ -113,7 +114,14 @@ public class GradeFragment extends android.support.v4.app.Fragment implements Vi
             @Override
             public void call(Subscriber<? super List<FDScore>> subscriber) {
                 loadingView.show();
-                List<FDScore> scores=HtmlParseUtil.getScore(context);
+                List<FDScore> scores= null;
+                try {
+                    scores = HtmlParseUtil.getScore(context);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    subscriber.onError(e);
+                    return;
+                }
                 subscriber.onNext(scores);
                 subscriber.onCompleted();
             }
@@ -209,7 +217,14 @@ public class GradeFragment extends android.support.v4.app.Fragment implements Vi
         Observable.create(new Observable.OnSubscribe<List<FDScore>>() {
             @Override
             public void call(Subscriber<? super List<FDScore>> subscriber) {
-                List<FDScore> scores=HtmlParseUtil.getScore(context);
+                List<FDScore> scores= null;
+                try {
+                    scores = HtmlParseUtil.getScore(context);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    subscriber.onError(new RuntimeException("网络出错"));
+                    return;
+                }
                 subscriber.onNext(scores);
                 subscriber.onCompleted();
             }
@@ -228,6 +243,12 @@ public class GradeFragment extends android.support.v4.app.Fragment implements Vi
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        if (e.getMessage().equals("网络出错")){
+                            Toast.makeText(getActivity(),"获取成绩出错 ！请稍后手动刷新", Toast.LENGTH_SHORT).show();
+                            showLoading(false);
+                            List<FDScore> scores = DBManager.getInstance(getActivity()).queryFDScoreList();
+                            scoreMap = CalculateUtil.getTermScores(scores);
+                        }
                     }
 
                     @Override

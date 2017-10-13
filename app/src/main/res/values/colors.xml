@@ -46,4 +46,6 @@
     <color name="journey_green">#2cc7ad</color>
 
     <color name="transparent">#00ffffff</color>
+
+    <color name="widgetBg">#Afffffff</color>
 </resources>

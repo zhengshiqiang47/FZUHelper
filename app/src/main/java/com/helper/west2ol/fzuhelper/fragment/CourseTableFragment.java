@@ -478,6 +478,13 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
+    public void onRefreshError() {
+        String content="获取成绩出错，请稍后再试";
+        Snackbar.make(layout,content,Snackbar.LENGTH_SHORT).show();
+        showLoading(false);
+    }
+
+    @Override
     public Context getParentActivity() {
         return getActivity();
     }
@@ -554,6 +561,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.fab_sheet_item_create:
                 materialSheetFab.hideSheet();
+                Toast.makeText(getActivity(), "此功能即将来袭，敬请期待!!!", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 coursePresenter.addPoupWindow(view.getId());

@@ -20,69 +20,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
             <RelativeLayout
-                android:id="@+id/theme_setting"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:clickable="true"
-                android:background="@drawable/view_sbw"
-                android:paddingBottom="15dip"
-                android:paddingTop="15dip">
-                <TextView
-                    android:layout_alignParentTop="true"
-                    android:layout_width="200dp"
-                    android:layout_height="25dp"
-                    android:layout_marginLeft="20dp"
-                    android:text="风格"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="15dp"/>
-                <TextView
-                    android:layout_alignParentBottom="true"
-                    android:layout_width="200dp"
-                    android:layout_height="25dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginBottom="5dp"
-                    android:text="修改你的界面风格"
-                    android:textColor="@color/colorGray"
-                    android:textSize="13dp"/>
-            </RelativeLayout>
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_height="0.3dp"
-                android:src="@color/colorWhite"/>
-            <RelativeLayout
-                android:id="@+id/library_user_setting"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:background="@drawable/view_sbw"
-                android:paddingBottom="15dip"
-                android:paddingTop="15dip">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="20dp"
-                    android:text="账号绑定"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="15dp"/>
-                <TextView
-                    android:layout_alignParentBottom="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="25dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginBottom="5dp"
-                    android:text="可以绑定你的图书馆账号"
-                    android:textColor="@color/colorGray"
-                    android:textSize="13dp"/>
-            </RelativeLayout>
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_height="0.3dp"
-                android:src="@color/colorWhite"/>
-            <RelativeLayout
                 android:id="@+id/post_advice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -200,7 +137,7 @@
                     android:layout_height="25dp"
                     android:layout_marginLeft="20dp"
                     android:layout_marginBottom="5dp"
-                    android:text="想认识帅气的作者吗"
+                    android:text="想认识作者吗"
                     android:textColor="@color/colorGray"
                     android:textSize="13dp"/>
             </RelativeLayout>

@@ -2,6 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_marginTop="4dp"
+    android:background="@color/colorWhite"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
@@ -15,6 +16,7 @@
         android:id="@+id/weekday_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="5dp"
         android:orientation="horizontal"
         android:layout_toRightOf="@id/test_empty">
         <!-- 星期一的格子 -->
