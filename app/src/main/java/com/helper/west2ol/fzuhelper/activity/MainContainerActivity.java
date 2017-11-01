@@ -1,10 +1,13 @@
 package com.helper.west2ol.fzuhelper.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
@@ -13,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -23,8 +27,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.helper.west2ol.fzuhelper.BuildConfig;
 import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.bean.CourseBean;
 import com.helper.west2ol.fzuhelper.bean.CourseBeanLab;
@@ -38,6 +44,7 @@ import com.helper.west2ol.fzuhelper.fragment.GradeFragment;
 import com.helper.west2ol.fzuhelper.fragment.MathFragment;
 import com.helper.west2ol.fzuhelper.fragment.YibanFragment;
 import com.helper.west2ol.fzuhelper.util.ActivityController;
+import com.helper.west2ol.fzuhelper.util.DateUtil;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.DownloadAPK;
 import com.helper.west2ol.fzuhelper.util.FzuCookie;
@@ -60,7 +67,13 @@ import rx.schedulers.Schedulers;
 
 public class MainContainerActivity extends FragmentActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG="MainActivity";
-    private static final String VERSION="1.0";
+    private static  String VERSION="1.0";
+    public static final int TABLE_FRAGMENT=0;
+    public static final int SCORE_FRAGMENT=1;
+    public static final int EXAM_FRAGMENT=2;
+    public static final int YIBAN_FRAGMENT=3;
+    public static final int EMPTY_ROOM_FRAGMENT=4;
+
 
     public CourseTableFragment courseTableFragment;
     GradeFragment gradeFragment;
@@ -77,15 +90,16 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
     private Activity activity;
 
     Bundle parameterToFragment;
+    int shortCut=0;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("onCreate");
+    protected void onCreate(Bundle savedInstanceState) {;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         activity=this;
         Fabric.with(this, new Crashlytics());
+        requestPermission();
         checkVersion();
         setContentView(R.layout.activity_main_container);
         ActivityController.addActivity(this);
@@ -105,18 +119,37 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
         id = getIntent().getStringExtra("id");
         parameterToFragment = new Bundle();
         parameterToFragment.putString("id",id);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        course_Item = navigationView.getMenu().getItem(0);
-        course_Item.setChecked(true);
         courseTableFragment = new CourseTableFragment();
         courseTableFragment.setArguments(parameterToFragment);
         current = courseTableFragment;
-
+        shortCut=getIntent().getIntExtra("shortcut",0);
+        Log.i(TAG, "onCreate: shortCut:" + shortCut);
+        shortcutView(shortCut);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        course_Item = navigationView.getMenu().getItem(shortCut);
+        course_Item.setChecked(true);
     }
 
     private void initData(){
         DBManager dbManager=DBManager.getInstance(getApplicationContext());
+        if (DefaultConfig.get().getBeginDate() == 0) {
+            DefaultConfig defaultConfig=saveObjectUtils.getObject("config",DefaultConfig.class);
+            DefaultConfig config=DefaultConfig.get();
+            if (defaultConfig != null) {
+                config.setBeginDate(defaultConfig.getBeginDate());
+                config.setUserAccount(defaultConfig.getUserAccount());
+                config.setUserName(defaultConfig.getUserName());
+                //打开应用时重新计算周数
+                int week= DateUtil.getWeeks(defaultConfig.getBeginDate(),System.currentTimeMillis());
+                config.setNowWeek(week);
+                config.setCurXuenian(defaultConfig.getCurXuenian());
+                config.setCurYear(defaultConfig.getCurYear());
+                config.setXqValues(defaultConfig.getXqValues());
+                config.setOptions(defaultConfig.getOptions());
+                config.setLogin(defaultConfig.isLogin());
+            }
+        }
         List<User> resUsers=dbManager.queryUserList();
         if (resUsers != null && resUsers.size() >= 1) {
             System.out.println("resUserCount:" + resUsers.size());
@@ -132,13 +165,45 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
         }
     }
 
+
+    private void shortcutView(int shortcut){
+        switch (shortcut) {
+            case SCORE_FRAGMENT:
+                parameterToFragment.putString("id",id);
+                if (gradeFragment == null) {
+                    gradeFragment = new GradeFragment();
+                }
+               current=gradeFragment;
+                break;
+            case EXAM_FRAGMENT:
+                if (examFragment == null) {
+                    examFragment = new ExamFragment();
+                }
+                current = examFragment;
+                break;
+            case YIBAN_FRAGMENT:
+                if (yibanFragment == null) {
+                    yibanFragment = new YibanFragment();
+                }
+                current=yibanFragment;
+                break;
+            case EMPTY_ROOM_FRAGMENT:
+                if (emptyRoomFragment == null) {
+                    emptyRoomFragment = new EmptyRoomFragment();
+                }
+                current = emptyRoomFragment;
+                break;
+        }
+
+    }
+
     private boolean isFirst=true;
     //界面渲染完成回调
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         if (isFirst&&hasFocus) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_container , courseTableFragment)
+                    .replace(R.id.main_container , current)
                     .commit();
             isFirst=false;
         }
@@ -173,6 +238,9 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
 
     @Override
     public void onResume(){
+        if (shortCut != 0) {
+            shortcutView(shortCut);
+        }
         super.onResume();
         System.out.println("onResume");
     }
@@ -268,27 +336,46 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
     }
 
     private void logout(){
-        DBManager dbManager=new DBManager(this);
-        List<User> users=dbManager.queryUserList();
-        for (User user:users){
-            if (user.getFzuAccount().equals(DefaultConfig.get().getUserAccount())) {
-                user.setIsLogin(false);
-                dbManager.updateUser(user);
-                break;
-            }
-        }
-        dbManager.dropCourseBeans();
-        dbManager.dropFDScores();
-        SaveObjectUtils saveObjectUtils=new SaveObjectUtils(getApplicationContext(),"config");
-        DefaultConfig config=saveObjectUtils.getObject("config", DefaultConfig.class);
-        config.setUserAccount("");
-        saveObjectUtils.setObject("config", null);
-        saveObjectUtils.setObject("cookie", null);
-        CourseBeanLab.get(this).getCourses().clear();
-        ActivityController.finashAll();
-        Intent intent = new Intent(MainContainerActivity.this , LoginActivity_1.class);
-        startActivity(intent);
-        finish();
+        AlertDialog.Builder logoutDialog =
+                new AlertDialog.Builder(MainContainerActivity.this);
+        logoutDialog.setIcon(R.drawable.icon_f);
+        logoutDialog.setTitle("注销");
+        logoutDialog.setMessage("确定退出当前账号?");
+        logoutDialog.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DBManager dbManager=new DBManager(MainContainerActivity.this);
+                        List<User> users=dbManager.queryUserList();
+                        for (User user:users){
+                            if (user.getFzuAccount().equals(DefaultConfig.get().getUserAccount())) {
+                                user.setIsLogin(false);
+                                dbManager.updateUser(user);
+                                break;
+                            }
+                        }
+                        dbManager.dropCourseBeans();
+                        dbManager.dropFDScores();
+                        SaveObjectUtils saveObjectUtils=new SaveObjectUtils(getApplicationContext(),"config");
+                        DefaultConfig config=saveObjectUtils.getObject("config", DefaultConfig.class);
+                        config.setUserAccount("");
+                        saveObjectUtils.setObject("config", null);
+                        saveObjectUtils.setObject("cookie", null);
+                        CourseBeanLab.get(MainContainerActivity.this).getCourses().clear();
+                        ActivityController.finashAll();
+                        Intent intent = new Intent(MainContainerActivity.this , LoginActivity_1.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });;
+        logoutDialog.setNegativeButton("取消",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        logoutDialog.show();
     }
 
     private void switchFragment(Fragment from, Fragment to){
@@ -301,6 +388,25 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
             current=to;
         }
 
+    }
+
+    public void requestPermission(){
+        //判断当前Activity是否已经获得了该权限
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            //如果App的权限申请曾经被用户拒绝过，就需要在这里跟用户做出解释
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(this,"please give me the permission",Toast.LENGTH_SHORT).show();
+            } else {
+                //进行权限请求
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        1);
+            }
+        }
     }
 
     private void checkVersion(){
@@ -344,7 +450,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                                     new AlertDialog.Builder(MainContainerActivity.this);
                             normalDialog.setIcon(R.drawable.icon_f);
                             normalDialog.setTitle("检测到新版本");
-                            normalDialog.setMessage("是否更新"+versionStr+"版本?\n(由于此是beta版本，使用强制更新策略，这意味着你不更新无法使用这个版本)");
+                            normalDialog.setMessage("是否更新"+versionStr+"版本?\n(由于此是beta版本，使用强制更新策略，这意味着你不更新无法使用这个版本^-^)\n如遇安装时闪退请检查是否给予运行时权限");
                             normalDialog.setPositiveButton("确定",
                                     new DialogInterface.OnClickListener() {
                                         @Override
@@ -358,7 +464,7 @@ public class MainContainerActivity extends FragmentActivity implements Navigatio
                                         public void onClick(DialogInterface dialog, int which) {
                                             finish();
                                         }
-                                    });
+                                    }).setCancelable(false);
                             normalDialog.show();
                         }
 

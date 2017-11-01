@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FzuHelper</string>
+    <string name="app_name">福大助手</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -15,6 +15,9 @@
     <string name="sun">周日</string>
     <string name="title_activity_login_1">Sign in</string>
 
+    <string name="shortcutShortLabel">快捷方式</string>
+    <string name="shortcutLongLabel">LongLabel213</string>
+    <string name="shortcutDisabledMessage">不可用提示</string>
     <!-- Strings related to login -->
     <string name="account">学号</string>
     <string name="password">密码</string>
@@ -27,4 +30,5 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
 </resources>

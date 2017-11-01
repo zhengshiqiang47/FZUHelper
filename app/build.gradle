@@ -2,9 +2,20 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 apply plugin: 'io.fabric'
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 24
+    signingConfigs {
+        config {
+            keyAlias 'FzuHelpkey'
+            keyPassword 'zsqqq1996424'
+            storeFile file('/Users/coderqiang/Documents/FzuHelper-master/androidKey')
+            storePassword 'zsqqq1996424'
+        }
+    }
+    compileSdkVersion 26
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.helper.west2ol.fzuhelper"
@@ -18,11 +29,14 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
-    } }
+    }
+}
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    mavenCentral()
 }
 
 dependencies {
@@ -48,6 +62,8 @@ dependencies {
     testCompile 'junit:junit:4.5'
     compile 'com.jakewharton:butterknife:8.6.0'
     compile 'com.gordonwong:material-sheet-fab:1.2.1'
+
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.7.0@aar') {
         transitive = true;

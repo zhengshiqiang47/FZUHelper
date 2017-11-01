@@ -1,10 +1,17 @@
 package com.helper.west2ol.fzuhelper.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,6 +22,7 @@ import com.helper.west2ol.fzuhelper.R;
 import com.helper.west2ol.fzuhelper.bean.Exam;
 import com.helper.west2ol.fzuhelper.bean.User;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
+import com.helper.west2ol.fzuhelper.util.DateUtil;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.FzuCookie;
 import com.helper.west2ol.fzuhelper.util.HttpUtil;
@@ -22,6 +30,7 @@ import com.helper.west2ol.fzuhelper.util.SaveObjectUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.ConnectException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
@@ -36,8 +45,10 @@ import rx.schedulers.Schedulers;
 
 public class FlashActivity extends Activity {
 
+
     private static final String TAG="FlashActivity";
     private Context context;
+    private ShortcutManager mShortcutManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,10 +60,11 @@ public class FlashActivity extends Activity {
         flashLogin();
     }
 
-
+    SaveObjectUtils saveObjectUtils=null;
 
     private void flashLogin() {
-        SaveObjectUtils saveObjectUtils=new SaveObjectUtils(this,"config");
+        setupShortcuts();
+        saveObjectUtils=new SaveObjectUtils(this,"config");
         try {
             DefaultConfig defaultConfig=saveObjectUtils.getObject("config",DefaultConfig.class);
             DefaultConfig config=DefaultConfig.get();
@@ -60,7 +72,9 @@ public class FlashActivity extends Activity {
                 config.setBeginDate(defaultConfig.getBeginDate());
                 config.setUserAccount(defaultConfig.getUserAccount());
                 config.setUserName(defaultConfig.getUserName());
-                config.setNowWeek(defaultConfig.getNowWeek());
+                //打开应用时重新计算周数
+                int week= DateUtil.getWeeks(defaultConfig.getBeginDate(),System.currentTimeMillis());
+                config.setNowWeek(week);
                 config.setCurXuenian(defaultConfig.getCurXuenian());
                 config.setCurYear(defaultConfig.getCurYear());
                 config.setXqValues(defaultConfig.getXqValues());
@@ -77,11 +91,13 @@ public class FlashActivity extends Activity {
             e.printStackTrace();
             
         }
+
        
         FzuCookie fzuCookie = saveObjectUtils.getObject("cookie", FzuCookie.class);
         if (fzuCookie != null) {
             FzuCookie.get(fzuCookie);
         }
+
         Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> subscriber) {
@@ -96,6 +112,7 @@ public class FlashActivity extends Activity {
                                 return;
                             }
                             DefaultConfig.get().setUserAccount(user.getFzuAccount());
+                            saveObjectUtils.setObject("config",DefaultConfig.get());
                             String loginResponse=null;
                             try {
                                 loginResponse = HttpUtil.Login(getApplicationContext(),user);
@@ -165,7 +182,59 @@ public class FlashActivity extends Activity {
                 Toast.makeText(getApplicationContext(), (String)o, Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
-
+    private void setupShortcuts() {
+        mShortcutManager = getSystemService(ShortcutManager.class);
+        List<ShortcutInfo> infos = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            if (i == 1) {
+                Intent intent = new Intent(this, MainContainerActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.putExtra("shortcut", MainContainerActivity.EXAM_FRAGMENT);
+                ShortcutInfo info = new ShortcutInfo.Builder(this, "id" + i)
+                        .setShortLabel("考场")
+                        .setLongLabel("考场查询" )
+                        .setIcon(Icon.createWithResource(this, R.drawable.icon_exam))
+                        .setIntent(intent)
+                        .build();
+                infos.add(info);
+            } else if (i == 2) {
+                Intent intent = new Intent(this, MainContainerActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.putExtra("shortcut", MainContainerActivity.SCORE_FRAGMENT);
+                ShortcutInfo info = new ShortcutInfo.Builder(this, "id" + i)
+                        .setShortLabel("成绩")
+                        .setLongLabel("成绩查询" )
+                        .setIcon(Icon.createWithResource(this, R.drawable.ic_grade))
+                        .setIntent(intent)
+                        .build();
+                infos.add(info);
+            }else if (i == 3) {
+                Intent intent = new Intent(this, MainContainerActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.putExtra("shortcut", MainContainerActivity.YIBAN_FRAGMENT);
+                ShortcutInfo info = new ShortcutInfo.Builder(this, "id" + i)
+                        .setShortLabel("易班工具")
+                        .setLongLabel("易班工具(含一键评议" )
+                        .setIcon(Icon.createWithResource(this, R.drawable.icon_yiban))
+                        .setIntent(intent)
+                        .build();
+                infos.add(info);
+            }else if (i == 4) {
+                Intent intent = new Intent(this, MainContainerActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.putExtra("shortcut", MainContainerActivity.EMPTY_ROOM_FRAGMENT);
+                ShortcutInfo info = new ShortcutInfo.Builder(this, "id" + i)
+                        .setShortLabel("空教室")
+                        .setLongLabel("空教室查询" )
+                        .setIcon(Icon.createWithResource(this, R.drawable.icon_room))
+                        .setIntent(intent)
+                        .build();
+                infos.add(info);
+            }
+//            manager.addDynamicShortcuts(Arrays.asList(info));
+        }
+        mShortcutManager.setDynamicShortcuts(infos);
     }
 }

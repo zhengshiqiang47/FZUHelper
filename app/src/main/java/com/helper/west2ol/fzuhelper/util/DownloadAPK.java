@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.support.v4.BuildConfig;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.helper.west2ol.fzuhelper.activity.MainContainerActivity;
 
@@ -88,6 +89,7 @@ public class DownloadAPK {
                 connect.disconnect();
             } catch (Exception e) {
                 e.printStackTrace();
+
                 if (DEBUG) Log.e(TAG, "downloadFile exception !" + e);
             }
             return null;
@@ -99,6 +101,7 @@ public class DownloadAPK {
             downloadProDialog.dismiss();
 
         }
+
     }
 
     public void downloadProgress(Context context){//自己定义的一个下载的进度条

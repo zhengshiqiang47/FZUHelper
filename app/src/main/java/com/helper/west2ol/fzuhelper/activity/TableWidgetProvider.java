@@ -33,6 +33,7 @@ import com.helper.west2ol.fzuhelper.bean.FDScoreLB;
 import com.helper.west2ol.fzuhelper.dao.DBManager;
 import com.helper.west2ol.fzuhelper.presenter.CourseTablePresenterImpl;
 import com.helper.west2ol.fzuhelper.util.CalculateUtil;
+import com.helper.west2ol.fzuhelper.util.DateUtil;
 import com.helper.west2ol.fzuhelper.util.DefaultConfig;
 import com.helper.west2ol.fzuhelper.util.FzuCookie;
 import com.helper.west2ol.fzuhelper.util.HtmlParseUtil;
@@ -132,8 +133,10 @@ public class TableWidgetProvider extends AppWidgetProvider {
             if (defaultConfig == null) {
                 return;
             }
+            int week= DateUtil.getWeeks(defaultConfig.getBeginDate(),System.currentTimeMillis());
+            defaultConfig.setNowWeek(week);
             Log.i(TAG, "onUpdate: Week:"+defaultConfig.getNowWeek()+" year"+defaultConfig.getCurYear()+defaultConfig.getCurXuenian());
-            showKB(defaultConfig.getNowWeek(),defaultConfig.getCurYear(),defaultConfig.getCurXuenian());
+            showKB(week,defaultConfig.getCurYear(),defaultConfig.getCurXuenian());
             course_table_layout.measure(0,0);
             course_table_layout.layout(0,0,0,0);
             Bitmap bitmap=Bitmap.createBitmap(loadBitmapFromView(context,course_table_layout));
@@ -147,6 +150,7 @@ public class TableWidgetProvider extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.widget_image, pendingIntent);
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
+        saveObjectUtils.setObject("config",defaultConfig);
     }
 
 
@@ -209,7 +213,7 @@ public class TableWidgetProvider extends AppWidgetProvider {
         initKB(root_layout);
         DisplayMetrics dm = new DisplayMetrics();
         //屏幕宽度
-        int width =dip2px(context,250);
+        int width =dip2px(context,248);
         int height = dip2px(context,320);
         //平均宽度
         int aveWidth = width / 7;
@@ -225,13 +229,6 @@ public class TableWidgetProvider extends AppWidgetProvider {
             for(int j = 2; j <= 8; j ++){
                 TextView tx = new TextView(context);
                 tx.setId((i - 1) * 8  + j);
-                //除了最后一列，都使用course_text_view_bg背景（最后一列没有右边框）
-//                if(j < 8)
-//                    tx.setBackgroundDrawable(this.
-//                            getResources().getDrawable(R.drawable.course_text_view_bg));
-//                else
-//                    tx.setBackgroundDrawable(this.
-//                            getResources().getDrawable(R.drawable.course_table_last_colum));
                 //相对布局参数
                 RelativeLayout.LayoutParams rp = new RelativeLayout.LayoutParams(aveWidth * 33 / 32 + 1, gridHeight);
                 //文字对齐方式
@@ -328,7 +325,6 @@ public class TableWidgetProvider extends AppWidgetProvider {
             int timecount = Math.abs(kc.getKcEndTime()-kc.getKcStartTime()+1) ;
             RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(aveWidth * 31 / 32, (gridHeight - 5) * timecount );
             //textview的位置由课程开始节数和上课的时间（day of week）确定
-
             rlp.topMargin = 5 + (kc.getKcStartTime()- 1) * gridHeight+40;
             rlp.leftMargin = 1;
             // 偏移由这节课是星期几决定

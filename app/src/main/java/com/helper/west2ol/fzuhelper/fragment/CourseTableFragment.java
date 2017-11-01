@@ -97,7 +97,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
     Button menu_button_in_course_table;
     @BindView(R.id.more_button_in_course_table)
     Button moreButton;
-    @BindView(R.id.course_table_nice_spinner)
+    @BindView(R.id.course_table_week_spinner)
     NiceSpinner niceSpinner;
     @BindView(R.id.course_layout)
     LinearLayout layout;
@@ -406,9 +406,15 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
         TextView headerNameText = (TextView) drawer.findViewById(R.id.nav_header_name);
         TextView headerWeekText= (TextView) drawer.findViewById(R.id.nav_header_week);
         TextView headerXnText= (TextView) drawer.findViewById(R.id.nav_header_xuenian);
-        headerNameText.setText(defaultConfig.getUserName());
-        headerWeekText.setText("第 "+defaultConfig.getNowWeek()+" 周");
-        headerXnText.setText(defaultConfig.getCurYear()+"年"+defaultConfig.getCurXuenian()+"学期");
+        try {
+            Log.i(TAG, "showDrawerInfo: headerText:" + headerNameText);
+            headerNameText.setText(defaultConfig.getUserName());
+            headerWeekText.setText("第 "+defaultConfig.getNowWeek()+" 周");
+            headerXnText.setText(defaultConfig.getCurYear()+"年"+defaultConfig.getCurXuenian()+"学期");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -434,7 +440,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
                 DefaultConfig.get().setCurXuenian(Integer.parseInt(options.get(options1).substring(4,6)));
                 DefaultConfig.get().setCurYear(Integer.parseInt(options.get(options2).substring(0,4)));
             }
-        }).build();
+        }).setTitleText("切换到其他学期").build();
         pickerView.setPicker(options);
         pickerView.show(true);
     }
@@ -479,7 +485,7 @@ public class CourseTableFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onRefreshError() {
-        String content="获取成绩出错，请稍后再试";
+        String content="获取课表出错，请稍后再试(>v<)!";
         Snackbar.make(layout,content,Snackbar.LENGTH_SHORT).show();
         showLoading(false);
     }

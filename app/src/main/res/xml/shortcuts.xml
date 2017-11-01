@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="settings"
+        android:enabled="true"
+        android:icon="@drawable/appicon"
+        android:shortcutShortLabel="@string/shortcutShortLabel"
+        android:shortcutLongLabel="@string/shortcutLongLabel"
+        android:shortcutDisabledMessage="@string/shortcutDisabledMessage">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.helper.west2ol.fzuhelper"
+            android:targetClass="com.helper.west2ol.fzuhelper.activity.FlashActivity" />
+        <categories android:name="android.shortcut.conversation"/>
+    </shortcut>
+</shortcuts>

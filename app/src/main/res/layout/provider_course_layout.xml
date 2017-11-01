@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/colorWhite"
-    android:layout_width="fill_parent"
+    android:background="@color/widgetBg"
+    android:backgroundTint="@color/widgetBg"
+    android:layout_width="250dp"
     android:layout_height="fill_parent">
     <!-- 最左边空白的格子 -->
     <LinearLayout
         android:paddingTop="8dp"
-        android:divider="@color/colorBlackLight_2"
+        android:paddingBottom="8dp"
         android:id="@+id/weekday_layout"
+        android:background="@color/widgetBg2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -39,12 +41,11 @@
            style="@style/WidgetItem"
             android:text="日"/>
     </LinearLayout>
-
-
     <!-- 课程表body部分 -->
     <RelativeLayout
         android:id="@+id/provieder_root_layout"
-        android:background="@color/colorWhite"
+        android:alpha="100"
+        android:background="@color/widgetBg"
         android:layout_below="@id/weekday_layout"
         android:paddingBottom="8dp"
         android:layout_width="match_parent"

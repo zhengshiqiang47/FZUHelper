@@ -48,4 +48,5 @@
     <color name="transparent">#00ffffff</color>
 
     <color name="widgetBg">#Afffffff</color>
+    <color name="widgetBg2">#Dfffffff</color>
 </resources>
