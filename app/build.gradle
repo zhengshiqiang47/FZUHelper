@@ -9,10 +9,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     signingConfigs {
         config {
-            keyAlias 'FzuHelpkey'
-            keyPassword 'zsqqq1996424'
-            storeFile file('/Users/coderqiang/Documents/FzuHelper-master/androidKey')
-            storePassword 'zsqqq1996424'
+
         }
     }
     compileSdkVersion 26
